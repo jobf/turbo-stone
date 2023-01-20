@@ -1,0 +1,14 @@
+-cp .submodules/akai-fire-hx/src
+-cp .submodules/dial-it-in
+-cp .submodules/grig.midi
+-cp lib
+
+-lib utest
+-lib json2object
+-lib lime
+-lib peote-view
+-lib json2object
+-lib grig.midi
+-lib format
+-lib json2object
+-lib compiletime
