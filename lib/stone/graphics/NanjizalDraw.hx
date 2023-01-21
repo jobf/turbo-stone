@@ -8,8 +8,10 @@ import justPath.LinePathContextTrace;
 import stone.graphics.implementation.Graphics;
 import stone.graphics.Fill;
 import stone.graphics.implementation.PeoteLine;
+import stone.graphics.NanjizalDraw;
 
 typedef QuadrilateralPos = { ax: Float, ay: Float, bx: Float, by: Float, cx: Float, cy: Float, dx: Float, dy: Float };
+typedef TrianglePos = { ax: Float, ay: Float, bx: Float, by: Float, cx: Float, cy: Float };
 
 @:access(stone.graphics.implementation.Graphics)
 class NanjizalDraw implements ILinePathContext {
@@ -42,7 +44,98 @@ class NanjizalDraw implements ILinePathContext {
         this.scaleX = scaleX;
         this.scaleY = scaleY;
     }
+    inline
+    public function fillTriangle( ax: Float, ay: Float
+                                , bx: Float, by: Float
+                                , cx: Float, cy: Float
+                                , hasHit: Bool = false ){
+        var adjustWinding = ( (ax * by - bx * ay) + (bx * cy - cx * by) + (cx * ay - ax * cy) )>0;
+        if( !adjustWinding ){// TODO: this is inverse of cornerContour needs thought, but provides required protection
+            // swap b and c
+            // probably wrong way as y is down?
+            var bx_ = bx;
+            var by_ = by;
+            bx = cx;
+            by = cy;
+            cx = bx_;
+            cy = by_;
+        }
+        return fillTriUnsafe( pixelImage, ax, ay, bx, by, cx, cy, color, hasHit );
+    }
 
+    inline 
+    function fillTriUnsafe( ax: Float, ay: Float
+                          , bx: Float, by: Float
+                          , cx: Float, cy: Float
+                          , hasHit: Bool = false ): Null<HitTri>{
+        var s0 = ay*cx - ax*cy;
+        var sx = cy - ay;
+        var sy = ax - cx;
+        var t0 = ax*by - ay*bx;
+        var tx = ay - by;
+        var ty = bx - ax;
+        var A = -by*cx + ay*(-bx + cx) + ax*(by - cy) + bx*cy; 
+        var yIter3: IteratorRange = boundIterator3( ay, by, cy );
+        var foundY = false;
+        var s = 0.;
+        var t = 0.;
+        var sxx = 0.;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+        var txx = 0.;
+        var startY: Int = 0;
+        for( x in boundIterator3( ax, bx, cx ) ){
+            sxx = sx*x;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+            txx = tx*x;
+            foundY = false;
+            for( y in yIter3 ){
+                s = s0 + sxx + sy*y;
+                t = t0 + txx + ty*y;
+                if( s <= 0 || t <= 0 ){
+                    // after filling break
+                    if( foundY ) {
+                        graphicsLine( x, startY, x, y, color, 1 );
+                        break;
+                    }
+                } else {
+                    if( (s + t) < A ) {
+                        // store first hit
+                        if( foundY == false ) {
+                            startY = y;
+                            foundY = true;
+                        }
+                    } else {
+                        // after filling break
+                        if( foundY ) {
+                            graphicsLine( x, startY, x, y, color, 1 );
+                            break;  
+                        }
+                    }
+                }
+            }                                                                                                                                                                                                                                                                                                                                                                                                                                
+        }
+        return if( hasHit == true ){
+            var v: TrianglePos = { ax: ax, ay: ay, bx: bx, by: by, cx: cx, cy: cy };
+            v;
+        } else {
+            null;
+        }
+    }
+    inline
+    public function fillQuadrilateral( pixelImage: Pixelimage, ax: Float, ay: Float
+                 , bx: Float, by: Float
+                 , cx: Float, cy: Float
+                 , dx: Float, dy: Float 
+                 , hasHit: Bool = false ): Null<HitQuad>{
+        // tri e - a b d
+        // tri f - b c d
+        fillTriangle( pixelImage, ax, ay, bx, by, dx, dy, color, hasHit );
+        fillTriangle( pixelImage, bx, by, cx, cy, dx, dy, color, hasHit );
+        return if( hasHit == true ){
+            var v: HitQuad = { ax: ax, ay: ay, bx: bx, by: by, cx: cx, cy: cy, dx: dx, dy: dy };
+            v;
+        } else {
+            null;
+        }
+    }
     inline
     function graphicsLine( x0: Float, y0: Float, x1: Float, y1: Float, thick: Float, color: Color ): QuadrilateralPos {
         var line: PeoteLine = cast graphics.make_line( x0, y0, x1, y1, cast color );
@@ -108,6 +201,7 @@ class NanjizalDraw implements ILinePathContext {
                 graphicsLine( xA*scaleX + translateX, yA*scaleY + translateY
                     , x0*scaleX + translateX, y0*scaleY + translateY 
                     , strokeWidth, strokeColor );
+                // Can try fillQuadrilateral here!
                 //fillQuadrilateral( oldInfo.bx*scaleX + translateX, oldInfo.by*scaleY + translateY, info.ax*scaleX + translateX, info.ay*scaleY + translateY, info.dx*scaleX + translateX, info.dy*scaleY + translateY, oldInfo.cx*scaleX + translateX, oldInfo.cy*scaleY + translateY, strokeColor );
                 
             }
@@ -133,6 +227,7 @@ class NanjizalDraw implements ILinePathContext {
             graphicsLine( xA*scaleX + translateX, yA*scaleY + translateY
                 , x0*scaleX + translateX, y0*scaleY + translateY 
                 , strokeWidth, strokeColor );
+            // Can try fillQuadrilateral here!
             //fillQuadrilateral( oldInfo.bx*scaleX + translateX, oldInfo.by*scaleY + translateY, info.ax*scaleX + translateX, info.ay*scaleY + translateY, info.dx*scaleX + translateX, info.dy*scaleY + translateY, oldInfo.cx*scaleX + translateX, oldInfo.cy*scaleY + translateY, strokeColor );
         }
         x0 = x2;
@@ -157,5 +252,113 @@ class NanjizalDraw implements ILinePathContext {
     public
     function quadThru( x2: Float, y2: Float, x3: Float, y3: Float ){
         svgLinePath.quadThru( x2, y2, x3, y3 );
+    }
+}
+// for triangle iteration ( module level functions need recent haxe compiler )
+    inline 
+    function boundIterator3( a: Float, b: Float, c: Float ): IteratorRange {
+        return if( a > b ){
+            if( a > c ){ // a,b a,c
+                (( b > c )? Math.floor( c ): Math.floor( b ))...Math.ceil( a );
+            } else { // c,a,b
+                Math.floor( b )...Math.ceil( c );
+            }
+        } else {
+            if( b > c ){ // b,a, b,c 
+                (( a > c )? Math.floor( c ): Math.ceil( a ))...Math.ceil( b );
+            } else { // c,b,a
+                Math.floor( a )...Math.ceil( c );
+            }
+        }
+    }
+
+
+@:access(IntIterator.min, IntIterator.max )
+class IntIterStart {
+    public var start: Int;
+    public var max: Int;
+    public function new( min_: Int, max_: Int ){
+        start = min_;
+        max = max_;
+    }
+}
+@:transitive
+@:access( IntIterator.min, IntIterator.max )
+@:forward
+abstract IteratorRange( IntIterStart ) from IntIterStart {
+    public static inline
+    function startLength( min: Int, len: Int ): IteratorRange {
+        return new IteratorRange( min, min + len - 1 );
+    }
+    public inline
+    function new( min: Int, max: Int ){
+        this = new IntIterStart( min, max );
+    }
+    @:from
+    static inline
+    public function fromIterator( ii: IntIterator ): IteratorRange {
+        return new IteratorRange( ii.min, ii.max );
+    }
+    @:to
+    function toIterStart():IteratorRange {
+       return new IteratorRange( this.start, this.max );
+    }
+    public inline function iterator(){
+        return this.start...this.max;
+    }
+    @:op(A + B) public static inline
+    function adding( a: IteratorRange, b: IteratorRange ): IteratorRange {
+      	return a.add( b );
+    }
+    public inline
+    function add( b: IteratorRange ): IteratorRange {
+        var begin: Int = Std.int( Math.min( this.start, b.max ) );
+        var end = ( begin == this.start )? b.max: this.max;
+        return new IteratorRange( begin, end );
+    }
+    public
+    var length( get, set ): Int; 
+    inline
+    function get_length(): Int {
+        return this.max - this.start + 1;
+    }
+    inline
+    function set_length( l: Int ): Int {
+        this.max = l - 1;
+        return l;
+    }
+    inline
+    public function contains( v: Int ): Bool {
+        return ( v > ( this.start - 1 ) && ( v < this.max + 1 ) );
+    }
+    inline
+    public function containsF( v: Float ): Bool {
+        return ( v > ( this.start - 1 ) && ( v < this.max + 1 ) );
+    }
+    inline
+    public function isWithin( ir: IteratorRange ): Bool {
+        return contains( ir.start ) && contains( ir.max );
+    }
+    inline
+    public function moveRange( v: Int ){
+        this.start += v;
+        this.max += v;
+    }
+    @:op(A += B)
+    public inline static
+    function addAssign( a: IteratorRange, v: Int ){
+        a.moveRange( v );
+        return a;
+    } 
+    @:op(A -= B)
+    public inline static
+    function minusAssign( a: IteratorRange, v: Int ){
+        return a+=-v;
+    }
+    inline
+    public function ifContainMove( v: Int, amount: Int ): Bool {
+        var ifHas = contains( v );
+        if( ifHas ) moveRange( amount );
+        return ifHas; 
     }
 }
