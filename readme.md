@@ -23,6 +23,9 @@ haxelib install compiletime
 haxelib git peote-view https://github.com/maitag/peote-view.git
 ```
 
+
+From within the `test-app` directory...
+
 Compile and run web
 
 ```
