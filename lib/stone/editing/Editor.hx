@@ -146,8 +146,8 @@ class Designer {
 			return;
 		}
 
-		mouse_position.x = round_to_nearest(mouse_position.x, size_segment) - size_segment_half;
-		mouse_position.y = round_to_nearest(mouse_position.y, size_segment) - size_segment_half;
+		mouse_position.x = round_to_nearest(mouse_position.x, size_segment);
+		mouse_position.y = round_to_nearest(mouse_position.y, size_segment);
 		mouse_pointer.x = mouse_position.x;
 		mouse_pointer.y = mouse_position.y;
 		if (isDrawingLine) {
@@ -265,8 +265,8 @@ class Designer {
 				return;
 			}
 			isDrawingLine = true;
-		var x = round_to_nearest(point.x, size_segment) - size_segment_half;
-		var y = round_to_nearest(point.y, size_segment) - size_segment_half;
+		var x = round_to_nearest(point.x, size_segment);
+		var y = round_to_nearest(point.y, size_segment);
 		var line:AbstractLine = graphics.make_line(x, y, x, y, 0xFFFFFFff);
 		figure.lines.push(line);
 		trace('start_drawing_line ${x} ${y}');
@@ -279,8 +279,8 @@ class Designer {
 		isDrawingLine = false;
 		trace('stop_drawing_line ${point.x} ${point.y}');
 		var line = figure.line_newest();
-		line.point_to.x = round_to_nearest(point.x, size_segment) - size_segment_half;
-		line.point_to.y = round_to_nearest(point.y, size_segment) - size_segment_half;
+		line.point_to.x = round_to_nearest(point.x, size_segment);;
+		line.point_to.y = round_to_nearest(point.y, size_segment);;
 		figure.model.push(map_line(line.point_from, line.point_to));
 		// save_state();
 		for (line in figure.lines) {
@@ -289,7 +289,7 @@ class Designer {
 	}
 
 	function round_to_nearest(value:Float, interval:Float):Float {
-		return Math.floor(value / interval) * interval;
+		return Math.round(value / interval) * interval;
 	}
 
 }
