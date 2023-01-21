@@ -219,20 +219,23 @@ class DesignerScene extends Scene {
 			}
 		];
 
-		var y_button = 50;
-		var x_button = 675;
+		var gap = 10;
+		var width_button = Std.int(font.width_character * 10);
+		var height_button = font.height_model + gap;
+		var x_button = bounds.width - width_button - gap;
+		var y_button = gap * 3;
 
 		var add_button:(Button, Action) -> Void = (button_key, action) -> {
 			var button = ui.make_button({
 				y: y_button,
 				x: x_button,
-				width: Std.int(font.width_character * 10),
-				height: 10 + font.height_model
+				width: width_button,
+				height: height_button,
 			}, action.name, 0x151517ff, 0xd0b85087);
 
 			button.on_click = () -> action.on_pressed();
 			actions[button_key] = action;
-			y_button += 10 + font.height_model + 10;
+			y_button += gap + font.height_model + gap;
 		}
 
 
