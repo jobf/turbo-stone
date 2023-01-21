@@ -279,8 +279,8 @@ class Designer {
 		isDrawingLine = false;
 		trace('stop_drawing_line ${point.x} ${point.y}');
 		var line = figure.line_newest();
-		line.point_to.x = round_to_nearest(point.x, size_segment);;
-		line.point_to.y = round_to_nearest(point.y, size_segment);;
+		line.point_to.x = round_to_nearest(point.x, size_segment);
+		line.point_to.y = round_to_nearest(point.y, size_segment);
 		figure.model.push(map_line(line.point_from, line.point_to));
 		// save_state();
 		for (line in figure.lines) {
