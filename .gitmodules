@@ -1,9 +1,0 @@
-[submodule ".submodules/akai-fire-hx"]
-	path = .submodules/akai-fire-hx
-	url = https://github.com/owlbee/akai-fire-hx.git
-[submodule ".submodules/dial-it-in"]
-	path = .submodules/dial-it-in
-	url = https://github.com/jobf/dial-it-in.git
-[submodule ".submodules/grig.midi"]
-	path = .submodules/grig.midi
-	url = https://github.com/osakared/grig.midi.git
