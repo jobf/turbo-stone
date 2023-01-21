@@ -3,14 +3,9 @@
 
 	<haxelib name="lime" />
 	<haxelib name="peote-view" />
-	<haxelib name="json2object" />
-	<haxelib name="grig.midi" />
 	<haxelib name="format" />
 	<haxelib name="json2object" />
 	<haxelib name="compiletime" />
 
-	<source path="../.submodules/akai-fire-hx/src" />
-	<source path="../.submodules/dial-it-in" />
-	<source path="../.submodules/grig.midi" />
 
 </project>
