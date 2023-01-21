@@ -48,11 +48,9 @@ class NanjizalDraw implements ILinePathContext {
     public function fillTriangle( ax: Float, ay: Float
                                 , bx: Float, by: Float
                                 , cx: Float, cy: Float
-                                , hasHit: Bool = false ){
+                                , hasHit: Bool = true ){
         var adjustWinding = ( (ax * by - bx * ay) + (bx * cy - cx * by) + (cx * ay - ax * cy) )>0;
-        if( !adjustWinding ){// TODO: this is inverse of cornerContour needs thought, but provides required protection
-            // swap b and c
-            // probably wrong way as y is down?
+        if( !adjustWinding ){
             var bx_ = bx;
             var by_ = by;
             bx = cx;
@@ -67,7 +65,7 @@ class NanjizalDraw implements ILinePathContext {
     function fillTriUnsafe( ax: Float, ay: Float
                           , bx: Float, by: Float
                           , cx: Float, cy: Float
-                          , hasHit: Bool = false ): Null<HitTri>{
+                          , hasHit: Bool = true ): Null<TrianglePos>{
         var s0 = ay*cx - ax*cy;
         var sx = cy - ay;
         var sy = ax - cx;
@@ -124,13 +122,13 @@ class NanjizalDraw implements ILinePathContext {
                  , bx: Float, by: Float
                  , cx: Float, cy: Float
                  , dx: Float, dy: Float 
-                 , hasHit: Bool = false ): Null<HitQuad>{
+                 , hasHit: Bool = true ): Null<QuadrilateralPos>{
         // tri e - a b d
         // tri f - b c d
         fillTriangle( pixelImage, ax, ay, bx, by, dx, dy, color, hasHit );
         fillTriangle( pixelImage, bx, by, cx, cy, dx, dy, color, hasHit );
         return if( hasHit == true ){
-            var v: HitQuad = { ax: ax, ay: ay, bx: bx, by: by, cx: cx, cy: cy, dx: dx, dy: dy };
+            var v: QuadrilateralPos = { ax: ax, ay: ay, bx: bx, by: by, cx: cx, cy: cy, dx: dx, dy: dy };
             v;
         } else {
             null;
