@@ -8,7 +8,7 @@
 	<haxelib name="format" />
 	<haxelib name="json2object" />
 	<haxelib name="compiletime" />
-
+	<haxelib name="justPath" />
 	<source path="../.submodules/akai-fire-hx/src" />
 	<source path="../.submodules/dial-it-in" />
 	<source path="../.submodules/grig.midi" />
