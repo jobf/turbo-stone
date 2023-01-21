@@ -63,7 +63,11 @@ class Main extends Application {
 		implementation_graphics.set_color(slate);
 		
 		var hud_graphics = new Graphics(display_hud, viewport_window);
-		var init_scene = game -> new DesignerScene(hud_graphics, game, viewport_window, black);
+		var init_scene: Game -> Scene = game -> new DesignerScene(hud_graphics, game, viewport_window, black);
+
+		#if simple
+		init_scene = game -> new SimpleDraw(game, viewport_window, black);
+		#end
 		
 		#if web
 		js.Browser.document.onclick = (e) -> {
