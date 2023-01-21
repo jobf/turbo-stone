@@ -58,7 +58,7 @@ class NanjizalDraw implements ILinePathContext {
             cx = bx_;
             cy = by_;
         }
-        return fillTriUnsafe( pixelImage, ax, ay, bx, by, cx, cy, color, hasHit );
+        return fillTriUnsafe( ax, ay, bx, by, cx, cy, hasHit );
     }
 
     inline 
@@ -118,15 +118,15 @@ class NanjizalDraw implements ILinePathContext {
         }
     }
     inline
-    public function fillQuadrilateral( pixelImage: Pixelimage, ax: Float, ay: Float
-                 , bx: Float, by: Float
-                 , cx: Float, cy: Float
-                 , dx: Float, dy: Float 
-                 , hasHit: Bool = true ): Null<QuadrilateralPos>{
+    public function fillQuadrilateral( ax: Float, ay: Float
+                                     , bx: Float, by: Float
+                                     , cx: Float, cy: Float
+                                     , dx: Float, dy: Float 
+                                     , hasHit: Bool = true ): Null<QuadrilateralPos>{
         // tri e - a b d
         // tri f - b c d
-        fillTriangle( pixelImage, ax, ay, bx, by, dx, dy, color, hasHit );
-        fillTriangle( pixelImage, bx, by, cx, cy, dx, dy, color, hasHit );
+        fillTriangle( ax, ay, bx, by, dx, dy, hasHit );
+        fillTriangle( bx, by, cx, cy, dx, dy, hasHit );
         return if( hasHit == true ){
             var v: QuadrilateralPos = { ax: ax, ay: ay, bx: bx, by: by, cx: cx, cy: cy, dx: dx, dy: dy };
             v;
