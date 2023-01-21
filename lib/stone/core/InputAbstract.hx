@@ -1,7 +1,6 @@
 package stone.core;
 
 import stone.core.Vector;
-import akaifirehx.fire.Events;
 
 enum Button {
 	NONE;
@@ -66,8 +65,6 @@ abstract class InputAbstract {
 	
 	abstract public function mouse_cursor_show():Void;
 
-	// public var on_pressed:(button:Button) -> Void = b -> trace(b);
 	public var on_pressed:Event<Button> = new Event<Button>();
-	// public var on_released:(button:Button) -> Void = b -> trace(b);
 	public var on_released:Event<Button> = new Event<Button>();
 }
