@@ -63,7 +63,7 @@ class DesignerScene extends Scene {
 		
 		#if web
 		if (file.models.length == 0) {
-			var json = "";
+			var json = Assets.getText('models/$state_file_path');
 			file = Disk.parse_file_contents(json);
 		}
 		#else
@@ -214,7 +214,7 @@ class DesignerScene extends Scene {
 				on_pressed: () -> handle_mouse_press_left(),
 				on_released: () -> handle_mouse_release_left(),
 			},
-			MOUSE_RIGHT => {
+			MOUSE_MIDDLE => {
 				on_pressed: () -> handle_mouse_press_right(),
 			}
 		];
@@ -299,6 +299,7 @@ class DesignerScene extends Scene {
 				actions[button].on_pressed();
 			}
 		});
+		
 		game.input.on_released.add(button -> {
 			if (actions.exists(button)) {
 				actions[button].on_released();

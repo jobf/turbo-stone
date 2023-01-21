@@ -14,7 +14,8 @@
 
 	<haxelib name="stone" path="../lib" />
 
-	<!-- <assets path="assets" /> -->
+	<assets path="assets/models" rename="models" include="*.json" />
+
 
 	<!-- force compiling for a special opengl-es version (only set one of them) -->
 	<!-- this optimizes the build and forces no-runtimecheck for the gl-features -->
