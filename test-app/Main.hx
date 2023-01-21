@@ -52,7 +52,7 @@ class Main extends Application {
 		}
 
 		peoteview = new PeoteView(window);
-		display_main = new Display(0, 0, window.width, window.height);
+		display_main = new Display(0, 0, 800, 640);
 		peoteview.addDisplay(display_main);
 
 		display_hud = new Display(0, 0, window.width, window.height);
