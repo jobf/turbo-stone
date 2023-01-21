@@ -163,7 +163,7 @@ class DesignerScene extends Scene {
 		}
 	}
 
-	function handle_mouse_press_right() {
+	function delete_line_under_mouse(){
 		designer.line_under_cursor_remove();
 	}
 
@@ -215,11 +215,14 @@ class DesignerScene extends Scene {
 				on_released: () -> handle_mouse_release_left(),
 			},
 			MOUSE_MIDDLE => {
-				on_pressed: () -> handle_mouse_press_right(),
+				on_pressed: () -> delete_line_under_mouse(),
+			},
+			KEY_D => {
+				on_pressed: () -> delete_line_under_mouse()
 			}
 		];
 
-		var gap = 10;
+			var gap = 10;
 		var width_button = Std.int(font.width_character * 10);
 		var height_button = font.height_model + gap;
 		var x_button = bounds.width - width_button - gap;
