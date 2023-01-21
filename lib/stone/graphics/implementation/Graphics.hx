@@ -17,9 +17,10 @@ class Graphics extends GraphicsAbstract {
 	var moon_buffer:Buffer<Sprite>;
 	var moon_program:Program;
 	var display:Display;
-	public var buffer_lines(default, null):Buffer<Line>;
-	var buffer_fills:Buffer<Rectangle>;
 
+	public var buffer_lines(default, null):Buffer<Line>;
+
+	var buffer_fills:Buffer<Rectangle>;
 
 	public function new(display:Display, viewport_bounds:RectangleGeometry) {
 		super(viewport_bounds);
@@ -36,16 +37,15 @@ class Graphics extends GraphicsAbstract {
 		moon_buffer = new Buffer<Sprite>(1, 1, false);
 		moon_program = new Program(moon_buffer);
 		display.addProgram(moon_program);
-
 	}
-	
-	public function add_moon(image:Image):Sprite{
+
+	public function add_moon(image:Image):Sprite {
 		moon_texture = new Texture(image.width, image.height);
 		moon_texture.setImage(image);
 
 		moon_program.addTexture(moon_texture, "custom");
 		moon_program.snapToPixel(1); // for smooth animation
-		var moon = new Sprite(320,320,1015,1015);
+		var moon = new Sprite(320, 320, 1015, 1015);
 		moon_buffer.addElement(moon);
 		return moon;
 	}
@@ -62,8 +62,7 @@ class Graphics extends GraphicsAbstract {
 			x: to_x,
 			y: to_y
 		},
-			element, line -> line_erase(line),
-			make_rectangle(Std.int(from_x), Std.int(from_y), size_cap, size_cap, color),
+			element, line -> line_erase(line), make_rectangle(Std.int(from_x), Std.int(from_y), size_cap, size_cap, color),
 			make_rectangle(Std.int(from_x), Std.int(from_y), size_cap, size_cap, color), cast color));
 		// trace('new line $from_x $from_y $to_x $to_y');
 		return lines[lines.length - 1];
@@ -71,7 +70,7 @@ class Graphics extends GraphicsAbstract {
 
 	public function make_fill(x:Int, y:Int, width:Int, height:Int, color:RGBA):AbstractFillRectangle {
 		var element = make_rectangle(x, y, width, height, color);
-		fills.push(new PeoteFill(element));
+		fills.push(new PeoteFill(element, element -> buffer_fills.removeElement(element)));
 		return fills[fills.length - 1];
 	}
 

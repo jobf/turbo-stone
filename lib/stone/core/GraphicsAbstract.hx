@@ -42,6 +42,8 @@ abstract class AbstractFillRectangle {
 	}
 
 	abstract public function draw():Void;
+	abstract public function erase():Void;
+	
 }
 
 @:structInit

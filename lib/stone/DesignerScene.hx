@@ -1,5 +1,7 @@
 package stone;
 
+import stone.ui.Ui.Modal;
+import js.Browser;
 import lime.utils.Assets;
 import dials.SettingsController;
 import dials.Disk;
@@ -174,6 +176,7 @@ class DesignerScene extends Scene {
 	var fill:AbstractFillRectangle;
 	var toggle:Toggle;
 	var button:ButtonUI;
+	var help:Modal;
 
 	function settings_load() {
 		var font = font_load_embedded();
@@ -213,16 +216,19 @@ class DesignerScene extends Scene {
 			MOUSE_LEFT => {
 				on_pressed: () -> handle_mouse_press_left(),
 				on_released: () -> handle_mouse_release_left(),
+				name: "DRAW"
 			},
 			MOUSE_MIDDLE => {
 				on_pressed: () -> delete_line_under_mouse(),
+				name: "DELETE"
 			},
 			KEY_D => {
-				on_pressed: () -> delete_line_under_mouse()
+				on_pressed: () -> delete_line_under_mouse(),
+				name: "DELETE"
 			}
 		];
 
-			var gap = 10;
+		var gap = 10;
 		var width_button = Std.int(font.width_character * 10);
 		var height_button = font.height_model + gap;
 		var x_button = bounds.width - width_button - gap;
@@ -300,6 +306,35 @@ class DesignerScene extends Scene {
 			name: "GRID MORE"
 		});
 
+		add_button(KEY_H, {
+			on_pressed: () -> {
+				if(help == null){
+					var help_text = [for(pair in actions.keyValueIterator()) '${pair.key} : ${pair.value.name}'];
+					help = ui.make_modal({
+						y: 30,
+						x: 30,
+						width: font.width_character * 40,
+						height: font.width_character * 40
+					}, font.height_model, help_text, 0x151517ff, 0xd0b85087);
+				}
+				else{
+					help.erase();
+					help = null;
+				}
+			},
+			name: "HELP"
+		});
+
+		#if web
+		var div =  Browser.document.createDivElement();
+		for(pair in actions.keyValueIterator()){
+			var paragraph = Browser.document.createParagraphElement();
+			paragraph.innerText = '${pair.key} : ${pair.value.name}';
+			div.appendChild(paragraph);
+		}
+		Browser.document.body.appendChild(div);
+		#end
+
 		game.input.on_pressed.add(button -> {
 			if (actions.exists(button)) {
 				actions[button].on_pressed();
@@ -311,6 +346,8 @@ class DesignerScene extends Scene {
 				actions[button].on_released();
 			}
 		});
+
+
 		
 		var page:Page = {
 			pads: [],

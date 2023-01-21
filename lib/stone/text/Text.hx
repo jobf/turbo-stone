@@ -71,7 +71,8 @@ class Text {
 
 		words.push({
 			text: text,
-			drawings: drawings
+			drawings: drawings,
+			on_erase: word -> words.remove(word)
 		});
 
 		return words[words.length - 1];
@@ -90,6 +91,7 @@ class Text {
 class Word {
 	var text(default, null):String;
 	var drawings(default, null):Array<Drawing>;
+	public var on_erase:Word->Void;
 
 	public var height(get, never):Int;
 	function get_height():Int{
@@ -100,6 +102,7 @@ class Word {
 		for (drawing in drawings) {
 			drawing.erase();
 		}
+		on_erase(this);
 	}
 
 	public function draw() {

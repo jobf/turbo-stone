@@ -147,6 +147,33 @@ class Button {
 	}
 }
 
+class Modal{
+	var lines:Array<Word>;
+	var background:AbstractFillRectangle;
+	public function new(geometry:RectangleGeometry, line_height:Int, text:Array<String>, color_text:RGBA, color_background:RGBA, graphics:GraphicsCore){
+		var width_center = Std.int(geometry.width * 0.5);
+		var height_center = Std.int(geometry.width * 0.5);
+		background = graphics.fill_make(geometry.x + width_center, geometry.y + height_center, geometry.width, geometry.height, color_background);
+		var gap = 10;
+		var y_label = geometry.y + (gap * 3);
+		var x_label = geometry.x + gap;
+		lines = [];
+		for (string in text) {
+			lines.push(graphics.word_make(x_label, y_label, string, width_center));
+			y_label += line_height + gap;
+		}
+	}
+
+	public function erase() {
+		var index_line = lines.length;
+		while(index_line-- > 0){
+			var line = lines.pop();
+			line.erase();
+		}
+		background.erase();
+	}
+}
+
 class Ui {
 	var sliders:Array<Slider> = [];
 	var toggles:Array<Toggle> = [];
@@ -167,6 +194,10 @@ class Ui {
 
 	public function make_button(geometry:RectangleGeometry, label:String, color_text:RGBA, color_background:RGBA):Button {
 		return buttons.pushAndReturn(new Button(geometry, label, color_text, color_background, graphics));
+	}
+
+	public function make_modal(geometry:RectangleGeometry, line_height:Int, text:Array<String>, color_text:RGBA, color_background:RGBA):Modal {
+		return new Modal(geometry, line_height, text, color_text, color_background, graphics);
 	}
 
 	public function handle_mouse_click(x_mouse:Int, y_mouse:Int) {
