@@ -1,7 +1,6 @@
 package stone;
 
 import stone.ui.Ui.Modal;
-import js.Browser;
 import lime.utils.Assets;
 
 import peote.view.Color;

@@ -1,4 +1,5 @@
 
+import stone.file.FileStorage;
 import peote.view.Display;
 import peote.view.PeoteView;
 import stone.core.Engine;
@@ -44,6 +45,12 @@ class Main extends Application {
 		var black = 0x000000ff;
 		var slate = 0x151517ff;
 
+		// for(pair in Sys.environment().keyValueIterator()){
+		// 	trace('${pair.key} : ${pair.value}');
+		// }
+
+		var storage:FileStorage;// = new stone.file.FileStorage();
+		
 		var viewport_window:RectangleGeometry = {
 			y: 0,
 			x: 0,
