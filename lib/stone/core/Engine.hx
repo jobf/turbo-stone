@@ -1,17 +1,22 @@
 package stone.core;
 
+import stone.core.Storage;
 import stone.core.InputAbstract;
 import stone.core.GraphicsAbstract;
+
 
 class Game {
 	var current_scene:Scene;
 
 	public var graphics(default, null):GraphicsAbstract;
 	public var input(default, null):InputAbstract;
+	public var storage(default, null):Storage;
 
-	public function new(scene_constructor:Game->Scene, graphics:GraphicsAbstract, input:InputAbstract) {
+	public function new(scene_constructor:Game->Scene, graphics:GraphicsAbstract, input:InputAbstract, storage:Storage) {
 		this.graphics = graphics;
 		this.input = input;
+		this.storage = storage;
+
 		scene_init(scene_constructor);
 	}
 

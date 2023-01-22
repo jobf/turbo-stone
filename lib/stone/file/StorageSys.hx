@@ -6,9 +6,12 @@ import sys.FileSystem;
 
 class StorageSys {
 	static var home = Sys.environment()['HOME'];
-	static var path_storage_root = Path.join([home, path_storage_root]);
+	static var path_storage_root = Path.join([home, '.turbo-stone']);
 
 	static function path_in_root(key:String):String {
+		if (!FileSystem.exists(path_storage_root)) {
+			FileSystem.createDirectory(path_storage_root);
+		}
 		return Path.join([path_storage_root, key]);
 	}
 
@@ -32,7 +35,12 @@ class StorageSys {
 		@throws Exception
 	**/
 	static public function getItem(key:String) {
-		return File.getContent(path_in_root(key));
+		var path = path_in_root(key);
+		if(FileSystem.exists(path)){
+			return File.getContent(path);
+		}
+
+		return null;
 	}
 
 	/**

@@ -1,18 +1,17 @@
-
-import stone.file.FileStorage;
+import stone.core.Storage;
 import peote.view.Display;
 import peote.view.PeoteView;
 import stone.core.Engine;
 import stone.input.Input;
 import stone.LoadingScene;
 import stone.DesignerScene;
-
 import stone.graphics.implementation.Graphics;
-
 import lime.graphics.RenderContext;
 import haxe.CallStack;
 import lime.app.Application;
 import lime.ui.Window;
+
+using stone.util.DateExtensions;
 
 class Main extends Application {
 	var peoteview:PeoteView;
@@ -45,12 +44,6 @@ class Main extends Application {
 		var black = 0x000000ff;
 		var slate = 0x151517ff;
 
-		// for(pair in Sys.environment().keyValueIterator()){
-		// 	trace('${pair.key} : ${pair.value}');
-		// }
-
-		var storage:FileStorage;// = new stone.file.FileStorage();
-		
 		var viewport_window:RectangleGeometry = {
 			y: 0,
 			x: 0,
@@ -68,41 +61,24 @@ class Main extends Application {
 		implementation_graphics = new Graphics(display_main, viewport_window);
 		implementation_input = new Input(window);
 		implementation_graphics.set_color(slate);
-		
+
 		var hud_graphics = new Graphics(display_hud, viewport_window);
-		var init_scene: Game -> Scene = game -> new DesignerScene(hud_graphics, game, viewport_window, black);
+		var init_scene:Game->Scene = game -> new DesignerScene(hud_graphics, game, viewport_window, black);
 
 		#if simple
 		init_scene = game -> new SimpleDraw(game, viewport_window, black);
 		#end
-		
-		#if web
-		js.Browser.document.onclick = (e) -> {
-			trace(e);
-			if(e.button == 2){
-				trace('right click');
-				e.preventDefault();
-			}
-			// trace('e ${e}');
-			// if(e.button ==2){
-			// 	e.preventDefault();
-			// }
-		 };
-		window.onDropFile.add(file_list -> {
-			if(file_list.length > 0){
-				var list:js.html.FileList = cast file_list;
-				var file = list[0];
-				stone.file.TextFileWeb.import_content(file);
-			}
-		});
-		#else
-		window.onDropFile.add(s -> trace(s));
+
+		#if files
+		init_scene = game -> new FileBrowseTest(game, viewport_window, black);
 		#end
-
-
+		
 		var init_scene_loader:Game->Scene = game -> new LoadingScene(preloader, init_scene, game, viewport_window, 0x00000000);
-		game = new Game(init_scene_loader, implementation_graphics, implementation_input);
+		
+		var storage = new Storage(window);
 
+		game = new Game(init_scene_loader, implementation_graphics, implementation_input, storage);
+		
 		isReady = true;
 	}
 

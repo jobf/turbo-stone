@@ -13,11 +13,16 @@ class FileStorage {
 	var _file_list:FileListJSON;
 	var key_file_list:String = "____FILE_LIST";
 
-	function new() {
+	public function new() {
 		var file_list_json = Store.getItem(key_file_list);
-		_file_list = parse_file_list(file_list_json);
-		if (_file_list.paths.length <= 0) {
+		if(file_list_json == null){
+			_file_list ={
+				paths: []
+			}
 			file_list_save(_file_list);
+		}
+		else{
+			_file_list = parse_file_list(file_list_json);
 		}
 	}
 	
@@ -27,9 +32,10 @@ class FileStorage {
 		Store.setItem(key_file_list, json_string);
 	}
 
-	function file_save(file:FileJSON){
+	public function file_save(file:FileJSON){
 		var item = Store.getItem(file.name);
-		if(item.length <= 0){
+		if(item == null){
+			// this is a new addition so addto the file list
 			_file_list.paths.push(file.name);
 			file_list_save(_file_list);
 		}
