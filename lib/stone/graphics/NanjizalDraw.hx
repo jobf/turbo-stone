@@ -44,7 +44,7 @@ class NanjizalDraw implements ILinePathContext {
         this.scaleX = scaleX;
         this.scaleY = scaleY;
     }
-    inline
+    
     public function fillTriangle( ax: Float, ay: Float
                                 , bx: Float, by: Float
                                 , cx: Float, cy: Float
@@ -61,11 +61,11 @@ class NanjizalDraw implements ILinePathContext {
         return fillTriUnsafe( ax, ay, bx, by, cx, cy, hasHit );
     }
 
-    inline 
     function fillTriUnsafe( ax: Float, ay: Float
                           , bx: Float, by: Float
                           , cx: Float, cy: Float
                           , hasHit: Bool = true ): Null<TrianglePos>{
+                            trace( 'fillTriUnsafe ' );
         var s0 = ay*cx - ax*cy;
         var sx = cy - ay;
         var sy = ax - cx;
@@ -73,37 +73,41 @@ class NanjizalDraw implements ILinePathContext {
         var tx = ay - by;
         var ty = bx - ax;
         var A = -by*cx + ay*(-bx + cx) + ax*(by - cy) + bx*cy; 
-        var yIter3: IteratorRange = boundIterator3( ay, by, cy );
-        var foundY = false;
+        //var yIter3: IteratorRange = boundIterator3( ay, by, cy );
+        var xIter3: IteratorRange = boundIterator3( ax, bx, cx );
+        var foundX = false;
         var s = 0.;
         var t = 0.;
-        var sxx = 0.;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-        var txx = 0.;
-        var startY: Int = 0;
-        for( x in boundIterator3( ax, bx, cx ) ){
-            sxx = sx*x;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-            txx = tx*x;
-            foundY = false;
-            for( y in yIter3 ){
-                s = s0 + sxx + sy*y;
-                t = t0 + txx + ty*y;
+        var syy = 0.;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+        var tyy = 0.;
+        var startX: Int = 0;
+        var count = 0;
+        for( y in boundIterator3( ay, by, cy ) ){
+            
+            syy = sy*y;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+            tyy = ty*y;
+            foundX = false;
+            for( x in xIter3 ){
+                s = s0 + tx*x + syy; 
+                t = t0 + sx*x + tyy; 
                 if( s <= 0 || t <= 0 ){
                     // after filling break
-                    if( foundY ) {
-                        graphicsLine( x, startY, x, y, color, 1 );
+                    if( foundX ) {
+                        graphicsLine( startX, y, x, y, 1, strokeColor );
                         break;
                     }
                 } else {
                     if( (s + t) < A ) {
                         // store first hit
-                        if( foundY == false ) {
-                            startY = y;
-                            foundY = true;
+                        if( foundX == false ) {
+                            startX = x;
+                            trace( 'startX ' + x );
                         }
+                        foundX = true;
                     } else {
                         // after filling break
-                        if( foundY ) {
-                            graphicsLine( x, startY, x, y, color, 1 );
+                        if( foundX ) {
+                            graphicsLine( startX, y, x, y, 1, strokeColor );
                             break;  
                         }
                     }
@@ -134,7 +138,7 @@ class NanjizalDraw implements ILinePathContext {
             null;
         }
     }
-    inline
+    
     function graphicsLine( x0: Float, y0: Float, x1: Float, y1: Float, thick: Float, color: Color ): QuadrilateralPos {
         var line: PeoteLine = cast graphics.make_line( x0, y0, x1, y1, cast color );
         line.thick = Std.int( thick );
@@ -252,6 +256,16 @@ class NanjizalDraw implements ILinePathContext {
         svgLinePath.quadThru( x2, y2, x3, y3 );
     }
 }
+
+inline
+function rotX( x: Float, y: Float, sin: Float, cos: Float ){
+	return x * cos - y * sin;
+}
+inline
+function rotY( x: Float, y: Float, sin: Float, cos: Float ){
+	return y * cos + x * sin;
+}
+
 // for triangle iteration ( module level functions need recent haxe compiler )
     inline 
     function boundIterator3( a: Float, b: Float, c: Float ): IteratorRange {
