@@ -82,8 +82,20 @@ class Storage {
 		}
 	}
 
-
 	public function file_delete(path_file:String) {
 		storage.file_delete(path_file);
+	}
+
+	public function export(path_file) {
+		#if web
+		var file:FileJSON = storage.file_load(path_file);
+		var blob = new js.html.Blob([file.content]);
+		var url = js.html.URL.createObjectURL(blob);
+		var anchor = js.Browser.document.createAnchorElement();
+		anchor.href = url;
+		anchor.download = path_file;
+		anchor.click();
+		js.html.URL.revokeObjectURL(url);
+		#end
 	}
 }

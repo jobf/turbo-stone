@@ -120,12 +120,11 @@ class FileBrowseTest extends Scene {
 		
 		add_button(KEY_E, {
 			on_pressed: () -> {
-				// var file:FileJSON = game.storage.file_new("");
-				// list_files();
-				// load_file(file.name);
-				// game.scene_change(game -> new DesignerScene(hud_graphics, game, viewport_window, black));
+				if(path_file_selected.length > 0){
+					game.storage.export(path_file_selected);
+				}
 			},
-			name: "EDIT",
+			name: "EXPORT",
 		});
 
 		list_files();
