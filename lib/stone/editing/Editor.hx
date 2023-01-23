@@ -2,7 +2,6 @@ package stone.editing;
 
 import stone.core.GraphicsAbstract;
 import stone.core.Models;
-import stone.file.Disk;
 import stone.core.Engine;
 import stone.graphics.implementation.Graphics;
 import haxe.ds.ArraySort;

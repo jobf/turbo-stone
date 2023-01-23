@@ -13,7 +13,6 @@ import stone.core.GraphicsAbstract;
 import stone.core.InputAbstract;
 import stone.input.Controller;
 import stone.core.Engine;
-import stone.file.Disk;
 import stone.util.EnumMacros;
 import stone.text.CodePage;
 import stone.text.Text;

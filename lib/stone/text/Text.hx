@@ -3,7 +3,6 @@ package stone.text;
 import stone.editing.Editor;
 import stone.core.Models;
 import stone.core.GraphicsAbstract;
-import stone.file.Disk;
 import stone.editing.Drawing;
 
 @:structInit
@@ -16,7 +15,7 @@ class Font {
 
 function font_load_embedded(size_model:Int=64):Font {
 	var models_json = CompileTime.readJsonFile("stone/text/fonts/code-page-models.json");
-	var model_file = Disk.parse_file_contents(models_json);
+	var model_file = Deserialize.parse_file_contents(models_json);
 	var width_char = Std.int(size_model * 0.5625);
 	return {
 		models: model_file.models.map(model -> model.lines),

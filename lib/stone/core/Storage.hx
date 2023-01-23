@@ -1,6 +1,5 @@
 package stone.core;
 
-import stone.file.Deserialize;
 import stone.file.FileStorage;
 import lime.ui.Window;
 import haxe.io.Path;
