@@ -4,6 +4,7 @@ import stone.file.FileStorage;
 import stone.core.Engine.Scene;
 import stone.text.Text;
 import stone.core.InputAbstract;
+using StringTools;
 
 class FileBrowseTest extends Scene {
 	var text:Text;
@@ -15,7 +16,7 @@ class FileBrowseTest extends Scene {
 
 	public function init() {
 		game.storage.on_drop_file.add(s -> trace(s));
-		font = font_load_embedded();
+		font = font_load_embedded(24);
 		text = new Text(font, game.graphics);
 
 		
@@ -76,20 +77,27 @@ class FileBrowseTest extends Scene {
 			},
 			name: "LOAD",
 		});
+
+
+		list_files();
 	}
 
-	// function set_selected_path(arg0:Int):Null<() -> Void> {
-	// 	// throw new haxe.exceptions.NotImplementedException();
-	// }
 
 	function file_set_selected(arg0:String) {}
 
 	function load_file(name:String) {}
 
 	function list_files() {
-		// for (path in game.storage.file_paths()) {
-		// 	text.word_make(x_label, y_label, path, 0xffffffFF);
-		// }
+		var x_label_file = 10;
+		var y_label_file = y_label;
+		var gap = 10;
+		trace('listing files');
+		for (path in game.storage.file_paths()) {
+			trace(path);
+			var label = path.toUpperCase();
+			text.word_make(x_label_file, y_label_file, label, 0xffffffFF);
+			y_label_file += (gap + font.height_model);
+		}
 	}
 
 	public function update(elapsed_seconds:Float) {}

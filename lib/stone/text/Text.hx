@@ -14,11 +14,10 @@ class Font {
 	public var width_character:Int = 0;
 }
 
-function font_load_embedded():Font {
+function font_load_embedded(size_model:Int=64):Font {
 	var models_json = CompileTime.readJsonFile("stone/text/fonts/code-page-models.json");
 	var model_file = Disk.parse_file_contents(models_json);
-	var size_model = 64;
-	var width_char = 36;
+	var width_char = Std.int(size_model * 0.5625);
 	return {
 		models: model_file.models.map(model -> model.lines),
 		width_model: size_model,
