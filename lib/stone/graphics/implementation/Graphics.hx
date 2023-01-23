@@ -120,11 +120,10 @@ class Graphics extends GraphicsAbstract {
 	}
 
 	public function close() {
-		@:privateAccess
-		fills.clear(fill -> buffer_fills.removeElement(fill.element));
-
-		@:privateAccess
-		lines.clear(line -> buffer_lines.removeElement(line.element));
+		buffer_fills.clear();
+		buffer_lines.clear(true);
+		fills.clear();
+		lines.clear();
 	}
 
 	public function display_add(display_hud:Display) {
