@@ -36,6 +36,8 @@ class Game {
 		if (current_scene != null) {
 			graphics.close();
 			current_scene.close();
+			input.on_pressed.removeAll();
+			input.on_released.removeAll();
 			scene_init(scene_constructor);
 		}
 	}
