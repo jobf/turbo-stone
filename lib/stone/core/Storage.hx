@@ -41,7 +41,7 @@ class Storage {
 		var path = new haxe.io.Path(path_disk);
 		var file:FileJSON = {
 			name: path_to_name(path),
-			content: ""
+			content: content
 		}
 		storage.file_save(file);
 		on_drop_file.dispatch(file);
