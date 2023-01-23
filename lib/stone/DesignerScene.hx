@@ -288,9 +288,15 @@ class DesignerScene extends Scene {
 			name: "SAVE"
 		});
 
-		add_button(KEY_E, {
-			on_pressed: () -> export(),
-			name: "EXPORT"
+		// revert to last save??
+		// add_button(KEY_, {
+		// 	on_pressed: () -> {},
+		// 	name: "REVERT"
+		// });
+
+		add_button(KEY_F, {
+			on_pressed: () -> game.scene_change(game -> new FileBrowseTest(game, bounds, color)),
+			name: "FILES"
 		});
 
 		add_button(KEY_O, {
@@ -355,11 +361,5 @@ class DesignerScene extends Scene {
 		var size_segment = divisions_calculate_size_segment();
 		grid_draw(size_segment);
 		designer.granularity_set(size_segment);
-	}
-
-	function export() {
-		#if web
-		stone.file.TextFileWeb.export_content(state_file_path);
-		#end
 	}
 }
