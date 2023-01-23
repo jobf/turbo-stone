@@ -192,13 +192,11 @@ class DesignerScene extends Scene {
 			// fill_make: graphics_hud.make_fill
 		});
 
-		// todo - make on_pressed an event dispatcher
 		game.input.on_pressed.add(button -> switch button {
 			case MOUSE_LEFT: click();
 			case _:
 		});
 
-		// todo - make on_released an event dispatcher
 		game.input.on_released.add(button -> switch button {
 			case MOUSE_LEFT: release();
 			case _:

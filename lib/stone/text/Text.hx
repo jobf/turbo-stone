@@ -88,7 +88,7 @@ class Text {
 
 @:structInit
 class Word {
-	var text(default, null):String;
+	public var text(default, null):String;
 	var drawings(default, null):Array<Drawing>;
 	public var on_erase:Word->Void;
 

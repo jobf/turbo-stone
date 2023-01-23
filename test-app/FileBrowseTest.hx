@@ -31,6 +31,11 @@ class FileBrowseTest extends Scene {
 			y: 0,
 			x: 0
 		}
+		game.input.on_pressed.add(button -> switch button {
+			case MOUSE_LEFT: click();
+			case _:
+		});
+
 
 		var gap = 10;
 		var width_button = Std.int(font.width_character * 10);
@@ -88,6 +93,11 @@ class FileBrowseTest extends Scene {
 		list_files();
 	}
 
+	function click() {
+		var x_mouse = Std.int(game.input.mouse_position.x);
+		var y_mouse = Std.int(game.input.mouse_position.y);
+		ui.handle_mouse_click(x_mouse, y_mouse);
+	}
 
 	function file_set_selected(arg0:String) {}
 
@@ -108,7 +118,10 @@ class FileBrowseTest extends Scene {
 		for (path in game.storage.file_paths()) {
 			trace(path);
 			var label = path.toUpperCase();
-			var label_ui = ui.make_label(geometry, line_height, label, 0xffffffFF, 0xfdb6b63c);
+			var label_ui = ui.make_label(geometry, line_height, label, 0xffffffFF, 0xFF85AB36);
+			label_ui.on_click.add(file_path -> {
+				file_set_selected(file_path);
+			});
 			geometry.y += (gap + font.height_model);
 		}
 	}

@@ -1,5 +1,6 @@
 package stone.ui;
 
+import stone.core.Event;
 import stone.core.Engine;
 import stone.text.Text;
 import stone.core.GraphicsAbstract;
@@ -175,12 +176,16 @@ class Modal {
 }
 
 class Label {
-	var text:Word;
+	var word:Word;
 	var background:AbstractFillRectangle;
 	var highlight_alpha:Int;
 	var hover_alpha:Int;
+	var is_clicked:Bool = false;
+	public var on_click(default, null):Event<String>;
 
 	public function new(geometry:RectangleGeometry, line_height:Int, text_label:String, color_text:RGBA, color_background:RGBA, graphics:GraphicsCore) {
+		on_click = new Event();
+		
 		var width_center = Std.int(geometry.width * 0.5);
 		var height_center = Std.int(geometry.width * 0.5);
 		var gap = 10;
@@ -191,14 +196,14 @@ class Label {
 		hover_alpha = Std.int(color_background.a * 0.5);
 		color_background.a = 0;
 	
-		text = graphics.word_make(x_label, y_label, text_label, color_text);
+		word = graphics.word_make(x_label, y_label, text_label, color_text);
 		background = graphics.fill_make(geometry.x + width_center, y_label, geometry.width, geometry.height, color_background);
 		
 		y_label += line_height + gap;
 	}
 
 	public function erase() {
-		text.erase();
+		word.erase();
 		background.erase();
 	}
 
@@ -207,10 +212,13 @@ class Label {
 	}
 
 	public function hover(should_hover:Bool){
+		if(is_clicked){
+			return;
+		}
 		background.color.a = should_hover ? hover_alpha : 0;
 	}
 
-	public function overlaps(x_mouse:Int, y_mouse:Int):Bool{
+	public function overlaps_background(x_mouse:Int, y_mouse:Int):Bool{
 		var x_offset = Std.int(background.width * 0.5);
 		var y_offset = Std.int(background.height * 0.5);
 
@@ -219,6 +227,16 @@ class Label {
 			&& y_mouse > background.y - y_offset
 			&& background.x + background.width - x_offset > x_mouse
 			&& background.y + background.height - y_offset > y_mouse;
+	}
+
+	public function is_clicked_set(is_clicked_next:Bool){
+		is_clicked = is_clicked_next;
+		highlight(is_clicked);
+	}
+
+	public function click() {
+		on_click.dispatch(word.text);
+		is_clicked_set(!is_clicked);
 	}
 }
 
@@ -250,9 +268,16 @@ class Ui {
 	}
 
 	public function make_label(geometry:RectangleGeometry, line_height:Int, text:String, color_text:RGBA, color_background:RGBA):Label {
-		return labels.pushAndReturn(new Label(geometry, line_height, text, color_text, color_background, graphics));
+		var label = new Label(geometry, line_height, text, color_text, color_background, graphics);
+		label.on_click.add(s -> labels_reset_clicked());
+		return labels.pushAndReturn(label);
 	}
 
+	function labels_reset_clicked(){
+		for (label in labels) {
+			label.is_clicked_set(false);
+		}
+	}
 	public function handle_mouse_click(x_mouse:Int, y_mouse:Int) {
 		for (slider in sliders) {
 			if (slider.overlaps_handle(x_mouse, y_mouse)) {
@@ -269,6 +294,12 @@ class Ui {
 		for (button in buttons) {
 			if (button.overlaps_background(x_mouse, y_mouse)) {
 				button.click();
+			}
+		}
+
+		for(label in labels){
+			if(label.overlaps_background(x_mouse, y_mouse)){
+				label.click();
 			}
 		}
 	}
@@ -291,7 +322,7 @@ class Ui {
 		}
 
 		for(label in labels){
-			var should_hover = label.overlaps(x_mouse, y_mouse);
+			var should_hover = label.overlaps_background(x_mouse, y_mouse);
 			label.hover(should_hover);
 		}
 	}
