@@ -1,3 +1,5 @@
+import stone.core.Vector;
+import stone.core.Engine.RectangleGeometry;
 import stone.input.Controller;
 import stone.ui.Ui;
 import stone.file.FileStorage;
@@ -25,6 +27,10 @@ class FileBrowseTest extends Scene {
 			line_make: game.graphics.make_line,
 			fill_make: game.graphics.make_fill
 		});
+		mouse_position_previous = {
+			y: 0,
+			x: 0
+		}
 
 		var gap = 10;
 		var width_button = Std.int(font.width_character * 10);
@@ -88,19 +94,38 @@ class FileBrowseTest extends Scene {
 	function load_file(name:String) {}
 
 	function list_files() {
-		var x_label_file = 10;
-		var y_label_file = y_label;
+
 		var gap = 10;
+		var geometry:RectangleGeometry = {
+			y: y_label,
+			x: 10,
+			width: 600,
+			height: font.height_model,
+		}
+		var line_height = geometry.height + gap;
+
 		trace('listing files');
 		for (path in game.storage.file_paths()) {
 			trace(path);
 			var label = path.toUpperCase();
-			text.word_make(x_label_file, y_label_file, label, 0xffffffFF);
-			y_label_file += (gap + font.height_model);
+			var label_ui = ui.make_label(geometry, line_height, label, 0xffffffFF, 0xfdb6b63c);
+			geometry.y += (gap + font.height_model);
 		}
 	}
 
-	public function update(elapsed_seconds:Float) {}
+	var mouse_position_previous:Vector;
+	public function update(elapsed_seconds:Float) {
+		var is_x_mouse_changed = game.input.mouse_position.x != mouse_position_previous.x;
+		var is_y_mouse_changed = game.input.mouse_position.y != mouse_position_previous.y;
+
+		if (is_x_mouse_changed || is_y_mouse_changed) {
+			mouse_position_previous.x = game.input.mouse_position.x;
+			mouse_position_previous.y = game.input.mouse_position.y;
+			var x_mouse = Std.int(game.input.mouse_position.x);
+			var y_mouse = Std.int(game.input.mouse_position.y);
+			ui.handle_mouse_moved(x_mouse, y_mouse);
+		}
+	}
 
 	public function draw() {
 		text.draw();

@@ -73,7 +73,6 @@ class Slider {
 	}
 }
 
-
 class Toggle {
 	var label:Word;
 	var track:AbstractLine;
@@ -147,10 +146,11 @@ class Button {
 	}
 }
 
-class Modal{
+class Modal {
 	var lines:Array<Word>;
 	var background:AbstractFillRectangle;
-	public function new(geometry:RectangleGeometry, line_height:Int, text:Array<String>, color_text:RGBA, color_background:RGBA, graphics:GraphicsCore){
+
+	public function new(geometry:RectangleGeometry, line_height:Int, text:Array<String>, color_text:RGBA, color_background:RGBA, graphics:GraphicsCore) {
 		var width_center = Std.int(geometry.width * 0.5);
 		var height_center = Std.int(geometry.width * 0.5);
 		background = graphics.fill_make(geometry.x + width_center, geometry.y + height_center, geometry.width, geometry.height, color_background);
@@ -166,7 +166,7 @@ class Modal{
 
 	public function erase() {
 		var index_line = lines.length;
-		while(index_line-- > 0){
+		while (index_line-- > 0) {
 			var line = lines.pop();
 			line.erase();
 		}
@@ -174,10 +174,59 @@ class Modal{
 	}
 }
 
+class Label {
+	var text:Word;
+	var background:AbstractFillRectangle;
+	var highlight_alpha:Int;
+	var hover_alpha:Int;
+
+	public function new(geometry:RectangleGeometry, line_height:Int, text_label:String, color_text:RGBA, color_background:RGBA, graphics:GraphicsCore) {
+		var width_center = Std.int(geometry.width * 0.5);
+		var height_center = Std.int(geometry.width * 0.5);
+		var gap = 10;
+		var y_label = geometry.y + (gap * 3);
+		var x_label = geometry.x + gap;
+	
+		highlight_alpha = color_background.a;
+		hover_alpha = Std.int(color_background.a * 0.5);
+		color_background.a = 0;
+	
+		text = graphics.word_make(x_label, y_label, text_label, color_text);
+		background = graphics.fill_make(geometry.x + width_center, y_label, geometry.width, geometry.height, color_background);
+		
+		y_label += line_height + gap;
+	}
+
+	public function erase() {
+		text.erase();
+		background.erase();
+	}
+
+	public function highlight(should_highlight:Bool){
+		background.color.a = should_highlight ? highlight_alpha : 0;
+	}
+
+	public function hover(should_hover:Bool){
+		background.color.a = should_hover ? hover_alpha : 0;
+	}
+
+	public function overlaps(x_mouse:Int, y_mouse:Int):Bool{
+		var x_offset = Std.int(background.width * 0.5);
+		var y_offset = Std.int(background.height * 0.5);
+
+		return 
+			x_mouse > background.x - x_offset
+			&& y_mouse > background.y - y_offset
+			&& background.x + background.width - x_offset > x_mouse
+			&& background.y + background.height - y_offset > y_mouse;
+	}
+}
+
 class Ui {
 	var sliders:Array<Slider> = [];
 	var toggles:Array<Toggle> = [];
 	var buttons:Array<Button> = [];
+	var labels:Array<Label> = [];
 	var graphics:GraphicsCore;
 
 	public function new(graphics:GraphicsCore) {
@@ -200,6 +249,10 @@ class Ui {
 		return new Modal(geometry, line_height, text, color_text, color_background, graphics);
 	}
 
+	public function make_label(geometry:RectangleGeometry, line_height:Int, text:String, color_text:RGBA, color_background:RGBA):Label {
+		return labels.pushAndReturn(new Label(geometry, line_height, text, color_text, color_background, graphics));
+	}
+
 	public function handle_mouse_click(x_mouse:Int, y_mouse:Int) {
 		for (slider in sliders) {
 			if (slider.overlaps_handle(x_mouse, y_mouse)) {
@@ -213,7 +266,7 @@ class Ui {
 			}
 		}
 
-		for(button in buttons){
+		for (button in buttons) {
 			if (button.overlaps_background(x_mouse, y_mouse)) {
 				button.click();
 			}
@@ -235,6 +288,11 @@ class Ui {
 					}
 				}
 			}
+		}
+
+		for(label in labels){
+			var should_hover = label.overlaps(x_mouse, y_mouse);
+			label.hover(should_hover);
 		}
 	}
 }
