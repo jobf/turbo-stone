@@ -54,10 +54,14 @@ class Storage {
 		if (file_list.length > 0) {
 			var list:js.html.FileList = cast file_list;
 			if(list.length > 0){
-				var file = list[0];
+				var file:js.html.File = list[0];
+				trace('browser file ${file.name}');
 				var reader = new js.html.FileReader();
 				reader.onload = () -> {
-					var fileJSON = file_new(reader.result);
+					var fileJSON:FileJSON = {
+						name: file.name,
+						content: reader.result
+					};
 					storage.file_save(fileJSON);
 					on_drop_file.dispatch(fileJSON);
 				};
