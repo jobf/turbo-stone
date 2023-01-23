@@ -70,12 +70,11 @@ class FileBrowseTest extends Scene {
 
 		add_button(KEY_N, {
 			on_pressed: () -> {
-				// var file:FileJSON = game.storage.file_new("");
 				// file_set_selected(file.name);
 				// list_files();
 				// load_file(file.name);
 
-				ui.make_dialog({
+				var dialog = ui.make_dialog({
 					y: 400,
 					x: 560,
 					width: 200,
@@ -85,6 +84,13 @@ class FileBrowseTest extends Scene {
 				["CONFIRM", "NEW FILE ?"],
 				0x151517ff,
 				0xd0b85087);
+				
+				dialog.on_confirm.add(dialog -> {
+					var file:FileJSON = game.storage.file_new("");
+					game.storage.file_save(file);
+					list_files();
+					// game.scene_change(game -> new DesignerScene(hud_graphics, game, viewport_window, black));
+				});
 			},
 			name: "NEW",
 		});

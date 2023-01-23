@@ -67,6 +67,10 @@ class Storage {
 		#end
 	}
 
+	public function file_save(file:FileJSON){
+		storage.file_save(file);
+	}
+
 	public function file_new(content:String):FileJSON {
 		return {
 			name: Date.now().to_time_stamp(),
