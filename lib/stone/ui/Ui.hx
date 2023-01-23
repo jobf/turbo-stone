@@ -126,12 +126,8 @@ class Button {
 		var x_center = Std.int(geometry.width * 0.5);
 		var x_background = Std.int(geometry.x + x_center);
 		var y_background = Std.int(geometry.y + geometry.height * 0);
-		this.background = graphics.fill_make(x_background, y_background, geometry.width, geometry.height, color_background);
 
-		// var width_label = label.length * 14;
-		// var width_label_center = width_label * 0.5;
-		// var width_char_center = 7;
-		// var x_label = Std.int(geometry.x + x_center - width_label_center + width_char_center);
+		this.background = graphics.fill_make(x_background, y_background, geometry.width, geometry.height, color_background);
 		this.label = graphics.word_make(geometry.x, geometry.y, label, color_text, x_center);
 	}
 
@@ -151,6 +147,10 @@ class Button {
 	public function erase() {
 		label.erase();
 		background.erase();
+		dispose();
+	}
+	
+	public function dispose(){
 		clean_up(this);
 	}
 }
@@ -289,6 +289,10 @@ class Label {
 		background.erase();
 	}
 
+	public function dispose(){
+		on_click.removeAll();
+	}
+
 	public function highlight(should_highlight:Bool) {
 		background.color.a = should_highlight ? highlight_alpha : 0;
 	}
@@ -412,4 +416,12 @@ class Ui {
 			label.hover(should_hover);
 		}
 	}
+
+	public function clear() {
+		sliders.clear();
+		toggles.clear();
+		buttons.clear(button -> button.dispose());
+		labels.clear(label -> label.dispose());
+	}
+
 }

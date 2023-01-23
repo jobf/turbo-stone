@@ -1,5 +1,6 @@
 package stone.core;
 
+import stone.file.Deserialize;
 import stone.file.FileStorage;
 import lime.ui.Window;
 import haxe.io.Path;
@@ -97,5 +98,13 @@ class Storage {
 		anchor.click();
 		js.html.URL.revokeObjectURL(url);
 		#end
+	}
+
+	public function file_load(path_file_selected:String):FileJSON {
+		var item = storage.file_load(path_file_selected);
+		if(item == null){
+			// todo : init new, store and return
+		}
+		return item;
 	}
 }

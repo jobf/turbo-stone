@@ -9,11 +9,10 @@ class ArrayExtensions {
 	public static function clear<T>(array:Array<T>, ?call:T->Void = null) {
 		var index = array.length;
 		while (index-- > 0) {
-			var item = array[index];
+			var item = array.pop();
 			if (call != null) {
 				call(item);
 			}
-			array.remove(item);
 		}
 	}
 

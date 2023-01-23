@@ -32,10 +32,12 @@ class DesignerScene extends Scene {
 	var divisions_total:Int = 8;
 	var viewport_designer:RectangleGeometry;
 	var graphics_hud:Graphics;
+	var file:FileModel;
 
-	public function new(graphics_hud:Graphics, game:Game, bounds:RectangleGeometry, color:RGBA) {
+	public function new(graphics_hud:Graphics, game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel) {
 		super(game, bounds, color);
 		this.graphics_hud = graphics_hud;
+		this.file = file;
 	}
 
 	public function init() {
@@ -58,7 +60,6 @@ class DesignerScene extends Scene {
 		y_axis_line = cast game.graphics.make_line(x_center, 0, x_center, viewport_designer.height, 0xFF85AB10);
 
 		state_file_path = 'code-page-models.json';
-		var file = Disk.file_read(state_file_path);
 		
 		#if web
 		if (file.models.length == 0) {
@@ -142,6 +143,7 @@ class DesignerScene extends Scene {
 
 	public function close() {
 		// ?
+		ui.clear();
 	}
 
 	function handle_mouse_press_left() {

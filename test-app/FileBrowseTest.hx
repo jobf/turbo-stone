@@ -1,3 +1,8 @@
+import stone.core.Models.Deserialize;
+import stone.core.Engine;
+import stone.graphics.implementation.Graphics;
+import peote.view.Display;
+import stone.DesignerScene;
 import stone.core.Vector;
 import stone.core.Engine.RectangleGeometry;
 import stone.input.Controller;
@@ -78,12 +83,8 @@ class FileBrowseTest extends Scene {
 					x: 560,
 					width: 200,
 					height: 200
-				},
-				25,
-				["CONFIRM", "NEW FILE ?"],
-				0x151517ff,
-				0xd0b85087);
-				
+				}, 25, ["CONFIRM", "NEW FILE ?"], 0x151517ff, 0xd0b85087);
+
 				dialog.on_confirm.add(dialog -> {
 					var file:FileJSON = game.storage.file_new("");
 					game.storage.file_save(file);
@@ -92,22 +93,17 @@ class FileBrowseTest extends Scene {
 			},
 			name: "NEW",
 		});
-		
-		
+
 		add_button(KEY_D, {
 			on_pressed: () -> {
-				if(path_file_selected.length > 0){
+				if (path_file_selected.length > 0) {
 					var dialog = ui.make_dialog({
 						y: 400,
 						x: 560,
 						width: 200,
 						height: 200
-					},
-					25,
-					["CONFIRM", "DELETE SELECTED ?"],
-					0x151517ff,
-					0xd0b85087);
-					
+					}, 25, ["CONFIRM", "DELETE SELECTED ?"], 0x151517ff, 0xd0b85087);
+
 					dialog.on_confirm.add(dialog -> {
 						game.storage.file_delete(path_file_selected);
 						path_file_selected = "";
@@ -117,14 +113,37 @@ class FileBrowseTest extends Scene {
 			},
 			name: "DELETE",
 		});
-		
-		add_button(KEY_E, {
+
+		add_button(KEY_X, {
 			on_pressed: () -> {
-				if(path_file_selected.length > 0){
+				if (path_file_selected.length > 0) {
 					game.storage.export(path_file_selected);
 				}
 			},
 			name: "EXPORT",
+		});
+
+		add_button(KEY_E, {
+			on_pressed: () -> {
+				if (path_file_selected.length > 0) {
+					var hud_bounds:RectangleGeometry = {
+						x: 0,
+						y: 0,
+						width: bounds.width,
+						height: bounds.height
+					}
+					var display_hud = new Display(0, 0, hud_bounds.width, hud_bounds.height);
+					var graphics:Graphics = cast game.graphics;
+					graphics.display_add(display_hud);
+
+					var hud_graphics = new Graphics(display_hud, hud_bounds);
+					var file = game.storage.file_load(path_file_selected);
+					var models = Deserialize.parse_file_contents(file.content);
+					var init_scene:Game->Scene = game -> new DesignerScene(hud_graphics, game, hud_bounds, 0x151517ff, models);
+					game.scene_change(init_scene);
+				}
+			},
+			name: "EDIT",
 		});
 
 		list_files();
@@ -144,7 +163,7 @@ class FileBrowseTest extends Scene {
 
 	function list_files() {
 		var length_labels = labels.length;
-		while(length_labels-- > 0){
+		while (length_labels-- > 0) {
 			var label = labels.pop();
 			label.erase();
 		}
@@ -190,5 +209,9 @@ class FileBrowseTest extends Scene {
 		text.draw();
 	}
 
-	public function close() {}
+	public function close() {
+		trace('close FileBrowseTest');
+		ui.clear();
+	}
 }
+

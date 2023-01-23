@@ -1,4 +1,5 @@
 package stone.core;
+import json2object.*;
 
 import stone.core.Vector;
 
@@ -31,5 +32,19 @@ class IsoscelesModel {
 		b_point = {x: -3.0, y: 3.0};
 		c_point = {x: 3.0, y: 3.0};
 		points = [a_point, b_point, c_point];
+	}
+}
+
+
+class Deserialize {
+	public static function parse_file_contents(json:String):Null<FileModel> {
+		var errors = new Array<Error>();
+		var data = new JsonParser<FileModel>(errors).fromJson(json, 'json-errors');
+
+		if (errors.length <= 0 && data != null && data.models.length > 0) {
+			return data;
+		}
+
+		return null;
 	}
 }

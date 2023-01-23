@@ -62,23 +62,18 @@ class Main extends Application {
 		implementation_input = new Input(window);
 		implementation_graphics.set_color(slate);
 
-		var hud_graphics = new Graphics(display_hud, viewport_window);
-		var init_scene:Game->Scene = game -> new DesignerScene(hud_graphics, game, viewport_window, black);
+		var init_scene:Game->Scene = game -> new FileBrowseTest(game, viewport_window, black);
 
 		#if simple
 		init_scene = game -> new SimpleDraw(game, viewport_window, black);
 		#end
 
-		#if files
-		init_scene = game -> new FileBrowseTest(game, viewport_window, black);
-		#end
-		
 		var init_scene_loader:Game->Scene = game -> new LoadingScene(preloader, init_scene, game, viewport_window, 0x00000000);
-		
+
 		var storage = new Storage(window);
 
 		game = new Game(init_scene_loader, implementation_graphics, implementation_input, storage);
-		
+
 		isReady = true;
 	}
 

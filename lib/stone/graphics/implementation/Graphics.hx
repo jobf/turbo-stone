@@ -126,4 +126,8 @@ class Graphics extends GraphicsAbstract {
 		@:privateAccess
 		lines.clear(line -> buffer_lines.removeElement(line.element));
 	}
+
+	public function display_add(display_hud:Display) {
+		display.peoteView.addDisplay(display_hud);
+	}
 }
