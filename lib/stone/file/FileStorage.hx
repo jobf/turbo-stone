@@ -91,7 +91,7 @@ function parse_file_list(json:String):FileListJSON {
 function parse_file(json:String):FileJSON {
 	var errors = new Array<Error>();
 	var data = new JsonParser<FileJSON>(errors).fromJson(json, 'json-errors');
-	if (errors.length <= 0 && data != null && data.name.length > 0) {
+	if (errors.length <= 0 && data != null && data.name != null && data.name.length > 0) {
 		return data;
 	}
 

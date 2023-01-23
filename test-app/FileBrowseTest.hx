@@ -139,7 +139,12 @@ class FileBrowseTest extends Scene {
 					var hud_graphics = new Graphics(display_hud, hud_bounds);
 					var file = game.storage.file_load(path_file_selected);
 					var models = Deserialize.parse_file_contents(file.content);
-					var init_scene:Game->Scene = game -> new DesignerScene(hud_graphics, game, hud_bounds, 0x151517ff, models);
+					if(models == null){
+						models = {
+							models: []
+						}
+					}
+					var init_scene:Game->Scene = game -> new DesignerScene(hud_graphics, game, hud_bounds, 0x151517ff, models, file.name);
 					game.scene_change(init_scene);
 				}
 			},

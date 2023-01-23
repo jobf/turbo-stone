@@ -1,5 +1,6 @@
 package stone;
 
+import stone.file.FileStorage.FileJSON;
 import stone.ui.Ui.Modal;
 import lime.utils.Assets;
 
@@ -28,16 +29,17 @@ class DesignerScene extends Scene {
 	var designer:Designer;
 	var x_axis_line:PeoteLine;
 	var y_axis_line:PeoteLine;
-	var state_file_path:String;
 	var divisions_total:Int = 8;
 	var viewport_designer:RectangleGeometry;
 	var graphics_hud:Graphics;
 	var file:FileModel;
+	var file_name:String;
 
-	public function new(graphics_hud:Graphics, game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel) {
+	public function new(graphics_hud:Graphics, game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel, file_name:String) {
 		super(game, bounds, color);
 		this.graphics_hud = graphics_hud;
 		this.file = file;
+		this.file_name = file_name;
 	}
 
 	public function init() {
@@ -59,27 +61,17 @@ class DesignerScene extends Scene {
 		x_axis_line = cast game.graphics.make_line(0, y_center, viewport_designer.width, y_center, 0xFF85AB10);
 		y_axis_line = cast game.graphics.make_line(x_center, 0, x_center, viewport_designer.height, 0xFF85AB10);
 
-		state_file_path = 'code-page-models.json';
-		
-		#if web
-		if (file.models.length == 0) {
-			var json = Assets.getText('models/$state_file_path');
-			file = Disk.parse_file_contents(json);
-		}
-		#else
-		trace('init empty models');
 		if (file.models.length == 0) {
 			var names_map:Map<CodePage, String> = EnumMacros.nameByValue(CodePage);
 
 			for (i in 0...256) {
 				file.models.push({
 					index: i,
-					name: names_map[i],
+					name: '$i',
 					lines: []
 				});
 			}
 		}
-		#end
 
 		designer = new Designer(size_segment, game.graphics, viewport_designer, file);
 		settings_load();
@@ -284,7 +276,15 @@ class DesignerScene extends Scene {
 		});
 
 		add_button(KEY_S, {
-			on_pressed: () -> Disk.file_write_models(designer.file.models, state_file_path),
+			on_pressed: () -> {
+				var file_content = Serialize.to_string(file);
+				var file:FileJSON = {
+					name: file_name,
+					content: file_content
+				}
+
+				game.storage.file_save(file);
+			},
 			name: "SAVE"
 		});
 

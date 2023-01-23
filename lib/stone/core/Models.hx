@@ -48,3 +48,12 @@ class Deserialize {
 		return null;
 	}
 }
+
+
+class Serialize {
+	public static function to_string(model:FileModel) {
+		var writer = new JsonWriter<FileModel>();
+		var json:String = writer.write(model);
+		return json;
+	}
+}
