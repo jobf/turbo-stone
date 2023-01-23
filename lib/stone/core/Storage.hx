@@ -44,9 +44,9 @@ class Storage {
 			content: ""
 		}
 		storage.file_save(file);
+		on_drop_file.dispatch(file);
 		#end
 
-		on_drop_file.dispatch(file);
 	}
 
 	public function file_drop_web(file_list:String) {
@@ -55,7 +55,7 @@ class Storage {
 			var list:js.html.FileList = cast file_list;
 			if(list.length > 0){
 				var file = list[0];
-				var reader = new FileReader();
+				var reader = new js.html.FileReader();
 				reader.onload = () -> {
 					var fileJSON = file_new(reader.result);
 					storage.file_save(fileJSON);

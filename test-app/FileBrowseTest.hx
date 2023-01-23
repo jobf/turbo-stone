@@ -6,6 +6,7 @@ import stone.file.FileStorage;
 import stone.core.Engine.Scene;
 import stone.text.Text;
 import stone.core.InputAbstract;
+
 using StringTools;
 
 class FileBrowseTest extends Scene {
@@ -21,7 +22,6 @@ class FileBrowseTest extends Scene {
 		font = font_load_embedded(24);
 		text = new Text(font, game.graphics);
 
-		
 		ui = new Ui({
 			word_make: text.word_make,
 			line_make: game.graphics.make_line,
@@ -35,7 +35,6 @@ class FileBrowseTest extends Scene {
 			case MOUSE_LEFT: click();
 			case _:
 		});
-
 
 		var gap = 10;
 		var width_button = Std.int(font.width_character * 10);
@@ -66,19 +65,29 @@ class FileBrowseTest extends Scene {
 			// 	on_pressed: set_selected_path(1),
 			// 	name: "SELECT NEXT"
 			// },
-			
+
 		];
 
 		add_button(KEY_N, {
 			on_pressed: () -> {
-				var file:FileJSON = game.storage.file_new("");
-				file_set_selected(file.name);
-				list_files();
-				load_file(file.name);
+				// var file:FileJSON = game.storage.file_new("");
+				// file_set_selected(file.name);
+				// list_files();
+				// load_file(file.name);
+
+				ui.make_dialog({
+					y: 400,
+					x: 560,
+					width: 200,
+					height: 200
+				},
+				25,
+				["CONFIRM", "NEW FILE ?"],
+				0x151517ff,
+				0xd0b85087);
 			},
 			name: "NEW",
 		});
-
 
 		add_button(KEY_L, {
 			on_pressed: () -> {
@@ -88,7 +97,6 @@ class FileBrowseTest extends Scene {
 			},
 			name: "LOAD",
 		});
-
 
 		list_files();
 	}
@@ -104,7 +112,6 @@ class FileBrowseTest extends Scene {
 	function load_file(name:String) {}
 
 	function list_files() {
-
 		var gap = 10;
 		var geometry:RectangleGeometry = {
 			y: y_label,
@@ -127,6 +134,7 @@ class FileBrowseTest extends Scene {
 	}
 
 	var mouse_position_previous:Vector;
+
 	public function update(elapsed_seconds:Float) {
 		var is_x_mouse_changed = game.input.mouse_position.x != mouse_position_previous.x;
 		var is_y_mouse_changed = game.input.mouse_position.y != mouse_position_previous.y;

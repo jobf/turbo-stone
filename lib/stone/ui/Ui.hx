@@ -115,12 +115,14 @@ class Toggle {
 
 class Button {
 	var label:Word;
-	var track:AbstractLine;
 	var background:AbstractFillRectangle;
 
 	public var on_click:Void->Void = () -> trace('on_click');
+	var clean_up:Button->Void;
 
-	public function new(geometry:RectangleGeometry, label:String, color_text:RGBA, color_background:RGBA, graphics:GraphicsCore) {
+	public function new(geometry:RectangleGeometry, label:String, color_text:RGBA, color_background:RGBA, graphics:GraphicsCore, clean_up:Button->Void) {
+		this.clean_up = clean_up;
+
 		var x_center = Std.int(geometry.width * 0.5);
 		var x_background = Std.int(geometry.x + x_center);
 		var y_background = Std.int(geometry.y + geometry.height * 0);
@@ -145,6 +147,12 @@ class Button {
 	public function click() {
 		on_click();
 	}
+
+	public function erase() {
+		label.erase();
+		background.erase();
+		clean_up(this);
+	}
 }
 
 class Modal {
@@ -160,7 +168,7 @@ class Modal {
 		var x_label = geometry.x + gap;
 		lines = [];
 		for (string in text) {
-			lines.push(graphics.word_make(x_label, y_label, string, width_center));
+			lines.push(graphics.word_make(x_label, y_label, string, color_text));
 			y_label += line_height + gap;
 		}
 	}
@@ -175,30 +183,104 @@ class Modal {
 	}
 }
 
+class Dialog<T> {
+	var lines:Array<Word>;
+	var background:AbstractFillRectangle;
+
+	public var on_confirm(default, null):Event<Dialog<T>>;
+
+	var on_cancel:Event<Dialog<T>>;
+	var button_confirm:Button;
+	var button_cancel:Button;
+
+	public function new(geometry:RectangleGeometry, line_height:Int, text:Array<String>, color_text:RGBA, color_background:RGBA, graphics:GraphicsCore,
+			ui:Ui) {
+		on_confirm = new Event();
+		on_cancel = new Event();
+
+		var width_center = Std.int(geometry.width * 0.5);
+		var height_center = Std.int(geometry.width * 0.5);
+		background = graphics.fill_make(geometry.x, geometry.y, geometry.width, geometry.height, color_background);
+		background.x += width_center;
+		background.y += height_center;
+
+		var gap = 10;
+		var y_label = Std.int(background.y - height_center + line_height);
+		var x_label = Std.int(background.x - width_center + line_height);
+
+		lines = [];
+		for (string in text) {
+			lines.push(graphics.word_make(x_label, y_label, string.toUpperCase(), color_text));
+			y_label += line_height + gap;
+		}
+
+		var button_height = line_height;
+		var button_width = line_height * 3;
+		var x_button = Std.int(background.x - (button_width));
+		var y_button = Std.int(background.y + (geometry.height * 0.5) - button_height);
+
+		var button_geometry:RectangleGeometry = {
+			y: y_button,
+			x: x_button,
+			width: button_width,
+			height: button_height
+		}
+
+		button_confirm = ui.make_button(button_geometry, "YES", 0x000000FF, 0xffffffFF);
+		button_confirm.on_click = () -> {
+			on_confirm.dispatch(this);
+			erase();
+		}
+
+		button_geometry.x += button_width + gap;
+
+		button_cancel = ui.make_button(button_geometry, "NO", 0x000000FF, 0xffffffFF);
+		button_cancel.on_click = () -> {
+			on_cancel.dispatch(this);
+			erase();
+		};
+
+	}
+
+	public function erase() {
+		var index_line = lines.length;
+		while (index_line-- > 0) {
+			var line = lines.pop();
+			line.erase();
+		}
+		background.erase();
+		button_confirm.erase();
+		button_cancel.erase();
+		on_cancel.removeAll();
+		on_confirm.removeAll();
+	}
+}
+
 class Label {
 	var word:Word;
 	var background:AbstractFillRectangle;
 	var highlight_alpha:Int;
 	var hover_alpha:Int;
 	var is_clicked:Bool = false;
+
 	public var on_click(default, null):Event<String>;
 
 	public function new(geometry:RectangleGeometry, line_height:Int, text_label:String, color_text:RGBA, color_background:RGBA, graphics:GraphicsCore) {
 		on_click = new Event();
-		
+
 		var width_center = Std.int(geometry.width * 0.5);
 		var height_center = Std.int(geometry.width * 0.5);
 		var gap = 10;
 		var y_label = geometry.y + (gap * 3);
 		var x_label = geometry.x + gap;
-	
+
 		highlight_alpha = color_background.a;
 		hover_alpha = Std.int(color_background.a * 0.5);
 		color_background.a = 0;
-	
+
 		word = graphics.word_make(x_label, y_label, text_label, color_text);
 		background = graphics.fill_make(geometry.x + width_center, y_label, geometry.width, geometry.height, color_background);
-		
+
 		y_label += line_height + gap;
 	}
 
@@ -207,29 +289,28 @@ class Label {
 		background.erase();
 	}
 
-	public function highlight(should_highlight:Bool){
+	public function highlight(should_highlight:Bool) {
 		background.color.a = should_highlight ? highlight_alpha : 0;
 	}
 
-	public function hover(should_hover:Bool){
-		if(is_clicked){
+	public function hover(should_hover:Bool) {
+		if (is_clicked) {
 			return;
 		}
 		background.color.a = should_hover ? hover_alpha : 0;
 	}
 
-	public function overlaps_background(x_mouse:Int, y_mouse:Int):Bool{
+	public function overlaps_background(x_mouse:Int, y_mouse:Int):Bool {
 		var x_offset = Std.int(background.width * 0.5);
 		var y_offset = Std.int(background.height * 0.5);
 
-		return 
-			x_mouse > background.x - x_offset
+		return x_mouse > background.x - x_offset
 			&& y_mouse > background.y - y_offset
 			&& background.x + background.width - x_offset > x_mouse
 			&& background.y + background.height - y_offset > y_mouse;
 	}
 
-	public function is_clicked_set(is_clicked_next:Bool){
+	public function is_clicked_set(is_clicked_next:Bool) {
 		is_clicked = is_clicked_next;
 		highlight(is_clicked);
 	}
@@ -260,11 +341,15 @@ class Ui {
 	}
 
 	public function make_button(geometry:RectangleGeometry, label:String, color_text:RGBA, color_background:RGBA):Button {
-		return buttons.pushAndReturn(new Button(geometry, label, color_text, color_background, graphics));
+		return buttons.pushAndReturn(new Button(geometry, label, color_text, color_background, graphics, button -> buttons.remove(button)));
 	}
 
 	public function make_modal(geometry:RectangleGeometry, line_height:Int, text:Array<String>, color_text:RGBA, color_background:RGBA):Modal {
 		return new Modal(geometry, line_height, text, color_text, color_background, graphics);
+	}
+
+	public function make_dialog<T>(geometry:RectangleGeometry, line_height:Int, text:Array<String>, color_text:RGBA, color_background:RGBA):Dialog<T> {
+		return new Dialog<T>(geometry, line_height, text, color_text, color_background, graphics, this);
 	}
 
 	public function make_label(geometry:RectangleGeometry, line_height:Int, text:String, color_text:RGBA, color_background:RGBA):Label {
@@ -273,11 +358,12 @@ class Ui {
 		return labels.pushAndReturn(label);
 	}
 
-	function labels_reset_clicked(){
+	function labels_reset_clicked() {
 		for (label in labels) {
 			label.is_clicked_set(false);
 		}
 	}
+
 	public function handle_mouse_click(x_mouse:Int, y_mouse:Int) {
 		for (slider in sliders) {
 			if (slider.overlaps_handle(x_mouse, y_mouse)) {
@@ -297,8 +383,8 @@ class Ui {
 			}
 		}
 
-		for(label in labels){
-			if(label.overlaps_background(x_mouse, y_mouse)){
+		for (label in labels) {
+			if (label.overlaps_background(x_mouse, y_mouse)) {
 				label.click();
 			}
 		}
@@ -321,7 +407,7 @@ class Ui {
 			}
 		}
 
-		for(label in labels){
+		for (label in labels) {
 			var should_hover = label.overlaps_background(x_mouse, y_mouse);
 			label.hover(should_hover);
 		}
