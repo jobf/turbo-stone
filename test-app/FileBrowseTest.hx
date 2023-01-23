@@ -16,9 +16,12 @@ class FileBrowseTest extends Scene {
 	var y_label = 40;
 	var font:Font;
 	var actions:Map<Button, Action>;
+	var path_file_selected:String;
+	var labels:Array<Label> = [];
 
 	public function init() {
-		game.storage.on_drop_file.add(s -> trace(s));
+		game.storage.on_drop_file.add(s -> list_files());
+		path_file_selected = "";
 		font = font_load_embedded(24);
 		text = new Text(font, game.graphics);
 
@@ -70,10 +73,6 @@ class FileBrowseTest extends Scene {
 
 		add_button(KEY_N, {
 			on_pressed: () -> {
-				// file_set_selected(file.name);
-				// list_files();
-				// load_file(file.name);
-
 				var dialog = ui.make_dialog({
 					y: 400,
 					x: 560,
@@ -89,19 +88,44 @@ class FileBrowseTest extends Scene {
 					var file:FileJSON = game.storage.file_new("");
 					game.storage.file_save(file);
 					list_files();
-					// game.scene_change(game -> new DesignerScene(hud_graphics, game, viewport_window, black));
 				});
 			},
 			name: "NEW",
 		});
-
-		add_button(KEY_L, {
+		
+		
+		add_button(KEY_D, {
 			on_pressed: () -> {
-				var file:FileJSON = game.storage.file_new("");
-				list_files();
-				load_file(file.name);
+				if(path_file_selected.length > 0){
+					var dialog = ui.make_dialog({
+						y: 400,
+						x: 560,
+						width: 200,
+						height: 200
+					},
+					25,
+					["CONFIRM", "DELETE SELECTED ?"],
+					0x151517ff,
+					0xd0b85087);
+					
+					dialog.on_confirm.add(dialog -> {
+						game.storage.file_delete(path_file_selected);
+						path_file_selected = "";
+						list_files();
+					});
+				}
 			},
-			name: "LOAD",
+			name: "DELETE",
+		});
+		
+		add_button(KEY_E, {
+			on_pressed: () -> {
+				// var file:FileJSON = game.storage.file_new("");
+				// list_files();
+				// load_file(file.name);
+				// game.scene_change(game -> new DesignerScene(hud_graphics, game, viewport_window, black));
+			},
+			name: "EDIT",
 		});
 
 		list_files();
@@ -113,11 +137,19 @@ class FileBrowseTest extends Scene {
 		ui.handle_mouse_click(x_mouse, y_mouse);
 	}
 
-	function file_set_selected(arg0:String) {}
+	function file_set_selected(path_file:String) {
+		path_file_selected = path_file;
+	}
 
 	function load_file(name:String) {}
 
 	function list_files() {
+		var length_labels = labels.length;
+		while(length_labels-- > 0){
+			var label = labels.pop();
+			label.erase();
+		}
+
 		var gap = 10;
 		var geometry:RectangleGeometry = {
 			y: y_label,
@@ -130,12 +162,13 @@ class FileBrowseTest extends Scene {
 		trace('listing files');
 		for (path in game.storage.file_paths()) {
 			trace(path);
-			var label = path.toUpperCase();
+			var label = path;
 			var label_ui = ui.make_label(geometry, line_height, label, 0xffffffFF, 0xFF85AB36);
 			label_ui.on_click.add(file_path -> {
 				file_set_selected(file_path);
 			});
 			geometry.y += (gap + font.height_model);
+			labels.push(label_ui);
 		}
 	}
 

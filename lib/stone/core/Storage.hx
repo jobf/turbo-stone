@@ -78,4 +78,8 @@ class Storage {
 		}
 	}
 
+
+	public function file_delete(path_file:String) {
+		storage.file_delete(path_file);
+	}
 }

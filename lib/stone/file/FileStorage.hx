@@ -53,6 +53,16 @@ class FileStorage {
 		var item = Store.getItem(path);
 		return parse_file(item);
 	}
+
+	public function file_delete(path:String){
+		trace('delete $path');
+		var item = Store.getItem(path);
+		if(item != null){
+			_file_list.paths.remove(path);
+			file_list_save(_file_list);
+			Store.removeItem(path);
+		}
+	}
 }
 
 @:structInit

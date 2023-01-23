@@ -63,7 +63,8 @@ class Text {
 		}
 		var drawings:Array<Drawing> = [];
 		for (i in 0...text.length) {
-			var char_code = text.charCodeAt(i);
+			var text_upper = text.toUpperCase();
+			var char_code = text_upper.charCodeAt(i);
 			// trace('code $char_code letter ${String.fromCharCode(char_code)}');
 			drawings.push(drawing_create(font.models[char_code], x + font.width_character * i, y, color));
 		}
