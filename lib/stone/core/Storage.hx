@@ -76,8 +76,9 @@ class Storage {
 	}
 
 	public function file_new(content:String):FileJSON {
+		var time_stamp = Date.now().to_time_stamp();
 		return {
-			name: Date.now().to_time_stamp(),
+			name: '$time_stamp.json',
 			content: content
 		}
 	}
