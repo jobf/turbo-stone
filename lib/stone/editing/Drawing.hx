@@ -12,7 +12,7 @@ class Prototype{
 
 class Drawing{
 	var model_translation:EditorTranslation;
-	var prototype:Prototype;
+	var prototypeModel:Prototype;
 
 	public var origin:Vector = {
 		x:-0.5,
@@ -27,12 +27,12 @@ class Drawing{
 
 
 	public var lines:Array<AbstractLine> = [];
-	public function new(prototype:Prototype, x:Float, y:Float, make_line:MakeLine, model_translation:EditorTranslation, color:Int = 0x2C8D49ff) {
+	public function new(prototypeModel:Prototype, x:Float, y:Float, make_line:MakeLine, model_translation:EditorTranslation, color:Int = 0x2C8D49ff) {
 		this.x = x;
 		this.y = y;
-		this.prototype = prototype;
+		this.prototypeModel = prototypeModel;
 		this.model_translation = model_translation;
-		for (line_proto in prototype.model_lines) {
+		for (line_proto in prototypeModel.model_lines) {
 			var from_:Vector ={
 				x: (line_proto.from.x),
 				y: (line_proto.from.y),
@@ -80,7 +80,7 @@ class Drawing{
 
 		var rotation_sin = Math.sin(rotation);
 		var rotation_cos = Math.cos(rotation);
-		for (n => proto in prototype.model_lines) {
+		for (n => proto in prototypeModel.model_lines) {
 			translate(proto, lines[n], rotation_sin, rotation_cos);
 		}
 	}

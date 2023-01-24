@@ -53,7 +53,7 @@ class Text {
 		}
 	}
 
-	public function word_make(x:Int, y:Int, text:String, color:RGBA, x_center:Null<Int>=null):Word {
+	public function word_make(x:Int, y:Int, text:String, color:RGBA, x_center:Int = 0):Word {
 		var width_label = text.length * font.width_character;
 		var width_label_center = width_label * 0.5;
 		var width_char_center = font.width_character * 0.5;
