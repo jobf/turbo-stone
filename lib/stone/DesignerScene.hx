@@ -8,6 +8,7 @@ import peote.view.Color;
 import stone.graphics.implementation.PeoteLine;
 import stone.graphics.implementation.Graphics;
 import stone.editing.Editor;
+import stone.FileStorageScene;
 import stone.core.Models;
 import stone.core.GraphicsAbstract;
 import stone.core.InputAbstract;
@@ -294,7 +295,7 @@ class DesignerScene extends Scene {
 		// });
 
 		add_button(KEY_F, {
-			on_pressed: () -> game.scene_change(game -> new FileBrowseTest(game, bounds, color)),
+			on_pressed: () -> game.scene_change(game -> new FileStorageScene(game, bounds, color)),
 			name: "FILES"
 		});
 

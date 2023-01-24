@@ -4,7 +4,7 @@ import peote.view.PeoteView;
 import stone.core.Engine;
 import stone.input.Input;
 import stone.LoadingScene;
-import stone.DesignerScene;
+import stone.FileStorageScene;
 import stone.graphics.implementation.Graphics;
 import lime.graphics.RenderContext;
 import haxe.CallStack;
@@ -62,7 +62,7 @@ class Main extends Application {
 		implementation_input = new Input(window);
 		implementation_graphics.set_color(slate);
 
-		var init_scene:Game->Scene = game -> new FileBrowseTest(game, viewport_window, black);
+		var init_scene:Game->Scene = game -> new FileStorageScene(game, viewport_window, black);
 
 		#if simple
 		init_scene = game -> new SimpleDraw(game, viewport_window, black);

@@ -1,3 +1,5 @@
+package stone;
+
 import stone.core.Models.Deserialize;
 import stone.core.Engine;
 import stone.graphics.implementation.Graphics;
@@ -14,7 +16,7 @@ import stone.core.InputAbstract;
 
 using StringTools;
 
-class FileBrowseTest extends Scene {
+class FileStorageScene extends Scene {
 	var text:Text;
 	var ui:Ui;
 	var x_label = 40;
