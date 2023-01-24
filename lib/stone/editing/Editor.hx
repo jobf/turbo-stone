@@ -77,6 +77,7 @@ class Designer {
 
 	public var isDrawingLine(default, null):Bool = false;
 	public var figure(default, null):Figure;
+	var is_enabled:Bool = true;
 
 	public function new(size_segment:Int, graphics:GraphicsAbstract, bounds:RectangleGeometry, file:FileModel) {
 		this.file = file;
@@ -141,6 +142,10 @@ class Designer {
 	}
 
 	public function update_mouse_pointer(mouse_position:Vector) {
+		if(!is_enabled){
+			return;
+		}
+
 		if(mouse_position.x > bounds.width || mouse_position.y > bounds.height){
 			return;
 		}
@@ -258,6 +263,9 @@ class Designer {
 	}
 
 	public function start_drawing_line(point:Vector) {
+		if(!is_enabled || isDrawingLine){
+			return;
+		}
 		if(point.x > bounds.x + bounds.width
 			|| point.y > bounds.y + bounds.height)
 			{
@@ -272,7 +280,7 @@ class Designer {
 	}
 
 	public function stop_drawing_line(point:Vector) {
-		if(!isDrawingLine){
+		if(!is_enabled || !isDrawingLine){
 			return;
 		}
 		isDrawingLine = false;
@@ -280,17 +288,29 @@ class Designer {
 		var line = figure.line_newest();
 		line.point_to.x = round_to_nearest(point.x, size_segment);
 		line.point_to.y = round_to_nearest(point.y, size_segment);
-		figure.model.push(map_line(line.point_from, line.point_to));
-		// save_state();
-		for (line in figure.lines) {
-			trace('${line.point_from.x},${line.point_from.y} -> ${line.point_to.x},${line.point_to.y}');
+
+		var is_start_same_as_end = line.point_from.x == line.point_to.x && line.point_from.y == line.point_to.y;
+		if(is_start_same_as_end){
+			// delete the line because it is not a line
+			line.erase();
+			figure.lines.pop();
 		}
+		else{
+			figure.model.push(map_line(line.point_from, line.point_to));
+		}
+		
+		// for (line in figure.lines) {
+		// 	trace('${line.point_from.x},${line.point_from.y} -> ${line.point_to.x},${line.point_to.y}');
+		// }
 	}
 
 	function round_to_nearest(value:Float, interval:Float):Float {
 		return Math.round(value / interval) * interval;
 	}
 
+	public function input_set_enabled(enabled:Bool){
+		is_enabled = enabled;
+	}
 }
 
 @:structInit

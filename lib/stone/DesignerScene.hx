@@ -1,10 +1,8 @@
 package stone;
 
 import stone.file.FileStorage.FileJSON;
-import stone.ui.Ui.Modal;
-import lime.utils.Assets;
+import stone.ui.Components;
 
-import peote.view.Color;
 import stone.graphics.implementation.PeoteLine;
 import stone.graphics.implementation.Graphics;
 import stone.editing.Editor;
@@ -17,10 +15,7 @@ import stone.core.Engine;
 import stone.util.EnumMacros;
 import stone.text.CodePage;
 import stone.text.Text;
-import stone.ui.Ui.Ui;
-import stone.ui.Ui.Slider;
-import stone.ui.Ui.Toggle;
-import stone.ui.Ui.Button as ButtonUI;
+import stone.core.Ui;
 
 class DesignerScene extends Scene {
 	var x_center:Int;
@@ -37,7 +32,7 @@ class DesignerScene extends Scene {
 	var text:Text;
 	var label_model:Word;
 	var ui:Ui;
-	var help:Modal;
+	var help:Dialog<String>;
 
 	public function new(graphics_hud:Graphics, game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel, file_name:String) {
 		super(game, bounds, color);
@@ -102,35 +97,8 @@ class DesignerScene extends Scene {
 		}
 	}
 
-	function release() {
-		var x_mouse = Std.int(game.input.mouse_position.x);
-		var y_mouse = Std.int(game.input.mouse_position.y);
-		ui.handle_mouse_release(x_mouse, y_mouse);
-	}
-
-	function click() {
-		var x_mouse = Std.int(game.input.mouse_position.x);
-		var y_mouse = Std.int(game.input.mouse_position.y);
-		ui.handle_mouse_click(x_mouse, y_mouse);
-	}
-
-	var mouse_position_previous:Vector;
-
 	public function update(elapsed_seconds:Float) {
-		mouse_position.x = game.input.mouse_position.x;
-		mouse_position.y = game.input.mouse_position.y;
 		designer.update_mouse_pointer(mouse_position);
-
-		var is_x_mouse_changed = game.input.mouse_position.x != mouse_position_previous.x;
-		var is_y_mouse_changed = game.input.mouse_position.y != mouse_position_previous.y;
-
-		if (is_x_mouse_changed || is_y_mouse_changed) {
-			mouse_position_previous.x = game.input.mouse_position.x;
-			mouse_position_previous.y = game.input.mouse_position.y;
-			var x_mouse = Std.int(game.input.mouse_position.x);
-			var y_mouse = Std.int(game.input.mouse_position.y);
-			ui.handle_mouse_moved(x_mouse, y_mouse);
-		}
 	}
 
 	public function draw() {
@@ -182,28 +150,7 @@ class DesignerScene extends Scene {
 
 		var color:RGBA = 0xffffffFF;
 
-		
-
-		ui = new Ui({
-			word_make: text.word_make,
-			line_make: game.graphics.make_line,
-			fill_make: game.graphics.make_fill
-		});
-
-		game.input.on_pressed.add(button -> switch button {
-			case MOUSE_LEFT: click();
-			case _:
-		});
-
-		game.input.on_released.add(button -> switch button {
-			case MOUSE_LEFT: release();
-			case _:
-		});
-
-		mouse_position_previous = {
-			x: game.input.mouse_position.x,
-			y: game.input.mouse_position.y
-		}
+		ui = new Ui(game.graphics, text, game.input);
 
 		var actions:Map<Button, Action> = [
 			MOUSE_LEFT => {
@@ -318,29 +265,33 @@ class DesignerScene extends Scene {
 			name: "FILES"
 		});
 
-		for(i in 0...8){
+		for(i in 0...7){
 			add_space();
 		}
 
 		add_button(KEY_H, {
 			on_pressed: () -> {
 				if(help == null){
+					// prevent drawing when clicking dialog buttons
+					designer.input_set_enabled(false);
+
 					var help_text = [for(pair in actions.keyValueIterator()) '${pair.key} : ${pair.value.name}'];
-					help = ui.make_modal({
-						y: 30,
-						x: 30,
-						width: font.width_character * 40,
-						height: font.width_character * 40
-					}, font.height_model, help_text, 0x151517ff, 0xd0b85087);
-				}
-				else{
-					help.erase();
-					help = null;
+
+					help = ui.make_dialog(
+						bounds,
+						help_text,
+						0x151517ff,
+						0xd0b85087
+					);
+
+					help.on_erase.add(s -> {
+						designer.input_set_enabled(true);
+						help = null;
+					});
 				}
 			},
 			name: "HELP"
 		});
-
 
 		game.input.on_pressed.add(button -> {
 			if (actions.exists(button)) {
@@ -353,8 +304,6 @@ class DesignerScene extends Scene {
 				actions[button].on_released();
 			}
 		});
-
-
 	}
 
 	function divisions_calculate_size_segment() {

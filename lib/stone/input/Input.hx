@@ -47,9 +47,22 @@ class Input extends InputAbstract {
 	}
 
 	public function update_mouse_position() {
+		mouse_position_previous.x = mouse_position.x;
+		mouse_position_previous.y = mouse_position.y;
+		
 		mouse_position.x = mouse_x;
 		mouse_position.y = mouse_y;
+		
+		var is_x_mouse_changed = mouse_position.x != mouse_position_previous.x;
+		var is_y_mouse_changed = mouse_position.y != mouse_position_previous.y;
+		
+		if (is_x_mouse_changed || is_y_mouse_changed) {
+			on_mouse_move.dispatch(mouse_position);
+		}
 	}
+
+
+
 
 	var keyboard_down:Array<Button> = [];
 	var keyboard_up:Array<Button> = [];

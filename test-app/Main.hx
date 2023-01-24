@@ -68,6 +68,10 @@ class Main extends Application {
 		init_scene = game -> new SimpleDraw(game, viewport_window, black);
 		#end
 
+		#if testui
+		init_scene = game -> new TestUi(game, viewport_window, black);
+		#end
+
 		var init_scene_loader:Game->Scene = game -> new LoadingScene(preloader, init_scene, game, viewport_window, 0x00000000);
 
 		var storage = new Storage(window);

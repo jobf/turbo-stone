@@ -1,5 +1,6 @@
 package stone;
 
+import stone.core.Event;
 import stone.core.Models.Deserialize;
 import stone.core.Engine;
 import stone.graphics.implementation.Graphics;
@@ -8,7 +9,8 @@ import stone.DesignerScene;
 import stone.core.Vector;
 import stone.core.Engine.RectangleGeometry;
 import stone.input.Controller;
-import stone.ui.Ui;
+import stone.core.Ui;
+import stone.ui.Components;
 import stone.file.FileStorage;
 import stone.core.Engine.Scene;
 import stone.text.Text;
@@ -32,15 +34,8 @@ class FileStorageScene extends Scene {
 		font = font_load_embedded(24);
 		text = new Text(font, game.graphics);
 
-		ui = new Ui({
-			word_make: text.word_make,
-			line_make: game.graphics.make_line,
-			fill_make: game.graphics.make_fill
-		});
-		mouse_position_previous = {
-			y: 0,
-			x: 0
-		}
+		ui = new Ui(game.graphics, text, game.input);
+
 		game.input.on_pressed.add(button -> switch button {
 			case MOUSE_LEFT: click();
 			case _:
@@ -80,18 +75,22 @@ class FileStorageScene extends Scene {
 
 		add_button(KEY_N, {
 			on_pressed: () -> {
-				var dialog = ui.make_dialog({
-					y: 400,
-					x: 560,
-					width: 200,
-					height: 200
-				}, 25, ["CONFIRM", "NEW FILE ?"], 0x151517ff, 0xd0b85087);
-
-				dialog.on_confirm.add(dialog -> {
-					var file:FileJSON = game.storage.file_new("");
+				var on_confirm:ButtonModel = {
+					text: "YES",
+					action: ()-> {
+						var file:FileJSON = game.storage.file_new("");
 					game.storage.file_save(file);
 					list_files();
-				});
+					}
+				}
+
+				var dialog = ui.make_dialog(
+				bounds,
+				["REALLY MAKE NEW FILE ?"],
+				0x151517ff,
+				0xd0b85087,
+				[on_confirm]
+				);
 			},
 			name: "NEW",
 		});
@@ -99,18 +98,23 @@ class FileStorageScene extends Scene {
 		add_button(KEY_D, {
 			on_pressed: () -> {
 				if (path_file_selected.length > 0) {
-					var dialog = ui.make_dialog({
-						y: 400,
-						x: 560,
-						width: 200,
-						height: 200
-					}, 25, ["CONFIRM", "DELETE SELECTED ?"], 0x151517ff, 0xd0b85087);
+					
+					var on_confirm:ButtonModel = {
+						text: "YES",
+						action: ()-> {
+							game.storage.file_delete(path_file_selected);
+							path_file_selected = "";
+							list_files();
+						}
+					}
 
-					dialog.on_confirm.add(dialog -> {
-						game.storage.file_delete(path_file_selected);
-						path_file_selected = "";
-						list_files();
-					});
+					var dialog = ui.make_dialog(
+						bounds,
+						["REALLY DELETE SELECTED ?"],
+						0x151517ff,
+						0xd0b85087,
+						[on_confirm]
+					);
 				}
 			},
 			name: "DELETE",
@@ -159,7 +163,6 @@ class FileStorageScene extends Scene {
 	function click() {
 		var x_mouse = Std.int(game.input.mouse_position.x);
 		var y_mouse = Std.int(game.input.mouse_position.y);
-		ui.handle_mouse_click(x_mouse, y_mouse);
 	}
 
 	function file_set_selected(path_file:String) {
@@ -188,7 +191,7 @@ class FileStorageScene extends Scene {
 		for (path in game.storage.file_paths()) {
 			trace(path);
 			var label = path;
-			var label_ui = ui.make_label(geometry, line_height, label, 0xffffffFF, 0xFF85AB36);
+			var label_ui = ui.make_label(geometry, label, 0xffffffFF, 0xFF85AB36);
 			label_ui.on_click.add(file_path -> {
 				file_set_selected(file_path);
 			});
@@ -197,19 +200,7 @@ class FileStorageScene extends Scene {
 		}
 	}
 
-	var mouse_position_previous:Vector;
-
 	public function update(elapsed_seconds:Float) {
-		var is_x_mouse_changed = game.input.mouse_position.x != mouse_position_previous.x;
-		var is_y_mouse_changed = game.input.mouse_position.y != mouse_position_previous.y;
-
-		if (is_x_mouse_changed || is_y_mouse_changed) {
-			mouse_position_previous.x = game.input.mouse_position.x;
-			mouse_position_previous.y = game.input.mouse_position.y;
-			var x_mouse = Std.int(game.input.mouse_position.x);
-			var y_mouse = Std.int(game.input.mouse_position.y);
-			ui.handle_mouse_moved(x_mouse, y_mouse);
-		}
 	}
 
 	public function draw() {

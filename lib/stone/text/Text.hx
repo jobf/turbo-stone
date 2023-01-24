@@ -26,7 +26,7 @@ function font_load_embedded(size_model:Int=64):Font {
 }
 
 class Text {
-	var font:Font;
+	public var font(default, null):Font;
 	var graphics:GraphicsAbstract;
 	var model_translation:EditorTranslation;
 
@@ -54,12 +54,10 @@ class Text {
 	}
 
 	public function word_make(x:Int, y:Int, text:String, color:RGBA, x_center:Null<Int>=null):Word {
-		if(x_center != null){
-			var width_label = text.length * font.width_character;
-			var width_label_center = width_label * 0.5;
-			var width_char_center = font.width_character * 0.5;
-			x = Std.int(x + x_center - width_label_center + width_char_center);
-		}
+		var width_label = text.length * font.width_character;
+		var width_label_center = width_label * 0.5;
+		var width_char_center = font.width_character * 0.5;
+		x = Std.int(x + x_center - width_label_center + width_char_center);
 		var drawings:Array<Drawing> = [];
 		for (i in 0...text.length) {
 			var text_upper = text.toUpperCase();
@@ -71,7 +69,9 @@ class Text {
 		words.push({
 			text: text,
 			drawings: drawings,
-			on_erase: word -> words.remove(word)
+			on_erase: word -> words.remove(word),
+			width: width_label,
+			height: font.height_model
 		});
 
 		return words[words.length - 1];
@@ -89,13 +89,10 @@ class Text {
 @:structInit
 class Word {
 	public var text(default, null):String;
-	var drawings(default, null):Array<Drawing>;
 	public var on_erase:Word->Void;
-
-	public var height(get, never):Int;
-	function get_height():Int{
-		return Std.int(Math.abs(drawings[0].lines[0].point_from.y + drawings[0].lines[0].point_to.y));
-	}
+	public var height(default, null):Int;
+	public var width(default, null):Int;
+	var drawings(default, null):Array<Drawing>;
 
 	public function erase() {
 		for (drawing in drawings) {
