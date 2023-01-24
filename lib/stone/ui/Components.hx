@@ -307,8 +307,8 @@ class Dialog<T> {
 			);
 
 			button.on_click = () -> {
-				model.action();
 				erase();
+				model.action();
 			};
 
 			buttons.push(button);

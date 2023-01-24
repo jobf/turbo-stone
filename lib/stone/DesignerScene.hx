@@ -261,7 +261,24 @@ class DesignerScene extends Scene {
 		// });
 
 		add_button(KEY_F, {
-			on_pressed: () -> game.scene_change(game -> new FileStorageScene(game, bounds, color)),
+			on_pressed: () -> {
+				designer.input_set_enabled(false);
+
+				var warning_save = ui.make_dialog(
+					bounds,
+					["UNSAVED CHANGES WILL BE LOST", "CONTINUE TO FILE BROWSER?"],
+					0x151517ff,
+					0xd0b85087,
+					[{
+						text: "YES",
+						action: () -> game.scene_change(game -> new FileStorageScene(game, bounds, color))
+					}]
+				);
+
+				warning_save.on_erase.add(s -> {
+					designer.input_set_enabled(true);
+				});
+			},
 			name: "FILES"
 		});
 
