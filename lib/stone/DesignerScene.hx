@@ -148,7 +148,7 @@ class DesignerScene extends Scene {
 		if(label_model != null){
 			label_model.erase();
 		}
-		label_model = text.word_make(720, 600, label_text, 0xffffffFF);
+		label_model = text.word_make(720, 20, label_text, 0xffffffFF);
 	}
 
 	function handle_mouse_press_left() {
@@ -225,7 +225,7 @@ class DesignerScene extends Scene {
 		var width_button = Std.int(font.width_character * 10);
 		var height_button = font.height_model + gap;
 		var x_button = bounds.width - width_button - gap;
-		var y_button = gap * 3;
+		var y_button = gap * 5;
 
 		var add_button:(Button, Action) -> Void = (button_key, action) -> {
 			var button = ui.make_button({
@@ -240,6 +240,7 @@ class DesignerScene extends Scene {
 			y_button += gap + font.height_model + gap;
 		}
 
+		var add_space:Void->Void = () -> y_button += gap * 2;
 
 		add_button(KEY_LEFT, {
 			on_pressed: () -> {
@@ -256,6 +257,8 @@ class DesignerScene extends Scene {
 			},
 			name: "NEXT"
 		});
+
+		add_space();
 
 		add_button(KEY_C, {
 			on_pressed: () -> designer.buffer_copy(),
@@ -276,7 +279,21 @@ class DesignerScene extends Scene {
 			on_pressed: () -> designer.lines_remove(),
 			name: "CLEAR"
 		});
+		
+		add_space();
+		
+		add_button(KEY_O, {
+			on_pressed: () -> grid_set_granularity(-1),
+			name: "GRID LESS"
+		});
 
+		add_button(KEY_P, {
+			on_pressed: () -> grid_set_granularity(1),
+			name: "GRID MORE"
+		});
+
+		add_space();
+		
 		add_button(KEY_S, {
 			on_pressed: () -> {
 				var file_content = Serialize.to_string(file);
@@ -301,15 +318,9 @@ class DesignerScene extends Scene {
 			name: "FILES"
 		});
 
-		add_button(KEY_O, {
-			on_pressed: () -> grid_set_granularity(-1),
-			name: "GRID LESS"
-		});
-
-		add_button(KEY_P, {
-			on_pressed: () -> grid_set_granularity(1),
-			name: "GRID MORE"
-		});
+		for(i in 0...8){
+			add_space();
+		}
 
 		add_button(KEY_H, {
 			on_pressed: () -> {
