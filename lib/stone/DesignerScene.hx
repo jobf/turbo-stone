@@ -34,6 +34,10 @@ class DesignerScene extends Scene {
 	var graphics_hud:Graphics;
 	var file:FileModel;
 	var file_name:String;
+	var text:Text;
+	var label_model:Word;
+	var ui:Ui;
+	var help:Modal;
 
 	public function new(graphics_hud:Graphics, game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel, file_name:String) {
 		super(game, bounds, color);
@@ -75,6 +79,7 @@ class DesignerScene extends Scene {
 
 		designer = new Designer(size_segment, game.graphics, viewport_designer, file);
 		settings_load();
+		label_update();
 	}
 
 	var lines_grid:Array<AbstractLine> = [];
@@ -138,6 +143,14 @@ class DesignerScene extends Scene {
 		ui.clear();
 	}
 
+	function label_update(){
+		var label_text = '${designer.model_index}/${file.models.length - 1}';
+		if(label_model != null){
+			label_model.erase();
+		}
+		label_model = text.word_make(720, 600, label_text, 0xffffffFF);
+	}
+
 	function handle_mouse_press_left() {
 		if (!designer.isDrawingLine) {
 			designer.start_drawing_line({
@@ -160,15 +173,6 @@ class DesignerScene extends Scene {
 		designer.line_under_cursor_remove();
 	}
 
-	var text:Text;
-	var label_model:Word;
-	var slider:Slider;
-	var ui:Ui;
-	var fill:AbstractFillRectangle;
-	var toggle:Toggle;
-	var button:ButtonUI;
-	var help:Modal;
-
 	function settings_load() {
 		var font = font_load_embedded();
 		font.width_model = 18;
@@ -178,12 +182,12 @@ class DesignerScene extends Scene {
 
 		var color:RGBA = 0xffffffFF;
 
+		
+
 		ui = new Ui({
 			word_make: text.word_make,
 			line_make: game.graphics.make_line,
 			fill_make: game.graphics.make_fill
-			// line_make: graphics_hud.make_line,
-			// fill_make: graphics_hud.make_fill
 		});
 
 		game.input.on_pressed.add(button -> switch button {
@@ -240,8 +244,7 @@ class DesignerScene extends Scene {
 		add_button(KEY_LEFT, {
 			on_pressed: () -> {
 				designer.set_active_figure(-1);
-				// label_model.erase();
-				// label_model = text.word_make(20, 600, designer.model_name(), color);
+				label_update();
 			},
 			name: "PREVIOUS"
 		});
@@ -249,8 +252,7 @@ class DesignerScene extends Scene {
 		add_button(KEY_RIGHT, {
 			on_pressed: () -> {
 				designer.set_active_figure(1);
-				// label_model.erase();
-				// label_model = text.word_make(20, 600, designer.model_name(), color);
+				label_update();
 			},
 			name: "NEXT"
 		});

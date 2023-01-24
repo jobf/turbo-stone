@@ -62,7 +62,7 @@ class EditorTranslation {
 }
 
 class Designer {
-	var model_index:Int = 65;
+	public var model_index(default, null):Int = 0;
 	var mouse_pointer:AbstractFillRectangle;
 
 	public var line_under_cursor:AbstractLine;
