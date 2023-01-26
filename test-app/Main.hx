@@ -1,3 +1,6 @@
+import stone.core.Models.Deserialize;
+import stone.core.Models.FileModel;
+import stone.DesignerScene;
 import stone.core.Storage;
 import peote.view.Display;
 import peote.view.PeoteView;
@@ -61,8 +64,26 @@ class Main extends Application {
 		implementation_graphics = new Graphics(display_main, viewport_window);
 		implementation_input = new Input(window);
 		implementation_graphics.set_color(slate);
-
-		var init_scene:Game->Scene = game -> new FileStorageScene(game, viewport_window, black);
+		
+		
+		var storage = new Storage(window);
+		var file_name = 'start.json';
+		var file_list = storage.file_paths();
+		
+		var file:FileModel = {
+			models: []
+		}
+		
+		if(file_list.length > 0){
+			var index_end_of_list = file_list.length - 1;
+			var file_latest = storage.file_load(file_list[index_end_of_list]);
+			if(file_latest.content.length > 0){
+				file = Deserialize.parse_file_contents(file_latest.content);
+			}
+		}
+		
+		var hud_graphics = new Graphics(display_hud, viewport_window);
+		var init_scene:Game->Scene = game -> new DesignerScene(hud_graphics, game, viewport_window, 0x151517ff, file, file_name);
 
 		#if simple
 		init_scene = game -> new SimpleDraw(game, viewport_window, black);
@@ -74,7 +95,7 @@ class Main extends Application {
 
 		var init_scene_loader:Game->Scene = game -> new LoadingScene(preloader, init_scene, game, viewport_window, 0x00000000);
 
-		var storage = new Storage(window);
+
 
 		game = new Game(init_scene_loader, implementation_graphics, implementation_input, storage);
 
