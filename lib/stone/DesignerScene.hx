@@ -18,14 +18,12 @@ import stone.text.Text;
 import stone.core.Ui;
 
 class DesignerScene extends Scene {
-	var x_center:Int;
-	var y_center:Int;
+	var grid_center_x:Int;
+	var grid_center_y:Int;
 	var mouse_position:Vector;
 	var designer:Designer;
-	var x_axis_line:PeoteLine;
-	var y_axis_line:PeoteLine;
 	var divisions_total:Int = 8;
-	var viewport_designer:RectangleGeometry;
+	var bounds_grid:RectangleGeometry;
 	var graphics_hud:Graphics;
 	var file:FileModel;
 	var file_name:String;
@@ -43,7 +41,7 @@ class DesignerScene extends Scene {
 
 	public function init() {
 		// game.input.mouse_cursor_hide();
-		viewport_designer = {
+		bounds_grid = {
 			y: 0,
 			x: 0,
 			width: bounds.height,
@@ -51,14 +49,12 @@ class DesignerScene extends Scene {
 		}
 
 		mouse_position = game.input.mouse_position;
-		x_center = Std.int(viewport_designer.width * 0.5);
-		y_center = Std.int(viewport_designer.width * 0.5);
+		grid_center_x = Std.int(bounds_grid.width * 0.5);
+		grid_center_y = Std.int(bounds_grid.width * 0.5);
 
 		var size_segment = divisions_calculate_size_segment();
 		grid_draw(size_segment);
 
-		x_axis_line = cast game.graphics.make_line(0, y_center, viewport_designer.width, y_center, 0xFF85AB10);
-		y_axis_line = cast game.graphics.make_line(x_center, 0, x_center, viewport_designer.height, 0xFF85AB10);
 
 		if (file.models.length == 0) {
 			var names_map:Map<CodePage, String> = EnumMacros.nameByValue(CodePage);
@@ -72,7 +68,7 @@ class DesignerScene extends Scene {
 			}
 		}
 
-		designer = new Designer(size_segment, game.graphics, viewport_designer, file);
+		designer = new Designer(size_segment, game.graphics, bounds_grid, file);
 		settings_load();
 		label_update();
 	}
@@ -87,14 +83,24 @@ class DesignerScene extends Scene {
 				lines_grid.remove(lines_grid[delete_index]);
 			}
 		}
-		for (x in 0...Std.int(viewport_designer.width / size_segment)) {
+		
+		for (x in 0...Std.int(bounds_grid.width / size_segment)) {
 			var x_ = Std.int(x * size_segment);
-			lines_grid.push(game.graphics.make_line(x_, 0, x_, viewport_designer.height, 0xD1D76210));
+			lines_grid.push(game.graphics.make_line(x_, 0, x_, bounds_grid.height, 0xD1D76210));
 		}
-		for (y in 0...Std.int(viewport_designer.height / size_segment)) {
+
+		for (y in 0...Std.int(bounds_grid.height / size_segment)) {
 			var y_ = Std.int(y * size_segment);
-			lines_grid.push(game.graphics.make_line(0, y_, viewport_designer.width, y_, 0xD1D76210));
+			lines_grid.push(game.graphics.make_line(0, y_, bounds_grid.width, y_, 0xD1D76210));
 		}
+
+		var x_axis_line:PeoteLine  = cast game.graphics.make_line(0, grid_center_y, bounds_grid.width, grid_center_y, 0xFF85AB10);
+		x_axis_line.thick = 8;
+		lines_grid.push(x_axis_line);
+
+		var y_axis_line:PeoteLine = cast game.graphics.make_line(grid_center_x, 0, grid_center_x, bounds_grid.height, 0xFF85AB10);
+		y_axis_line.thick = 8;
+		lines_grid.push(y_axis_line);
 	}
 
 	public function update(elapsed_seconds:Float) {
@@ -119,21 +125,15 @@ class DesignerScene extends Scene {
 	}
 
 	function handle_mouse_press_left() {
-		if (!designer.isDrawingLine) {
-			designer.start_drawing_line({
-				x: mouse_position.x,
-				y: mouse_position.y
-			});
+		if(designer.point_is_outside_grid(mouse_position)){
+			return;
 		}
+
+		designer.start_drawing_line(mouse_position);
 	}
 
 	function handle_mouse_release_left() {
-		if (designer.isDrawingLine) {
-			designer.stop_drawing_line({
-				x: mouse_position.x,
-				y: mouse_position.y
-			});
-		}
+		designer.stop_drawing_line(mouse_position);
 	}
 
 	function delete_line_under_mouse(){
@@ -323,7 +323,7 @@ class DesignerScene extends Scene {
 	}
 
 	function divisions_calculate_size_segment() {
-		return Std.int(viewport_designer.height / divisions_total);
+		return Std.int(bounds_grid.height / divisions_total);
 	}
 
 	function grid_set_granularity(direction:Int) {

@@ -8,10 +8,12 @@ import haxe.ds.ArraySort;
 
 class EditorTranslation {
 	public var bounds_view:RectangleGeometry;
+
 	var x_center:Int;
 	var y_center:Int;
 	var points_in_translation_x = 10;
 	var points_in_translation_y = 10;
+
 	public var bounds_width_half:Float;
 	public var bounds_height_half:Float;
 
@@ -22,7 +24,7 @@ class EditorTranslation {
 		size_set(bounds_view.width, bounds_view.height);
 	}
 
-	public function size_set(width:Int, height:Int){
+	public function size_set(width:Int, height:Int) {
 		bounds_view.width = width;
 		bounds_view.height = height;
 		x_center = Std.int(bounds_view.width * 0.5);
@@ -58,11 +60,11 @@ class EditorTranslation {
 
 		return offset_point;
 	}
-
 }
 
 class Designer {
 	public var model_index(default, null):Int = 0;
+
 	var mouse_pointer:AbstractFillRectangle;
 
 	public var line_under_cursor:AbstractLine;
@@ -70,34 +72,35 @@ class Designer {
 	var size_segment:Int;
 	var size_segment_half:Int;
 	var graphics:Graphics;
-	var bounds:RectangleGeometry;
+	var bounds_grid:RectangleGeometry;
 
 	public var file(default, null):FileModel;
+
 	var translation:EditorTranslation;
 
 	public var isDrawingLine(default, null):Bool = false;
 	public var figure(default, null):Figure;
+
 	var is_enabled:Bool = true;
 
-	public function new(size_segment:Int, graphics:GraphicsAbstract, bounds:RectangleGeometry, file:FileModel) {
+	public function new(size_segment:Int, graphics:GraphicsAbstract, bounds_grid:RectangleGeometry, file:FileModel) {
 		this.file = file;
 		granularity_set(size_segment);
 		this.graphics = cast graphics;
-		this.bounds = bounds;
+		this.bounds_grid = bounds_grid;
 		var mouse_pointer_size = Std.int(size_segment * 0.5);
-		mouse_pointer = graphics.make_fill(0, 0, mouse_pointer_size,mouse_pointer_size, 0xFF448080);
+		mouse_pointer = graphics.make_fill(0, 0, mouse_pointer_size, mouse_pointer_size, 0xFF448080);
 		mouse_pointer.rotation = 45;
-		translation = new EditorTranslation(bounds, 1, 1);
+		translation = new EditorTranslation(bounds_grid, 1, 1);
 		figure_init();
 	}
 
-	public function granularity_set(size_segment:Int){
+	public function granularity_set(size_segment:Int) {
 		this.size_segment = Std.int(size_segment * 0.5);
 		this.size_segment_half = -Std.int(size_segment * 0.5);
 	}
 
 	function map_figure(model:FigureModel):Figure {
-		
 		var convert_line:LineModel->LineModel = line -> {
 			from: translation.model_to_view_point(line.from),
 			to: translation.model_to_view_point(line.to)
@@ -128,11 +131,8 @@ class Designer {
 		var model_point_from = translation.view_to_model_point(line_under_cursor.point_from);
 		var model_point_to = translation.view_to_model_point(line_under_cursor.point_to);
 
-		var models_under_cursor = figure.model.filter(
-			model -> model.from.x == model_point_from.x
-			&& model.from.y == model_point_from.y
-			&& model.to.x == model_point_to.x
-			&& model.to.y == model_point_to.y);
+		var models_under_cursor = figure.model.filter(model -> model.from.x == model_point_from.x && model.from.y == model_point_from.y
+			&& model.to.x == model_point_to.x && model.to.y == model_point_to.y);
 
 		if (models_under_cursor.length > 0) {
 			figure.model.remove(models_under_cursor[0]);
@@ -142,11 +142,7 @@ class Designer {
 	}
 
 	public function update_mouse_pointer(mouse_position:Vector) {
-		if(!is_enabled){
-			return;
-		}
-
-		if(mouse_position.x > bounds.width || mouse_position.y > bounds.height){
+		if (!is_enabled || point_is_outside_grid(mouse_position)) {
 			return;
 		}
 
@@ -225,13 +221,13 @@ class Designer {
 
 	var line_buffer:Array<LineModel>;
 
-	public function buffer_copy(){
+	public function buffer_copy() {
 		line_buffer = figure.model;
 	}
 
-	public function buffer_paste(){
-		if(line_buffer != null){
-			for(line in line_buffer){
+	public function buffer_paste() {
+		if (line_buffer != null) {
+			for (line in line_buffer) {
 				// file.models[model_index]
 				file.models[model_index].lines.push(line);
 			}
@@ -251,7 +247,7 @@ class Designer {
 		line.erase();
 	}
 
-	public function model_name():String{
+	public function model_name():String {
 		return '$model_index : ${file.models[model_index].name}';
 	}
 
@@ -262,29 +258,32 @@ class Designer {
 		}
 	}
 
+	public function point_is_outside_grid(point:Vector):Bool{
+		return (point.x > bounds_grid.x + bounds_grid.width || point.y > bounds_grid.y + bounds_grid.height);
+	}
+
 	public function start_drawing_line(point:Vector) {
-		if(!is_enabled || isDrawingLine){
+		if (!is_enabled || isDrawingLine) {
 			return;
 		}
-		if(point.x > bounds.x + bounds.width
-			|| point.y > bounds.y + bounds.height)
-			{
-				return;
-			}
-			isDrawingLine = true;
+
+		isDrawingLine = true;
+
 		var x = round_to_nearest(point.x, size_segment);
 		var y = round_to_nearest(point.y, size_segment);
 		var line:AbstractLine = graphics.make_line(x, y, x, y, 0xFFFFFFff);
+		
 		figure.lines.push(line);
+		
 		trace('start_drawing_line ${x} ${y}');
 	}
 
 	public function stop_drawing_line(point:Vector) {
-		if(!is_enabled || !isDrawingLine){
+		if (!is_enabled || !isDrawingLine) {
 			return;
 		}
 		isDrawingLine = false;
-		trace('stop_drawing_line ${point.x} ${point.y}');
+
 		var line = figure.line_newest();
 		line.point_to.x = round_to_nearest(point.x, size_segment);
 		line.point_to.y = round_to_nearest(point.y, size_segment);
@@ -294,13 +293,14 @@ class Designer {
 		// for (line in figure.lines) {
 		// 	trace('${line.point_from.x},${line.point_from.y} -> ${line.point_to.x},${line.point_to.y}');
 		// }
+		trace('stop_drawing_line ${point.x} ${point.y}');
 	}
 
 	function round_to_nearest(value:Float, interval:Float):Float {
 		return Math.round(value / interval) * interval;
 	}
 
-	public function input_set_enabled(enabled:Bool){
+	public function input_set_enabled(enabled:Bool) {
 		is_enabled = enabled;
 	}
 }
