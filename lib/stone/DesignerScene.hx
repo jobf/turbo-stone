@@ -103,11 +103,10 @@ class DesignerScene extends Scene {
 
 	public function draw() {
 		text.draw();
-		// ?
+		graphics_hud.draw();
 	}
 
 	public function close() {
-		// ?
 		ui.clear();
 	}
 
@@ -146,11 +145,11 @@ class DesignerScene extends Scene {
 		font.width_model = 18;
 		font.height_model = 18;
 		font.width_character = 10;
-		text = new Text(font, game.graphics);
+		text = new Text(font, graphics_hud);
 
 		var color:RGBA = 0xffffffFF;
 
-		ui = new Ui(game.graphics, text, game.input);
+		ui = new Ui(graphics_hud, text, game.input);
 
 		var actions:Map<Button, Action> = [
 			MOUSE_LEFT => {
