@@ -289,16 +289,8 @@ class Designer {
 		line.point_to.x = round_to_nearest(point.x, size_segment);
 		line.point_to.y = round_to_nearest(point.y, size_segment);
 
-		var is_start_same_as_end = line.point_from.x == line.point_to.x && line.point_from.y == line.point_to.y;
-		if(is_start_same_as_end){
-			// delete the line because it is not a line
-			line.erase();
-			figure.lines.pop();
-		}
-		else{
-			figure.model.push(map_line(line.point_from, line.point_to));
-		}
-		
+		figure.model.push(map_line(line.point_from, line.point_to));
+
 		// for (line in figure.lines) {
 		// 	trace('${line.point_from.x},${line.point_from.y} -> ${line.point_to.x},${line.point_to.y}');
 		// }
