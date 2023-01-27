@@ -16,6 +16,7 @@ class PeoteLine extends AbstractLine {
 	public var end:Rectangle;
 
 	var remove_from_buffer:PeoteLine->Void;
+	var is_erased:Bool = false;
 
 	public var element(default, null):Line;
 	public var rotation_override:Null<Float>;
@@ -60,7 +61,10 @@ class PeoteLine extends AbstractLine {
 	}
 
 	public function erase():Void {
-		remove_from_buffer(this);
+		if(!is_erased){
+			is_erased = true;
+			remove_from_buffer(this);
+		}
 	}
 
 	function get_thick():Int {

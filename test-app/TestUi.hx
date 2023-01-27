@@ -1,4 +1,3 @@
-import stone.core.Event;
 import stone.core.GraphicsAbstract.RGBA;
 import stone.text.Text;
 import stone.core.Engine;
@@ -14,11 +13,39 @@ class TestUi extends Scene {
 
 		text = new Text(font, game.graphics);
 		
-		ui = new Ui(game.graphics, text, game.input);
-
 		var width_button = Std.int(font.width_model * 9);
 		var height_button = Std.int(font.height_model * 1.5);
 		
+		ui = new Ui(
+			game.graphics,
+			text,
+			{
+				y: 0,
+				x: 0,
+				width: width_button,
+				height: bounds.height
+			},
+			{
+				y: 0,
+				x: width_button,
+				width: bounds.width - width_button,
+				height: bounds.height
+			}
+		);
+
+		game.input.on_pressed.add(button -> switch button {
+			case MOUSE_LEFT: ui.handle_mouse_click();
+			case _:
+		});
+
+		game.input.on_released.add(button -> switch button {
+			case MOUSE_LEFT: ui.handle_mouse_release();
+			case _:
+		});
+
+		game.input.on_mouse_move.add(mouse_position -> ui.handle_mouse_moved(mouse_position));
+
+
 		var color_text:RGBA = 0x002852FF;
 		var color_background:RGBA = 0x878f8fFF;
 		
@@ -29,74 +56,65 @@ class TestUi extends Scene {
 
 		var button_dialog_show = ui.make_button(
 			{
-				x: x_component,
-				y: y_component,
-				width: width_button,
-				height: height_button
+				// on_hover: on_hover,
+				// on_highlight: on_highlight,
+				// on_erase: on_erase,
+				on_click: component -> {
+					var dialog = ui.make_dialog(
+						[
+							"AN EXAMPLE DIALOG",
+						],
+						color_text,
+						color_background,
+						[
+							{
+								text: "YES",
+								action: ()->return
+							}
+						]
+					);
+				}
 			},
 			"DIALOG",
 			color_text,
 			color_background
 		);
-		
-		button_dialog_show.on_click = () -> {
-			var dialog = ui.make_dialog(
-				bounds,
-				[
-					"AN EXAMPLE DIALOG",
-				],
-				color_text,
-				color_background,
-				[
-					{
-						text: "YES",
-						action: ()->return
-					}
-				]
-			);
-		}
 
 		add_space();
 
 		var button_info_show = ui.make_button(
 			{
-				x: x_component,
-				y: y_component,
-				width: width_button,
-				height: height_button
+				on_click: component -> {
+					var dialog = ui.make_dialog(
+						[
+							"MANY",
+							"MANY",
+							"MANY",
+							"MANY",
+							"MANY",
+							"MANY",
+							"LINES OF",
+							"MANY",
+							"TEXT"
+						],
+						color_text,
+						color_background
+					);
+				}
 			},
 			"INFO",
 			color_text,
 			color_background
 		);
 		
-		button_info_show.on_click = () -> {
-			var dialog = ui.make_dialog(
-				bounds,
-				[
-					"MANY",
-					"MANY",
-					"MANY",
-					"MANY",
-					"MANY",
-					"MANY",
-					"LINES OF",
-					"MANY",
-					"TEXT"
-				],
-				color_text,
-				color_background
-			);
-		}
-
 		add_space();
 
 		var label = ui.make_label(
 			{
-				x: x_component,
-				y: y_component,
-				width: width_button,
-				height: height_button
+				// on_hover: on_hover,
+				// on_highlight: on_highlight,
+				// on_erase: on_erase,
+				// on_click: on_click
 			},
 			"LABEL",
 			0xd42424FF,
@@ -107,12 +125,15 @@ class TestUi extends Scene {
 
 		var toggle = ui.make_toggle(
 			{
-				x: x_component,
-				y: y_component,
-				width: width_button,
-				height: height_button
+				// on_hover: on_hover,
+				// on_highlight: on_highlight,
+				// on_erase: on_erase,
+				// on_click: component -> {
+
+				// }
 			},
 			"TOGGLE",
+			color_text,
 			color_background,
 			false
 		);
@@ -123,12 +144,14 @@ class TestUi extends Scene {
 
 		var slider = ui.make_slider(
 			{
-				x: x_component,
-				y: y_component,
-				width: width_button,
-				height: height_button
+				// on_release: on_release,
+				// on_hover: on_hover,
+				// on_highlight: on_highlight,
+				// on_erase: on_erase,
+				// on_click: on_click
 			},
 			"SLIDER",
+			color_text,
 			color_background
 		);
 

@@ -31,7 +31,6 @@ class Graphics extends GraphicsAbstract {
 
 		buffer_lines = new Buffer<Line>(256, 256, true);
 		var lineProgram = new Program(buffer_lines);
-		// lineProgram.setColorFormula( "vec4(base.r, base.g, base.b, base.a * alpha )" );
 		display.addProgram(lineProgram);
 
 		moon_buffer = new Buffer<Sprite>(1, 1, false);
@@ -44,7 +43,7 @@ class Graphics extends GraphicsAbstract {
 		moon_texture.setImage(image);
 
 		moon_program.addTexture(moon_texture, "custom");
-		moon_program.snapToPixel(1); // for smooth animation
+		moon_program.snapToPixel(1);
 		var moon = new Sprite(320, 320, 1015, 1015);
 		moon_buffer.addElement(moon);
 		return moon;
@@ -55,6 +54,12 @@ class Graphics extends GraphicsAbstract {
 		element.timeAStart = 0.0;
 		element.timeADuration = 3.0;
 		buffer_lines.addElement(element);
+
+		var line_clean_up:PeoteLine -> Void = line -> {
+			buffer_lines.removeElement(line.element);
+			lines.remove(line);
+		}
+
 		lines.push(new PeoteLine({
 			x: from_x,
 			y: from_y
@@ -62,7 +67,7 @@ class Graphics extends GraphicsAbstract {
 			x: to_x,
 			y: to_y
 		},
-			element, line -> line_erase(line), make_rectangle(Std.int(from_x), Std.int(from_y), size_cap, size_cap, color),
+			element, line_clean_up, make_rectangle(Std.int(from_x), Std.int(from_y), size_cap, size_cap, color),
 			make_rectangle(Std.int(from_x), Std.int(from_y), size_cap, size_cap, color), cast color));
 		// trace('new line $from_x $from_y $to_x $to_y');
 		return lines[lines.length - 1];
@@ -70,7 +75,14 @@ class Graphics extends GraphicsAbstract {
 
 	public function make_fill(x:Int, y:Int, width:Int, height:Int, color:RGBA):AbstractFillRectangle {
 		var element = make_rectangle(x, y, width, height, color);
-		fills.push(new PeoteFill(element, element -> buffer_fills.removeElement(element)));
+		
+		var fill_clean_up:PeoteFill -> Void = fill -> {
+			buffer_fills.removeElement(fill.element);
+			fills.remove(fill);
+		}
+		
+		fills.push(new PeoteFill(element, fill_clean_up));
+		
 		return fills[fills.length - 1];
 	}
 
@@ -86,13 +98,11 @@ class Graphics extends GraphicsAbstract {
 		return new Particle(Std.int(x), Std.int(y), size, cast color, lifetime_seconds, element);
 	}
 
-	public function line_erase(line:PeoteLine) {
+	function line_erase(line:PeoteLine) {
 		buffer_fills.removeElement(line.head);
 		buffer_fills.removeElement(line.end);
 		buffer_lines.removeElement(line.element);
-		// trace('removed line from buffer');
 		lines.remove(line);
-		// trace('removed line from lines array');
 	}
 
 	public function draw() {
@@ -100,7 +110,6 @@ class Graphics extends GraphicsAbstract {
 			line.draw();
 		}
 		for (fill in fills) {
-			// trace('draw fill');
 			fill.draw();
 		}
 		buffer_fills.update();
@@ -120,10 +129,8 @@ class Graphics extends GraphicsAbstract {
 	}
 
 	public function close() {
-		buffer_fills.clear();
-		buffer_lines.clear(true);
-		fills.clear();
-		lines.clear();
+		fills.clear(fill -> fill.erase());
+		lines.clear(line -> line.erase());
 	}
 
 	public function display_add(display_hud:Display) {

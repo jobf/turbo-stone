@@ -6,10 +6,10 @@ import stone.graphics.Fill;
 import stone.core.GraphicsAbstract;
 
 class PeoteFill extends AbstractFillRectangle {
-	var element:Rectangle;
-	var remove_from_buffer:Rectangle->Void;
-
-	public function new(element:Rectangle, remove_from_buffer:Rectangle->Void) {
+	public var element(default, null):Rectangle;
+	public var is_erased(default, null):Bool = false;
+	var remove_from_buffer:PeoteFill->Void;
+	public function new(element:Rectangle, remove_from_buffer:PeoteFill->Void) {
 		super(element.x, element.y, element.w, element.h, element.rotation, cast element.color);
 		this.element = element;
 		this.remove_from_buffer = remove_from_buffer;
@@ -25,6 +25,9 @@ class PeoteFill extends AbstractFillRectangle {
 	}
 
 	public function erase(){
-		remove_from_buffer(element);
+		if(!is_erased){
+			is_erased = true;
+			remove_from_buffer(this);
+		}
 	}
 }

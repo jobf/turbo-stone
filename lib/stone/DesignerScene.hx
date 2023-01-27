@@ -1,21 +1,21 @@
 package stone;
 
-import stone.file.FileStorage.FileJSON;
 import stone.ui.Components;
-
+import stone.core.GraphicsAbstract.RGBA;
+import stone.core.GraphicsAbstract.AbstractLine;
+import stone.text.Text;
+import stone.core.Engine;
+import stone.core.Ui;
+import stone.file.FileStorage.FileJSON;
 import stone.graphics.implementation.PeoteLine;
 import stone.graphics.implementation.Graphics;
 import stone.editing.Editor;
 import stone.FileStorageScene;
 import stone.core.Models;
-import stone.core.GraphicsAbstract;
 import stone.core.InputAbstract;
 import stone.input.Controller;
-import stone.core.Engine;
 import stone.util.EnumMacros;
 import stone.text.CodePage;
-import stone.text.Text;
-import stone.core.Ui;
 
 class DesignerScene extends Scene {
 	var grid_center_x:Int;
@@ -23,14 +23,16 @@ class DesignerScene extends Scene {
 	var mouse_position:Vector;
 	var designer:Designer;
 	var divisions_total:Int = 8;
+	var bounds_components:RectangleGeometry;
 	var bounds_grid:RectangleGeometry;
 	var graphics_hud:Graphics;
 	var file:FileModel;
 	var file_name:String;
+	var font:Font;
 	var text:Text;
-	var label_model:Word;
 	var ui:Ui;
-	var help:Dialog<String>;
+	var label_model:Word;
+	var help:Dialog;
 
 	public function new(graphics_hud:Graphics, game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel, file_name:String) {
 		super(game, bounds, color);
@@ -40,13 +42,53 @@ class DesignerScene extends Scene {
 	}
 
 	public function init() {
-		// game.input.mouse_cursor_hide();
+		font = font_load_embedded(18);
+		text = new Text(font, graphics_hud);
+
+		var width_button = Std.int(font.width_model * 9);
+		var margin_top = font.height_model * 2;
+
+		bounds_components = {
+			y: margin_top,
+			x: bounds.width - width_button,
+			width: width_button,
+			height: bounds.height
+		}
+
 		bounds_grid = {
 			y: 0,
 			x: 0,
-			width: bounds.height,
+			width: bounds.width - width_button,
 			height: bounds.height
 		}
+
+		ui = new Ui(
+			graphics_hud,
+			text,
+			bounds_components,
+			bounds_grid
+		);
+
+		game.input.on_mouse_move.add(mouse_position -> {
+			if(designer.point_is_outside_grid(mouse_position)){
+				game.input.mouse_cursor_show();
+				ui.handle_mouse_moved(mouse_position);
+			}
+			else{
+				game.input.mouse_cursor_hide();
+			}
+		});
+
+		game.input.on_pressed.add(button -> switch button {
+			case MOUSE_LEFT: handle_mouse_press_left();
+			case MOUSE_MIDDLE: delete_line_under_mouse();
+			case _:
+		});
+
+		game.input.on_released.add(button -> switch button {
+			case MOUSE_LEFT: handle_mouse_release_left();
+			case _:
+		});
 
 		mouse_position = game.input.mouse_position;
 		grid_center_x = Std.int(bounds_grid.width * 0.5);
@@ -54,7 +96,6 @@ class DesignerScene extends Scene {
 
 		var size_segment = divisions_calculate_size_segment();
 		grid_draw(size_segment);
-
 
 		if (file.models.length == 0) {
 			var names_map:Map<CodePage, String> = EnumMacros.nameByValue(CodePage);
@@ -69,7 +110,9 @@ class DesignerScene extends Scene {
 		}
 
 		designer = new Designer(size_segment, game.graphics, bounds_grid, file);
-		settings_load();
+
+		ui_setup();
+
 		label_update();
 	}
 
@@ -83,8 +126,8 @@ class DesignerScene extends Scene {
 				lines_grid.remove(lines_grid[delete_index]);
 			}
 		}
-		
-		for (x in 0...Std.int(bounds_grid.width / size_segment)) {
+
+		for (x in 0...Std.int(bounds_grid.width / size_segment) + 1) {
 			var x_ = Std.int(x * size_segment);
 			lines_grid.push(game.graphics.make_line(x_, 0, x_, bounds_grid.height, 0xD1D76210));
 		}
@@ -94,13 +137,8 @@ class DesignerScene extends Scene {
 			lines_grid.push(game.graphics.make_line(0, y_, bounds_grid.width, y_, 0xD1D76210));
 		}
 
-		var x_axis_line:PeoteLine  = cast game.graphics.make_line(0, grid_center_y, bounds_grid.width, grid_center_y, 0xFF85AB10);
-		x_axis_line.thick = 8;
-		lines_grid.push(x_axis_line);
-
-		var y_axis_line:PeoteLine = cast game.graphics.make_line(grid_center_x, 0, grid_center_x, bounds_grid.height, 0xFF85AB10);
-		y_axis_line.thick = 8;
-		lines_grid.push(y_axis_line);
+		lines_grid.push(game.graphics.make_line(0, grid_center_y, bounds_grid.width, grid_center_y, 0xFF85AB20));
+		lines_grid.push(game.graphics.make_line(grid_center_x, 0, grid_center_x, bounds_grid.height, 0xFF85AB20));
 	}
 
 	public function update(elapsed_seconds:Float) {
@@ -114,6 +152,7 @@ class DesignerScene extends Scene {
 
 	public function close() {
 		ui.clear();
+		graphics_hud.close();
 	}
 
 	function label_update(){
@@ -126,67 +165,69 @@ class DesignerScene extends Scene {
 
 	function handle_mouse_press_left() {
 		if(designer.point_is_outside_grid(mouse_position)){
+			ui.handle_mouse_click();
 			return;
 		}
 
+		if(ui.dialog_is_active()){
+			return;
+		}
+		
 		designer.start_drawing_line(mouse_position);
 	}
 
 	function handle_mouse_release_left() {
+		if(designer.point_is_outside_grid(mouse_position)){
+			ui.handle_mouse_release();
+		}
+
 		designer.stop_drawing_line(mouse_position);
 	}
 
 	function delete_line_under_mouse(){
+		if(ui.dialog_is_active()){
+			return;
+		}
 		designer.line_under_cursor_remove();
 	}
 
-	function settings_load() {
-		var font = font_load_embedded();
-		font.width_model = 18;
-		font.height_model = 18;
-		font.width_character = 10;
-		text = new Text(font, graphics_hud);
-
-		var color:RGBA = 0xffffffFF;
-
-		ui = new Ui(graphics_hud, text, game.input);
-
-		var actions:Map<Button, Action> = [
-			MOUSE_LEFT => {
-				on_pressed: () -> handle_mouse_press_left(),
-				on_released: () -> handle_mouse_release_left(),
-				name: "DRAW"
-			},
-			MOUSE_MIDDLE => {
-				on_pressed: () -> delete_line_under_mouse(),
-				name: "DELETE"
-			},
+	function ui_setup() {
+	
+		var actions:Map<stone.core.Button, Action> = [
+		
 			KEY_D => {
 				on_pressed: () -> delete_line_under_mouse(),
 				name: "DELETE"
 			}
 		];
 
+		var color:RGBA = 0xffffffFF;
 		var gap = 10;
-		var width_button = Std.int(font.width_character * 10);
-		var height_button = font.height_model + gap;
+		var width_button = Std.int(text.font.width_character * 10);
+		var height_button = text.font.height_model + gap;
 		var x_button = bounds.width - width_button - gap;
 		var y_button = gap * 5;
 
-		var add_button:(Button, Action) -> Void = (button_key, action) -> {
-			var button = ui.make_button({
-				y: y_button,
-				x: x_button,
-				width: width_button,
-				height: height_button,
-			}, action.name, 0x151517ff, 0xd0b85087);
+		var add_button:(stone.core.Button, Action) -> Void = (button_key, action) -> {
+			var button = ui.make_button(
+				{
+					// on_hover: on_hover,
+					// on_highlight: on_highlight,
+					// on_erase: on_erase,
+					on_click: component -> action.on_pressed()
+				},
+				action.name,
+				0x151517ff,
+				0x786b35FF
+			);
 
-			button.on_click = () -> action.on_pressed();
+			// button.on_click = () -> action.on_pressed();
 			actions[button_key] = action;
-			y_button += gap + font.height_model + gap;
+			y_button += gap + text.font.height_model + gap;
 		}
 
-		var add_space:Void->Void = () -> y_button += gap * 2;
+		// var add_space:Void->Void = () -> y_button += gap * 2;
+		var add_space:Void->Void = () -> ui.y_offset_increase(gap * 2);
 
 		add_button(KEY_LEFT, {
 			on_pressed: () -> {
@@ -261,52 +302,38 @@ class DesignerScene extends Scene {
 
 		add_button(KEY_F, {
 			on_pressed: () -> {
-				designer.input_set_enabled(false);
-
 				var warning_save = ui.make_dialog(
-					bounds,
 					["UNSAVED CHANGES WILL BE LOST", "CONTINUE TO FILE BROWSER?"],
 					0x151517ff,
-					0xd0b85087,
+					0x786b35FF,
 					[{
 						text: "YES",
 						action: () -> game.scene_change(game -> new FileStorageScene(game, bounds, color))
 					}]
 				);
-
-				warning_save.on_erase.add(s -> {
-					designer.input_set_enabled(true);
-				});
 			},
 			name: "FILES"
 		});
 
-		for(i in 0...7){
-			add_space();
-		}
-
+		add_space();
+		
 		add_button(KEY_H, {
 			on_pressed: () -> {
 				if(help == null){
-					// prevent drawing when clicking dialog buttons
-					designer.input_set_enabled(false);
-
 					var help_text = [for(pair in actions.keyValueIterator()) '${pair.key} : ${pair.value.name}'];
 
 					help = ui.make_dialog(
-						bounds,
 						help_text,
 						0x151517ff,
-						0xd0b85087
+						0x786b35FF
 					);
 
 					help.on_erase.add(s -> {
-						designer.input_set_enabled(true);
 						help = null;
 					});
 				}
 			},
-			name: "HELP"
+			name: "SECRETS"
 		});
 
 		game.input.on_pressed.add(button -> {
@@ -320,6 +347,8 @@ class DesignerScene extends Scene {
 				actions[button].on_released();
 			}
 		});
+
+
 	}
 
 	function divisions_calculate_size_segment() {

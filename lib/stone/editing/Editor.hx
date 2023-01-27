@@ -81,8 +81,6 @@ class Designer {
 	public var isDrawingLine(default, null):Bool = false;
 	public var figure(default, null):Figure;
 
-	var is_enabled:Bool = true;
-
 	public function new(size_segment:Int, graphics:GraphicsAbstract, bounds_grid:RectangleGeometry, file:FileModel) {
 		this.file = file;
 		granularity_set(size_segment);
@@ -142,7 +140,7 @@ class Designer {
 	}
 
 	public function update_mouse_pointer(mouse_position:Vector) {
-		if (!is_enabled || point_is_outside_grid(mouse_position)) {
+		if (point_is_outside_grid(mouse_position)) {
 			return;
 		}
 
@@ -263,7 +261,7 @@ class Designer {
 	}
 
 	public function start_drawing_line(point:Vector) {
-		if (!is_enabled || isDrawingLine) {
+		if (isDrawingLine) {
 			return;
 		}
 
@@ -279,7 +277,7 @@ class Designer {
 	}
 
 	public function stop_drawing_line(point:Vector) {
-		if (!is_enabled || !isDrawingLine) {
+		if (!isDrawingLine) {
 			return;
 		}
 		isDrawingLine = false;
@@ -298,10 +296,6 @@ class Designer {
 
 	function round_to_nearest(value:Float, interval:Float):Float {
 		return Math.round(value / interval) * interval;
-	}
-
-	public function input_set_enabled(enabled:Bool) {
-		is_enabled = enabled;
 	}
 }
 

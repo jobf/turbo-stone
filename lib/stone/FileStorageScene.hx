@@ -28,36 +28,69 @@ class FileStorageScene extends Scene {
 	var path_file_selected:String;
 	var labels:Array<Label> = [];
 
+	var bounds_components:RectangleGeometry;
+	var bounds_files:RectangleGeometry;
+	
 	public function init() {
 		game.storage.on_drop_file.add(s -> list_files());
 		path_file_selected = "";
 		font = font_load_embedded(24);
 		text = new Text(font, game.graphics);
+				
+		var width_button = Std.int(font.width_model * 9);
 
-		ui = new Ui(game.graphics, text, game.input);
+		bounds_components = {
+			y: 0,
+			x: bounds.width - width_button,
+			width: width_button,
+			height: bounds.height
+		}
+
+		bounds_files = {
+			y: 0,
+			x: 0,
+			width: bounds.width - width_button,
+			height: bounds.height
+		}
+
+		ui = new Ui(
+			game.graphics,
+			text,
+			bounds_components,
+			bounds_files
+		);
 
 		game.input.on_pressed.add(button -> switch button {
-			case MOUSE_LEFT: click();
+			case MOUSE_LEFT: ui.handle_mouse_click();
 			case _:
 		});
+
+		game.input.on_released.add(button -> switch button {
+			case MOUSE_LEFT: ui.handle_mouse_release();
+			case _:
+		});
+
+		game.input.on_mouse_move.add(mouse_position -> ui.handle_mouse_moved(mouse_position));
 
 		var gap = 10;
 		var width_button = Std.int(font.width_character * 10);
 		var height_button = font.height_model + gap;
 		var x_button = bounds.width - width_button - gap;
-		var y_button = gap * 3;
 
 		var add_button:(Button, Action) -> Void = (button_key, action) -> {
-			var button = ui.make_button({
-				y: y_button,
-				x: x_button,
-				width: width_button,
-				height: height_button,
-			}, action.name, 0x151517ff, 0xd0b85087);
+			var button = ui.make_button(
+				{
+					// on_hover: on_hover,
+					// on_highlight: on_highlight,
+					// on_erase: on_erase,
+					on_click: component ->  action.on_pressed()
+				},
+				action.name,
+				0x151517ff,
+				0xd0b85087
+			);
 
-			button.on_click = () -> action.on_pressed();
 			actions[button_key] = action;
-			y_button += gap + font.height_model + gap;
 		}
 
 		actions = [
@@ -79,17 +112,16 @@ class FileStorageScene extends Scene {
 					text: "YES",
 					action: ()-> {
 						var file:FileJSON = game.storage.file_new("");
-					game.storage.file_save(file);
-					list_files();
+						game.storage.file_save(file);
+						list_files();
 					}
 				}
 
 				var dialog = ui.make_dialog(
-				bounds,
-				["REALLY MAKE NEW FILE ?"],
-				0x151517ff,
-				0xd0b85087,
-				[on_confirm]
+					["REALLY MAKE NEW FILE ?"],
+					0x151517ff,
+					0xd0b85087,
+					[on_confirm]
 				);
 			},
 			name: "NEW",
@@ -109,7 +141,6 @@ class FileStorageScene extends Scene {
 					}
 
 					var dialog = ui.make_dialog(
-						bounds,
 						["REALLY DELETE SELECTED ?"],
 						0x151517ff,
 						0xd0b85087,
@@ -160,12 +191,7 @@ class FileStorageScene extends Scene {
 		list_files();
 	}
 
-	function click() {
-		var x_mouse = Std.int(game.input.mouse_position.x);
-		var y_mouse = Std.int(game.input.mouse_position.y);
-	}
-
-	function file_set_selected(path_file:String) {
+		function file_set_selected(path_file:String) {
 		path_file_selected = path_file;
 	}
 
@@ -191,10 +217,14 @@ class FileStorageScene extends Scene {
 		for (path in game.storage.file_paths()) {
 			trace(path);
 			var label = path;
-			var label_ui = ui.make_label(geometry, label, 0xffffffFF, 0xFF85AB36);
-			label_ui.on_click.add(file_path -> {
-				file_set_selected(file_path);
-			});
+			var label_interactions:Interactions ={
+				// on_hover: on_hover,
+				// on_highlight: on_highlight,
+				// on_erase: on_erase,
+				on_click: component -> file_set_selected(path)
+			}
+
+			var label_ui = ui.make_label(label_interactions, label, 0xffffffFF, 0xFF85AB36);
 			geometry.y += (gap + font.height_model);
 			labels.push(label_ui);
 		}
