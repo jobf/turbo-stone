@@ -41,8 +41,13 @@ class Deserialize {
 		var errors = new Array<Error>();
 		var data = new JsonParser<FileModel>(errors).fromJson(json, 'json-errors');
 
-		if (errors.length <= 0 && data != null && data.models.length > 0) {
+		if (errors.length <= 0 && data != null) {
 			return data;
+		}
+		else{
+			for (error in errors) {
+				trace(error);
+			}
 		}
 
 		return null;
