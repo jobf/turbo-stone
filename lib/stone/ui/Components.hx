@@ -127,6 +127,7 @@ class Interactions{
 
 class InteractiveComponent {
 	var background:AbstractFillRectangle;
+	var alpha_bg:Int ;
 	var alpha_highlight:Int;
 	var alpha_hover:Int;
 	var alpha_idle:Int ;
@@ -149,6 +150,7 @@ class InteractiveComponent {
 
 		background = graphics.make_fill(x_background, y_background, geometry.width, geometry.height, color_bg);
 		
+		alpha_bg = background.color.a;
 		alpha_idle = alpha_idle_is_transparent ? 0 : color_bg.a;
 		alpha_highlight = alpha_idle_is_transparent ? Std.int(color_bg.a * 0.3) : color_bg.a;
 		alpha_hover = alpha_idle_is_transparent ?  Std.int(color_bg.a * 0.2) : Std.int(color_bg.a * 0.9);
@@ -181,6 +183,15 @@ class InteractiveComponent {
 		background.erase();
 		label.erase();
 		interactions.on_erase(this);
+	}
+
+	public function hide() {
+		background.color.a = 10;
+	}
+
+
+	public function show() {
+		background.color.a = alpha_bg;
 	}
 
 	public function highlight(should_highlight:Bool) {
@@ -337,4 +348,5 @@ class Dialog {
 		on_erase.dispatch("");
 		on_erase.removeAll();
 	}
+
 }

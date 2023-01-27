@@ -94,9 +94,11 @@ class Ui {
 
 	public function make_dialog(lines_text:Array<String>, color_fg:RGBA, color_bg:RGBA, buttons:Array<ButtonModel>=null):Dialog {
 		if(dialog == null){
+			components.hide();
 			dialog = new Dialog(bounds_dialog, bounds_components, height_component, lines_text, color_fg, color_bg, graphics, text, buttons);
 			dialog.on_erase.add(s -> {
 				this.dialog = null;
+				components.show();
 			});
 		}
 		return dialog;
@@ -220,6 +222,28 @@ class ComponentsCollection{
 	public function clear() {
 		sliders.clear(slider -> slider.erase());
 		clickers.clear(clicker -> clicker.erase());
+	}
+
+
+	public function hide(){
+		for (component in clickers) {
+			component.hide();
+		}
+
+		for (slider in sliders) {
+			slider.hide();
+		}
+	}
+
+
+	public function show(){
+		for (component in clickers) {
+			component.show();
+		}
+
+		for (slider in sliders) {
+			slider.show();
+		}
 	}
 
 	function offset_y_component(geometry:RectangleGeometry){
