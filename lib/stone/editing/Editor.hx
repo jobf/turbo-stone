@@ -87,7 +87,7 @@ class Designer {
 		this.graphics = cast graphics;
 		this.bounds_grid = bounds_grid;
 		var mouse_pointer_size = Std.int(size_segment * 0.5);
-		mouse_pointer = graphics.make_fill(0, 0, mouse_pointer_size, mouse_pointer_size, 0xFF448080);
+		mouse_pointer = graphics.make_fill(0, 0, mouse_pointer_size, mouse_pointer_size, Theme.cursor);
 		mouse_pointer.rotation = 45;
 		translation = new EditorTranslation(bounds_grid, 1, 1);
 		figure_init();
@@ -108,7 +108,7 @@ class Designer {
 
 		return {
 			model: model.lines,
-			lines: graphics.model_to_lines(model.lines.map(line -> convert_line(line)), 0xFFFFFFff)
+			lines: graphics.model_to_lines(model.lines.map(line -> convert_line(line)), Theme.drawing_lines)
 		}
 	}
 
@@ -156,7 +156,7 @@ class Designer {
 			line_under_cursor = line_under_cursor_(mouse_position);
 			for (line in figure.lines) {
 				var overlaps = line == line_under_cursor;
-				line.color = overlaps ? 0xFF0000ff : 0xFFFFFFff;
+				line.color = overlaps ? Theme.drawing_lines_hover : Theme.drawing_lines;
 			}
 		}
 	}
@@ -269,7 +269,7 @@ class Designer {
 
 		var x = round_to_nearest(point.x, size_segment);
 		var y = round_to_nearest(point.y, size_segment);
-		var line:AbstractLine = graphics.make_line(x, y, x, y, 0xFFFFFFff);
+		var line:AbstractLine = graphics.make_line(x, y, x, y, Theme.drawing_lines);
 		
 		figure.lines.push(line);
 		

@@ -86,8 +86,8 @@ class FileStorageScene extends Scene {
 					on_click: component ->  action.on_pressed()
 				},
 				action.name,
-				0x151517ff,
-				0xd0b85087
+				Theme.fg_ui_component,
+				Theme.bg_ui_component
 			);
 
 			actions[button_key] = action;
@@ -119,8 +119,8 @@ class FileStorageScene extends Scene {
 
 				var dialog = ui.make_dialog(
 					["REALLY MAKE NEW FILE ?"],
-					0x151517ff,
-					0xd0b85087,
+					Theme.fg_ui_component,
+					Theme.bg_dialog,
 					[on_confirm]
 				);
 			},
@@ -142,8 +142,8 @@ class FileStorageScene extends Scene {
 
 					var dialog = ui.make_dialog(
 						["REALLY DELETE SELECTED ?"],
-						0x151517ff,
-						0xd0b85087,
+						Theme.fg_ui_component,
+						Theme.bg_dialog,
 						[on_confirm]
 					);
 				}
@@ -181,7 +181,7 @@ class FileStorageScene extends Scene {
 							models: []
 						}
 					}
-					var init_scene:Game->Scene = game -> new DesignerScene(hud_graphics, game, hud_bounds, 0x151517ff, models, file.name);
+					var init_scene:Game->Scene = game -> new DesignerScene(hud_graphics, game, hud_bounds, Theme.bg_scene, models, file.name);
 					game.scene_change(init_scene);
 				}
 			},
@@ -224,7 +224,7 @@ class FileStorageScene extends Scene {
 				on_click: component -> file_set_selected(path)
 			}
 
-			var label_ui = ui.make_label(label_interactions, label, 0xffffffFF, 0xFF85AB36);
+			var label_ui = ui.make_label(label_interactions, label, Theme.drawing_lines, Theme.bg_ui_component_label);
 			geometry.y += (gap + font.height_model);
 			labels.push(label_ui);
 		}

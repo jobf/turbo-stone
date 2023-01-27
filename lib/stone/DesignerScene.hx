@@ -129,16 +129,16 @@ class DesignerScene extends Scene {
 
 		for (x in 0...Std.int(bounds_grid.width / size_segment) + 1) {
 			var x_ = Std.int(x * size_segment);
-			lines_grid.push(game.graphics.make_line(x_, 0, x_, bounds_grid.height, 0xD1D76210));
+			lines_grid.push(game.graphics.make_line(x_, 0, x_, bounds_grid.height, Theme.grid_lines));
 		}
 
 		for (y in 0...Std.int(bounds_grid.height / size_segment)) {
 			var y_ = Std.int(y * size_segment);
-			lines_grid.push(game.graphics.make_line(0, y_, bounds_grid.width, y_, 0xD1D76210));
+			lines_grid.push(game.graphics.make_line(0, y_, bounds_grid.width, y_, Theme.grid_lines));
 		}
 
-		lines_grid.push(game.graphics.make_line(0, grid_center_y, bounds_grid.width, grid_center_y, 0xFF85AB20));
-		lines_grid.push(game.graphics.make_line(grid_center_x, 0, grid_center_x, bounds_grid.height, 0xFF85AB20));
+		lines_grid.push(game.graphics.make_line(0, grid_center_y, bounds_grid.width, grid_center_y, Theme.grid_lines_center));
+		lines_grid.push(game.graphics.make_line(grid_center_x, 0, grid_center_x, bounds_grid.height, Theme.grid_lines_center));
 	}
 
 	public function update(elapsed_seconds:Float) {
@@ -160,7 +160,7 @@ class DesignerScene extends Scene {
 		if(label_model != null){
 			label_model.erase();
 		}
-		label_model = text.word_make(720, 20, label_text, 0xffffffFF);
+		label_model = text.word_make(720, 20, label_text, Theme.drawing_lines);
 	}
 
 	function handle_mouse_press_left() {
@@ -172,7 +172,7 @@ class DesignerScene extends Scene {
 		if(ui.dialog_is_active()){
 			return;
 		}
-		
+
 		designer.start_drawing_line(mouse_position);
 	}
 
@@ -201,7 +201,7 @@ class DesignerScene extends Scene {
 			}
 		];
 
-		var color:RGBA = 0xffffffFF;
+		var color:RGBA = Theme.drawing_lines;
 		var gap = 10;
 		var width_button = Std.int(text.font.width_character * 10);
 		var height_button = text.font.height_model + gap;
@@ -217,8 +217,8 @@ class DesignerScene extends Scene {
 					on_click: component -> action.on_pressed()
 				},
 				action.name,
-				0x151517ff,
-				0x786b35FF
+				Theme.fg_ui_component,
+				Theme.bg_ui_component
 			);
 
 			// button.on_click = () -> action.on_pressed();
@@ -304,8 +304,8 @@ class DesignerScene extends Scene {
 			on_pressed: () -> {
 				var warning_save = ui.make_dialog(
 					["UNSAVED CHANGES WILL BE LOST", "CONTINUE TO FILE BROWSER?"],
-					0x151517ff,
-					0x786b35FF,
+					Theme.fg_ui_component,
+					Theme.bg_dialog,
 					[{
 						text: "YES",
 						action: () -> game.scene_change(game -> new FileStorageScene(game, bounds, color))
@@ -324,8 +324,8 @@ class DesignerScene extends Scene {
 
 					help = ui.make_dialog(
 						help_text,
-						0x151517ff,
-						0x786b35FF
+						Theme.fg_ui_component,
+						Theme.bg_dialog
 					);
 
 					help.on_erase.add(s -> {

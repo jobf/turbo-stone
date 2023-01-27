@@ -1,3 +1,4 @@
+import stone.Theme;
 import stone.core.Models.Deserialize;
 import stone.core.Models.FileModel;
 import stone.DesignerScene;
@@ -44,9 +45,6 @@ class Main extends Application {
 	}
 
 	public function init(window:Window) {
-		var black = 0x000000ff;
-		var slate = 0x151517ff;
-
 		var viewport_window:RectangleGeometry = {
 			y: 0,
 			x: 0,
@@ -63,7 +61,7 @@ class Main extends Application {
 
 		implementation_graphics = new Graphics(display_main, viewport_window);
 		implementation_input = new Input(window);
-		implementation_graphics.set_color(slate);
+		implementation_graphics.set_color(Theme.bg_scene);
 		
 		
 		var storage = new Storage(window);
@@ -83,17 +81,19 @@ class Main extends Application {
 		}
 		
 		var hud_graphics = new Graphics(display_hud, viewport_window);
-		var init_scene:Game->Scene = game -> new DesignerScene(hud_graphics, game, viewport_window, 0x151517ff, file, file_name);
+		var init_scene:Game->Scene = game -> new DesignerScene(hud_graphics, game, viewport_window, Theme.bg_scene, file, file_name);
 
 		#if simple
-		init_scene = game -> new SimpleDraw(game, viewport_window, black);
+		init_scene = game -> new SimpleDraw(game, viewport_window, Theme.bg_scene);
 		#end
-
+		
 		#if testui
-		init_scene = game -> new TestUi(game, viewport_window, black);
+		init_scene = game -> new TestUi(game, viewport_window, Theme.bg_scene);
 		#end
-
-		var init_scene_loader:Game->Scene = game -> new LoadingScene(preloader, init_scene, game, viewport_window, 0x00000000);
+		#if testfiles
+		init_scene = game -> new FileStorageScene(game, viewport_window, Theme.bg_scene);
+		#end
+		var init_scene_loader:Game->Scene = game -> new LoadingScene(preloader, init_scene, game, viewport_window, Theme.bg_scene);
 
 
 
@@ -124,3 +124,6 @@ class Main extends Application {
 		game.draw();
 	}
 }
+
+
+

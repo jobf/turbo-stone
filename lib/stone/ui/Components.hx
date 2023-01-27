@@ -293,8 +293,6 @@ class Dialog {
 			height: height_component
 		}
 
-		var color_button_background = 0xffffff90;
-
 		for (model in this.actions) {
 			var button = components.make_button(
 				{
@@ -309,7 +307,7 @@ class Dialog {
 				button_geometry,
 				model.text,
 				color_fg,
-				color_button_background
+				color_bg
 			);
 				
 		}
