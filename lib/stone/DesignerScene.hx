@@ -70,9 +70,9 @@ class DesignerScene extends Scene {
 		);
 
 		game.input.on_mouse_move.add(mouse_position -> {
+			ui.handle_mouse_moved(mouse_position);
 			if(designer.point_is_outside_grid(mouse_position)){
 				game.input.mouse_cursor_show();
-				ui.handle_mouse_moved(mouse_position);
 			}
 			else{
 				game.input.mouse_cursor_hide();

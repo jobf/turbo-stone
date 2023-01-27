@@ -1,3 +1,4 @@
+import stone.core.Models.Serialize;
 import stone.Theme;
 import stone.core.Models.Deserialize;
 import stone.core.Models.FileModel;
@@ -63,39 +64,49 @@ class Main extends Application {
 		implementation_input = new Input(window);
 		implementation_graphics.set_color(Theme.bg_scene);
 		
-		
+		var init_scene:Game->Scene;
+
 		var storage = new Storage(window);
-		var file_name = 'start.json';
 		var file_list = storage.file_paths();
 		
-		var file:FileModel = {
-			models: []
+		if(file_list.length <= 0){
+			var file_name = '${Date.now().to_time_stamp()}.json';
+			
+			storage.file_save({
+				name: file_name,
+				content: Serialize.to_string({
+					models: []
+				})
+			});
+			
+			file_list = storage.file_paths();
 		}
-		
+		else{
+			trace(file_list[0]);
+		}
+
 		if(file_list.length > 0){
 			var index_end_of_list = file_list.length - 1;
-			var file_latest = storage.file_load(file_list[index_end_of_list]);
-			if(file_latest.content.length > 0){
-				file = Deserialize.parse_file_contents(file_latest.content);
+			var file_name = file_list[index_end_of_list];
+			var file_latest = storage.file_load(file_name);
+			trace(file_latest.content);
+			var has_valid_file = file_latest != null && file_latest.content.length > 0;
+			if(has_valid_file){
+				var file = Deserialize.parse_file_contents(file_latest.content);
+				var hud_graphics = new Graphics(display_hud, viewport_window);
+				init_scene = game -> new DesignerScene(hud_graphics, game, viewport_window, Theme.bg_scene, file, file_name);
 			}
 		}
-		
-		var hud_graphics = new Graphics(display_hud, viewport_window);
-		var init_scene:Game->Scene = game -> new DesignerScene(hud_graphics, game, viewport_window, Theme.bg_scene, file, file_name);
-
-		#if simple
-		init_scene = game -> new SimpleDraw(game, viewport_window, Theme.bg_scene);
-		#end
 		
 		#if testui
 		init_scene = game -> new TestUi(game, viewport_window, Theme.bg_scene);
 		#end
+
 		#if testfiles
 		init_scene = game -> new FileStorageScene(game, viewport_window, Theme.bg_scene);
 		#end
+
 		var init_scene_loader:Game->Scene = game -> new LoadingScene(preloader, init_scene, game, viewport_window, Theme.bg_scene);
-
-
 
 		game = new Game(init_scene_loader, implementation_graphics, implementation_input, storage);
 

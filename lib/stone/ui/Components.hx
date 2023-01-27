@@ -17,11 +17,11 @@ class Label extends InteractiveComponent{
 	var track:AbstractLine;
 	var handle:AbstractFillRectangle;
 	public var on_change:Bool->Void = b -> trace('on_change $b');
-	public var is_enabled(default, set):Bool;
-	function set_is_enabled(v:Bool):Bool{
-		is_enabled = v;
-		on_change(is_enabled);
-		return is_enabled;
+	public var is_toggled(default, set):Bool;
+	function set_is_toggled(v:Bool):Bool{
+		is_toggled = v;
+		on_change(is_toggled);
+		return is_toggled;
 	}
 	public function new(label:String, interactions:Interactions, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text) {
 		var x_label_centered = false;
@@ -30,8 +30,8 @@ class Label extends InteractiveComponent{
 
 	override function click() {
 		super.click();
-		is_enabled = !is_enabled;
-		highlight(is_enabled);
+		is_toggled = !is_toggled;
+		highlight(is_toggled);
 	}
 }
 
@@ -39,12 +39,12 @@ class Toggle extends InteractiveComponent{
 	var track:AbstractLine;
 	var handle:AbstractFillRectangle;
 	public var on_change:Bool->Void = b -> trace('on_change $b');
-	public var is_enabled(default, set):Bool;
-	function set_is_enabled(v:Bool):Bool{
-		is_enabled = v;
-		on_change(is_enabled);
+	public var is_toggled(default, set):Bool;
+	function set_is_toggled(v:Bool):Bool{
+		is_toggled = v;
+		on_change(is_toggled);
 		handle_move();
-		return is_enabled;
+		return is_toggled;
 	}
 	public function new(label:String, interactions:Interactions, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text, is_enabled_:Bool) {
 		var x_label_centered = false;
@@ -60,12 +60,12 @@ class Toggle extends InteractiveComponent{
 
 	override function click() {
 		super.click();
-		is_enabled = !is_enabled;
+		is_toggled = !is_toggled;
 		handle_move();
 	}
 
 	function handle_move() {
-		var x_handle = is_enabled ? track.point_to.x : track.point_from.x;
+		var x_handle = is_toggled ? track.point_to.x : track.point_from.x;
 		handle.x = x_handle;
 		trace('handle_move ${handle.x}');
 	}
@@ -139,6 +139,7 @@ class InteractiveComponent {
 	var x_background:Int;
 	var y_background:Int;
 	var label:Word;
+	var is_enabled = true;
 	public function new(label:String, interactions:Interactions, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text, x_label_centered:Bool=true, y_label_offset:Int=0, alpha_idle_is_transparent:Bool=false) {
 		this.interactions = interactions;
 
@@ -154,14 +155,14 @@ class InteractiveComponent {
 		alpha_idle = alpha_idle_is_transparent ? 0 : color_bg.a;
 		alpha_highlight = alpha_idle_is_transparent ? Std.int(color_bg.a * 0.3) : color_bg.a;
 		alpha_hover = alpha_idle_is_transparent ?  Std.int(color_bg.a * 0.2) : Std.int(color_bg.a * 0.9);
-
+		background.color.a = alpha_idle;
 		var x_label = x_background;
 		var y_label = y_background + y_label_offset;
 		if(!x_label_centered){
-			var width_label = (label.length -1)* text.font.width_character;
-			x_label -= Std.int(width_label);
+			var width_label = (1 + label.length) * text.font.width_character;
+			x_label = Std.int(geometry.width - (width_label * 0.5));
 		}
-
+		
 		this.label = text.word_make(x_label, y_label, label, color_fg);
 	}
 
@@ -170,11 +171,17 @@ class InteractiveComponent {
 	}
 
 	public function click() {
+		if(!is_enabled){
+			return;
+		}
 		is_clicked = true;
 		interactions.on_click(this);
 	}
 
 	public function release() {
+		if(!is_enabled){
+			return;
+		}
 		is_clicked = false;
 		interactions.on_release(this);
 	}
@@ -186,21 +193,29 @@ class InteractiveComponent {
 	}
 
 	public function hide() {
+		is_enabled = false;
 		background.color.a = 10;
 	}
 
 
 	public function show() {
+		is_enabled = true;
 		background.color.a = alpha_bg;
 	}
 
 	public function highlight(should_highlight:Bool) {
+		if(!is_enabled){
+			return;
+		}
 		is_highlighted = should_highlight;
 		background.color.a = should_highlight ? alpha_highlight : alpha_idle;
 		interactions.on_highlight(should_highlight);
 	}
 
 	public function hover(is_mouse_over:Bool) {
+		if(!is_enabled){
+			return;
+		}
 		if(is_highlighted){
 			background.color.a = is_mouse_over ? alpha_hover : alpha_highlight;
 		}

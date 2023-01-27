@@ -35,7 +35,7 @@ class FileStorage {
 	public function file_save(file:FileJSON){
 		var item = Store.getItem(file.name);
 		if(item == null){
-			// this is a new addition so addto the file list
+			// this is a new addition so add to the file list
 			_file_list.paths.push(file.name);
 			file_list_save(_file_list);
 		}

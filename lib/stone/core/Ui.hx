@@ -126,11 +126,11 @@ class Ui {
 		x_mouse = Std.int(mouse_position.x);
 		y_mouse = Std.int(mouse_position.y);
 
-		if(dialog == null){
-			components.handle_mouse_moved(x_mouse, y_mouse);
+		if(dialog_is_active()){
+			dialog.handle_mouse_moved(x_mouse, y_mouse);
 		}
 		else{
-			dialog.handle_mouse_moved(x_mouse, y_mouse);
+			components.handle_mouse_moved(x_mouse, y_mouse);
 		}
 	}
 

@@ -38,6 +38,7 @@ class Game {
 			current_scene.close();
 			input.on_pressed.removeAll();
 			input.on_released.removeAll();
+			input.on_mouse_move.removeAll();
 			scene_init(scene_constructor);
 		}
 	}
