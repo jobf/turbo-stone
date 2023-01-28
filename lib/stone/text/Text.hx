@@ -42,9 +42,8 @@ class Text {
 			y: 0,
 			x: 0,
 			width: font.width_model,
-			height: font.width_model
+			height: font.height_model
 		});
-		// trace('font ${model_translation.}')
 	}
 
 	public function draw() {

@@ -64,7 +64,6 @@ class DesignerScene extends Scene {
 
 		ui = new Ui(
 			graphics_hud,
-			text,
 			bounds_components,
 			bounds_grid
 		);

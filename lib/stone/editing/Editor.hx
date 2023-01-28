@@ -304,7 +304,7 @@ class GraphicsExtensions{
 			to: translation.model_to_view_point(line.to)
 		}
 
-		trace('drawing model with ${model.lines.length} lines');
+		// trace('drawing model with ${model.lines.length} lines');
 
 		return {
 			model: model.lines,

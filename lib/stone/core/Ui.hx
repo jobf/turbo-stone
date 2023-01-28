@@ -21,14 +21,18 @@ class Ui {
 
 	var height_component:Int;
 	
-	public function new(graphics:GraphicsAbstract, text:Text, bounds_components:RectangleGeometry, bounds_dialog:RectangleGeometry) {
+	public function new(graphics:GraphicsAbstract, bounds_components:RectangleGeometry, bounds_dialog:RectangleGeometry) {
 		this.graphics = graphics;
-		this.text = text;
+		text = new Text(font_load_embedded(24), graphics);
 
 		height_component = Std.int(text.font.height_model * 1.5);
 		this.bounds_components = bounds_components;
 		this.bounds_dialog = bounds_dialog;
 		this.components = new ComponentsCollection(graphics, text, bounds_components, bounds_dialog, height_component);
+	}
+
+	public function draw(){
+		text.draw();
 	}
 
 	public function make_slider(interactions:Interactions, label:String, color_fg:RGBA, color_bg:RGBA):Slider {

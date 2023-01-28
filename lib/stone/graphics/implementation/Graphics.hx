@@ -133,7 +133,7 @@ class Graphics extends GraphicsAbstract {
 		lines.clear(line -> line.erase());
 	}
 
-	public function display_add(display_hud:Display) {
-		display.peoteView.addDisplay(display_hud);
+	public function display_add(display_additional:Display) {
+		display.peoteView.addDisplay(display_additional);
 	}
 }
