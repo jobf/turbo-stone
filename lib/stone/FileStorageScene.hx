@@ -19,112 +19,25 @@ import stone.core.InputAbstract;
 
 using StringTools;
 
-class FileStorageScene extends Scene {
-	var text:Text;
-	var ui:Ui;
+class FileStorageScene extends HudScene {
 	var x_label = 40;
 	var y_label = 40;
-	var font:Font;
-	var actions:Map<Button, Action>;
 	var path_file_selected:String;
-	// var labels:Array<Label> = [];
-
-	var bounds_components:RectangleGeometry;
-	var bounds_files:RectangleGeometry;
 	var file_list:FileList;
-	public function init() {
+	var file_selected_buttons:Array<stone.ui.Components.Button>;
+
+	override public function init() {
+		super.init();
+
 		game.storage.on_drop_file.add(file_json -> list_files());
 		path_file_selected = "";
-		font = font_load_embedded(24);
-		text = new Text(font, game.graphics);
-				
-		var width_button = Std.int(font.width_model * 9);
-		bounds_components = {
-			y: 0,
-			x: bounds.width - width_button,
-			width: width_button,
-			height: bounds.height
-		}
-		
-		bounds_files = {
-			y: 0,
-			x: 0,
-			width: bounds.width - width_button,
-			height: bounds.height
-		}
 
-		file_list = new FileList(game.graphics, text, bounds_files, file_name -> file_set_selected(file_name));
-
-		ui = new Ui(
-			game.graphics,
-			text,
-			bounds_components,
-			bounds_files
-		);
-
-		game.input.on_pressed.add(button -> switch button {
-			case MOUSE_LEFT: {
-				if(game.input.mouse_position.x > bounds_files.x + bounds_files.width){
-					ui.handle_mouse_click();
-				}
-				else{
-					file_list.handle_mouse_click();
-				}
-				buttons_refresh();
-			};
-			case _:
-		});
-
-		game.input.on_released.add(button -> switch button {
-			case MOUSE_LEFT: {
-				if(game.input.mouse_position.x > bounds_files.x + bounds_files.width){
-					ui.handle_mouse_release();
-				}
-				else{
-					file_list.ui.handle_mouse_release();
-				}
-			};
-			case _:
-		});
-
-		game.input.on_mouse_move.add(mouse_position -> {
-			ui.handle_mouse_moved(mouse_position);
-			file_list.ui.handle_mouse_moved(mouse_position);
-		});
+		file_list = new FileList(game.graphics, bounds_main, file_name -> file_set_selected(file_name));
 
 		var gap = 10;
-		var width_button = Std.int(font.width_character * 10);
-		var height_button = font.height_model + gap;
+		var width_button = Std.int(text.font.width_character * 10);
+		var height_button = text.font.height_model + gap;
 		var x_button = bounds.width - width_button - gap;
-
-		var add_button:(Button, Action) -> stone.ui.Components.Button = (button_key, action) -> {
-			var button = ui.make_button(
-				{
-					// on_hover: on_hover,
-					// on_highlight: on_highlight,
-					// on_erase: on_erase,
-					on_click: component ->  action.on_pressed()
-				},
-				action.name,
-				Theme.fg_ui_component,
-				Theme.bg_ui_component
-			);
-			actions[button_key] = action;
-			return button;
-		}
-
-		actions = [
-			// KEY_UP => {
-			// 	on_pressed: set_selected_path(-1),
-			// 	name: "SELECT PREVIOUS"
-			// },
-
-			// KEY_DOWN => {
-			// 	on_pressed: set_selected_path(1),
-			// 	name: "SELECT NEXT"
-			// },
-
-		];
 
 		add_button(KEY_N, {
 			on_pressed: () -> {
@@ -183,7 +96,6 @@ class FileStorageScene extends Scene {
 					var graphics:Graphics = cast game.graphics;
 					graphics.display_add(display_hud);
 
-					var hud_graphics = new Graphics(display_hud, hud_bounds);
 					var file = game.storage.file_load(path_file_selected);
 					var models = Deserialize.parse_file_contents(file.content);
 					if(models == null){
@@ -191,7 +103,7 @@ class FileStorageScene extends Scene {
 							models: []
 						}
 					}
-					var init_scene:Game->Scene = game -> new DesignerScene(hud_graphics, game, hud_bounds, Theme.bg_scene, models, file.name);
+					var init_scene:Game->Scene = game -> new DesignerScene(game, hud_bounds, Theme.bg_scene, models, file.name);
 					game.scene_change(init_scene);
 				}
 			},
@@ -207,8 +119,43 @@ class FileStorageScene extends Scene {
 		list_files();
 	}
 
-	var file_selected_buttons:Array<stone.ui.Components.Button>;
-	function buttons_refresh(){
+	function file_set_selected(path_file:String) {
+		path_file_selected = path_file;
+	}
+
+	function list_files() {
+		var paths = game.storage.file_paths();
+		file_list.list_files(paths);
+		ui_refresh();
+	}
+
+	override public function draw() {
+		super.draw();
+		file_list.draw();
+	}
+
+	override public function close() {
+		super.close();
+		file_list.close();
+	}
+
+	override function mouse_press_main() {
+		// super.mouse_press_main();
+		file_list.handle_mouse_click();
+	}
+
+	override function mouse_release_main() {
+		// super.mouse_release_main();
+		file_list.ui.handle_mouse_release();
+	}
+
+	override function mouse_moved(mouse_position:Vector) {
+		super.mouse_moved(mouse_position);
+		file_list.ui.handle_mouse_moved(mouse_position);
+	}
+
+	override function ui_refresh() {
+		// super.ui_refresh();
 		var file_is_selected = path_file_selected.length > 0;
 		@:privateAccess
 		for (clicker in ui.components.clickers) {
@@ -223,37 +170,15 @@ class FileStorageScene extends Scene {
 			}
 		}
 	}
-
-	function file_set_selected(path_file:String) {
-		path_file_selected = path_file;
-	}
-
-	function list_files() {
-		var paths = game.storage.file_paths();
-		file_list.list_files(paths);
-		buttons_refresh();
-	}
-
-	public function update(elapsed_seconds:Float) {
-	}
-
-	public function draw() {
-		text.draw();
-	}
-
-	public function close() {
-		ui.clear();
-	}
 }
 
 class FileList{
 	public var ui(default, null):Ui;
 	var on_file_select:String->Void;
 	var labels:Array<Label> = [];
-	public function new(graphics:GraphicsAbstract, text:Text, bounds_file_list:RectangleGeometry, on_file_select:String->Void){
+	public function new(graphics:GraphicsAbstract, bounds_file_list:RectangleGeometry, on_file_select:String->Void){
 		ui = new Ui(
 			graphics,
-			text,
 			bounds_file_list,
 			{
 				y: 0,
@@ -263,6 +188,14 @@ class FileList{
 			}
 		);
 		this.on_file_select = on_file_select;
+	}
+
+	public function draw(){
+		ui.draw();
+	}
+
+	public function close(){
+		ui.clear();
 	}
 
 	public function list_files(file_names:Array<String>) {
