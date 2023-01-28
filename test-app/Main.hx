@@ -95,6 +95,10 @@ class Main extends Application {
 				var file = Deserialize.parse_file_contents(file_latest.content);
 				var hud_graphics = new Graphics(display_hud, viewport_window);
 				init_scene = game -> new DesignerScene(hud_graphics, game, viewport_window, Theme.bg_scene, file, file_name);
+
+				#if testoverview
+				init_scene = game -> new Overview(implementation_graphics, game, viewport_window, Theme.bg_scene, file);
+				#end
 			}
 		}
 		

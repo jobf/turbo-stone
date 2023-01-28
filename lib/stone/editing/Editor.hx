@@ -6,6 +6,8 @@ import stone.core.Engine;
 import stone.graphics.implementation.Graphics;
 import haxe.ds.ArraySort;
 
+using stone.editing.Editor.GraphicsExtensions;
+
 class EditorTranslation {
 	public var bounds_view:RectangleGeometry;
 
@@ -54,8 +56,8 @@ class EditorTranslation {
 		}
 
 		var offset_point:Vector = {
-			x: transformed_point.x + bounds_width_half,
-			y: transformed_point.y + bounds_height_half
+			x: transformed_point.x + bounds_width_half + bounds_view.x,
+			y: transformed_point.y + bounds_height_half  + bounds_view.y
 		}
 
 		return offset_point;
@@ -97,21 +99,7 @@ class Designer {
 		this.size_segment = Std.int(size_segment * 0.5);
 		this.size_segment_half = -Std.int(size_segment * 0.5);
 	}
-
-	function map_figure(model:FigureModel):Figure {
-		var convert_line:LineModel->LineModel = line -> {
-			from: translation.model_to_view_point(line.from),
-			to: translation.model_to_view_point(line.to)
-		}
-
-		trace('drawing model with ${model.lines.length} lines');
-
-		return {
-			model: model.lines,
-			lines: graphics.model_to_lines(model.lines.map(line -> convert_line(line)), Theme.drawing_lines)
-		}
-	}
-
+	
 	function line_under_cursor_(position_cursor:Vector):Null<AbstractLine> {
 		for (line in figure.lines) {
 			var overlaps:Bool = position_cursor.line_overlaps_point(line.point_from, line.point_to);
@@ -177,7 +165,7 @@ class Designer {
 				return 1;
 			return 0;
 		});
-		figure = map_figure(file.models[model_index]);
+		figure = graphics.map_figure(file.models[model_index], translation);
 	}
 
 	function erase_figure_graphics() {
@@ -201,7 +189,7 @@ class Designer {
 		model_index = index_next;
 		trace('show ${model_name()}');
 
-		figure = map_figure(file.models[model_index]);
+		figure = graphics.map_figure(file.models[model_index], translation);
 	}
 
 	public function add_new_figure() {
@@ -214,7 +202,7 @@ class Designer {
 		model_index = file.models.length - 1;
 		trace('new figure $model_index');
 
-		figure = map_figure(file.models[model_index]);
+		figure = graphics.map_figure(file.models[model_index], translation);
 	}
 
 	var line_buffer:Array<LineModel>;
@@ -230,14 +218,14 @@ class Designer {
 				file.models[model_index].lines.push(line);
 			}
 			erase_figure_graphics();
-			figure = map_figure(file.models[model_index]);
+			figure = graphics.map_figure(file.models[model_index], translation);
 		}
 	}
 
 	public function lines_remove() {
 		erase_figure_graphics();
 		file.models[model_index].lines = [];
-		figure = map_figure(file.models[model_index]);
+		figure = graphics.map_figure(file.models[model_index], translation);
 	}
 
 	public function line_erase(line:AbstractLine) {
@@ -306,5 +294,21 @@ class Figure {
 
 	public function line_newest():AbstractLine {
 		return lines[lines.length - 1];
+	}
+}
+
+class GraphicsExtensions{
+	public static function map_figure(graphics:GraphicsAbstract, model:FigureModel, translation:EditorTranslation):Figure {
+		var convert_line:LineModel->LineModel = line -> {
+			from: translation.model_to_view_point(line.from),
+			to: translation.model_to_view_point(line.to)
+		}
+
+		trace('drawing model with ${model.lines.length} lines');
+
+		return {
+			model: model.lines,
+			lines: graphics.model_to_lines(model.lines.map(line -> convert_line(line)), Theme.drawing_lines)
+		}
 	}
 }
