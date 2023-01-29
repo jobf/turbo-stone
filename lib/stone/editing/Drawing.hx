@@ -53,6 +53,7 @@ class Drawing{
 			var line =  make_line(from.x, from.y, to.x, to.y, color);
 			lines.push(line);
 		}
+		draw();
 	}
 
 	function translate(line_proto:LineModel, line_drawing:AbstractLine, rotation_sin:Float, rotation_cos:Float){

@@ -18,17 +18,17 @@ class LoadingScene extends Scene {
 	}
 
 	public function init() {
-		var font = font_load_embedded();
-		text = new Text(font, game.graphics);
-		test = text.word_make(0, 200, "LOADING . . .", Theme.drawing_lines, Std.int(bounds.width * 0.5));
+		text = new Text(font_load_embedded(), game.graphics_layer_init());
+		test = text.word_make(Std.int(bounds.width * 0.5), 200, "LOADING . . .", Theme.drawing_lines, bounds.width);
 	}
 
 	public function update(elapsed_seconds:Float) {}
 
 	public function draw() {
-		text.draw();
+		// text.draw();
 	}
 
 	public function close() {
+		// test.erase();
 	}
 }

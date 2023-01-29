@@ -20,9 +20,7 @@ import stone.core.InputAbstract;
 using StringTools;
 
 class HudScene extends Scene {
-	var text:Text;
 	var ui:Ui;
-	var font:Font;
 	var actions:Map<Button, Action>;
 	var graphics_main:Graphics;
 	var graphics_hud:Graphics;
@@ -47,13 +45,8 @@ class HudScene extends Scene {
 			}
 		});
 
-		graphics_main = cast game.graphics;
-		var display_hud = new Display(bounds_viewport.x, bounds_viewport.y, bounds_viewport.width, bounds_viewport.height);
-		graphics_main.display_add(display_hud);
-		graphics_hud = new Graphics(display_hud, bounds_viewport);
-
-		text = new Text(font_load_embedded(24), game.graphics);
-
+		graphics_main = cast game.graphics_layer_init();
+		graphics_hud = cast game.graphics_layer_init();
 		
 		bounds_main = {
 			y: 0,
@@ -61,7 +54,7 @@ class HudScene extends Scene {
 			width: bounds.height,
 			height: bounds.height
 		}
-
+		
 		var width_components = Std.int(bounds.width - bounds.height);
 		
 		bounds_components = {
@@ -70,11 +63,11 @@ class HudScene extends Scene {
 			width: width_components,
 			height: bounds.height
 		}
-
+		
 		ui = new Ui(
-			graphics_hud,
-			bounds_components,
-			bounds_main
+			game.graphics_layer_init,
+			bounds_main,
+			bounds_components
 		);
 
 		game.input.on_pressed.add(button -> switch button {
@@ -107,7 +100,7 @@ class HudScene extends Scene {
 		});
 	}
 
-	function add_button(key:Button, action:Action):stone.ui.Components.Button {
+	function add_button(key:Button, action:Action, y_offset:Int=0):stone.ui.Components.Button {
 		actions[key] = action;
 		return ui.make_button(
 			{
@@ -118,44 +111,49 @@ class HudScene extends Scene {
 			},
 			action.name,
 			Theme.fg_ui_component,
-			Theme.bg_ui_component
+			Theme.bg_ui_component,
+			y_offset
 		);
 	}
 
 	public function init() {
 		// override me
-		add_button(KEY_H, {
-			on_pressed: () -> {
-				if(help == null){
-					var help_text = [for(pair in actions.keyValueIterator()) '${pair.key} : ${pair.value.name}'];
+		add_button(
+			KEY_H,
+			{
+				on_pressed: () -> {
+					if(help == null){
+						var help_text = [for(pair in actions.keyValueIterator()) '${pair.key} : ${pair.value.name}'];
 
-					help = ui.make_dialog(
-						help_text,
-						Theme.fg_ui_component,
-						Theme.bg_dialog
-					);
+						help = ui.make_dialog(
+							help_text,
+							Theme.fg_ui_component,
+							Theme.bg_dialog
+						);
 
-					help.on_erase.add(s -> {
-						help = null;
-					});
-				}
+						help.on_erase.add(s -> {
+							help = null;
+						});
+					}
+				},
+				name: "SECRETS"
 			},
-			name: "SECRETS"
-		});
+			604 // todo - better control over button y align?
+		);
 	}
 
 	public function update(elapsed_seconds:Float) {
 	}
 
 	public function draw() {
-		text.draw();
+		// text.draw();
 		ui.draw();
-		graphics_hud.draw();
+		// graphics_hud.draw();
 	}
 
 	public function close() {
 		ui.clear();
-		graphics_hud.close();
+		// graphics_hud.close();
 	}
 
 	function mouse_press_ui(){

@@ -17,14 +17,17 @@ class Graphics extends GraphicsAbstract {
 	var moon_buffer:Buffer<Sprite>;
 	var moon_program:Program;
 	var display:Display;
+	var graphics_layer_init:GraphicsConstructor;
 
 	public var buffer_lines(default, null):Buffer<Line>;
 
 	var buffer_fills:Buffer<Rectangle>;
 
-	public function new(display:Display, viewport_bounds:RectangleGeometry) {
+	public function new(display:Display, viewport_bounds:RectangleGeometry, graphics_layer_init:GraphicsConstructor) {
 		super(viewport_bounds);
 		this.display = display;
+		this.graphics_layer_init = graphics_layer_init;
+
 		buffer_fills = new Buffer<Rectangle>(256, 256, true);
 		var rectangleProgram = new Program(buffer_fills);
 		display.addProgram(rectangleProgram);
@@ -50,25 +53,37 @@ class Graphics extends GraphicsAbstract {
 	}
 
 	public function make_line(from_x:Float, from_y:Float, to_x:Float, to_y:Float, color:RGBA):AbstractLine {
-		var element = new Line(from_x, from_y, 1, 1, 0, cast color);
-		element.timeAStart = 0.0;
-		element.timeADuration = 3.0;
-		buffer_lines.addElement(element);
+		var element_line = new Line(from_x, from_y, 1, 1, 0, cast color);
+		buffer_lines.addElement(element_line);
+
+		var element_line_head = make_rectangle(Std.int(from_x), Std.int(from_y), size_cap, size_cap, color);
+		var element_line_tail = make_rectangle(Std.int(from_x), Std.int(from_y), size_cap, size_cap, color);
+
+		element_line.timeAStart = 0.0;
+		element_line.timeADuration = 3.0;
 
 		var line_clean_up:PeoteLine -> Void = line -> {
 			buffer_lines.removeElement(line.element);
 			lines.remove(line);
 		}
 
-		lines.push(new PeoteLine({
-			x: from_x,
-			y: from_y
-		}, {
-			x: to_x,
-			y: to_y
-		},
-			element, line_clean_up, make_rectangle(Std.int(from_x), Std.int(from_y), size_cap, size_cap, color),
-			make_rectangle(Std.int(from_x), Std.int(from_y), size_cap, size_cap, color), cast color));
+		lines.push(
+			new PeoteLine(
+				{
+					x: from_x,
+					y: from_y
+				}, {
+					x: to_x,
+					y: to_y
+				},
+				element_line,
+				line_clean_up,
+				element_line_head,
+				element_line_tail,
+				cast color
+			)
+		);
+
 		// trace('new line $from_x $from_y $to_x $to_y');
 		return lines[lines.length - 1];
 	}
@@ -129,11 +144,17 @@ class Graphics extends GraphicsAbstract {
 	}
 
 	public function close() {
-		fills.clear(fill -> fill.erase());
-		lines.clear(line -> line.erase());
+		buffer_fills.clear(true, true);
+		buffer_lines.clear(true, true);
+		// fills.clear(fill -> fill.erase());
+		// lines.clear(line -> line.erase());
 	}
 
 	public function display_add(display_additional:Display) {
 		display.peoteView.addDisplay(display_additional);
+	}
+
+	public function graphics_new_layer():GraphicsAbstract{
+		return graphics_layer_init();
 	}
 }

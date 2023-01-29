@@ -27,7 +27,7 @@ class Main extends Application {
 	var elapsed_seconds:Float = 0;
 	var game:Game;
 
-	var implementation_graphics:Graphics;
+	// var implementation_graphics:Graphics;
 	var implementation_input:Input;
 
 	override function onWindowCreate() {
@@ -43,7 +43,7 @@ class Main extends Application {
 				throw("Sorry, only works with OpenGL.");
 		}
 	}
-
+	var init_layer :GraphicsConstructor;
 	public function init(window:Window) {
 		var viewport_window:RectangleGeometry = {
 			y: 0,
@@ -53,17 +53,17 @@ class Main extends Application {
 		}
 
 		peoteview = new PeoteView(window);
-		display_main = new Display(0, 0, 800, 640);
-		peoteview.addDisplay(display_main);
+		// display_main = new Display(0, 0, 800, 640);
+		// peoteview.addDisplay(display_main);
 
-		display_hud = new Display(0, 0, window.width, window.height);
-		peoteview.addDisplay(display_hud);
+		// display_hud = new Display(0, 0, window.width, window.height);
+		// peoteview.addDisplay(display_hud);
 
-		implementation_graphics = new Graphics(display_main, viewport_window);
+		// implementation_graphics = new Graphics(display_main, viewport_window);
 		implementation_input = new Input(window);
-		implementation_graphics.set_color(Theme.bg_scene);
+		// implementation_graphics.set_color(Theme.bg_scene);
 		
-
+		
 		var storage = new Storage(window);
 		var file_list = storage.file_paths();
 		
@@ -82,8 +82,9 @@ class Main extends Application {
 		else{
 			trace(file_list[0]);
 		}
-
+		
 		var init_scene:Game->Scene;
+
 		if(file_list.length > 0){
 			var index_end_of_list = file_list.length - 1;
 			var file_name = file_list[index_end_of_list];
@@ -110,7 +111,13 @@ class Main extends Application {
 
 		var init_scene_loader:Game->Scene = game -> new LoadingScene(preloader, init_scene, game, viewport_window, Theme.bg_scene);
 
-		game = new Game(init_scene_loader, implementation_graphics, implementation_input, storage);
+		init_layer  = () -> {
+			var display = new Display(0, 0, 800, 640);
+			peoteview.addDisplay(display);
+			return new Graphics(display, viewport_window, init_layer);
+		}
+
+		game = new Game(init_scene_loader, init_layer, implementation_input, storage);
 
 		isReady = true;
 	}

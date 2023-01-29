@@ -70,7 +70,7 @@ class DesignerScene extends HudScene {
 			}
 		}
 
-		designer = new Designer(size_segment, game.graphics, bounds_main, file);
+		designer = new Designer(size_segment, graphics_main, bounds_main, file);
 
 		ui_setup();
 
@@ -90,16 +90,16 @@ class DesignerScene extends HudScene {
 
 		for (x in 0...Std.int(bounds_main.width / size_segment) + 1) {
 			var x_ = Std.int(x * size_segment);
-			lines_grid.push(game.graphics.make_line(x_, 0, x_, bounds_main.height, Theme.grid_lines));
+			lines_grid.push(graphics_main.make_line(x_, 0, x_, bounds_main.height, Theme.grid_lines));
 		}
 
 		for (y in 0...Std.int(bounds_main.height / size_segment)) {
 			var y_ = Std.int(y * size_segment);
-			lines_grid.push(game.graphics.make_line(0, y_, bounds_main.width, y_, Theme.grid_lines));
+			lines_grid.push(graphics_main.make_line(0, y_, bounds_main.width, y_, Theme.grid_lines));
 		}
 
-		lines_grid.push(game.graphics.make_line(0, grid_center_y, bounds_main.width, grid_center_y, Theme.grid_lines_center));
-		lines_grid.push(game.graphics.make_line(grid_center_x, 0, grid_center_x, bounds_main.height, Theme.grid_lines_center));
+		lines_grid.push(graphics_main.make_line(0, grid_center_y, bounds_main.width, grid_center_y, Theme.grid_lines_center));
+		lines_grid.push(graphics_main.make_line(grid_center_x, 0, grid_center_x, bounds_main.height, Theme.grid_lines_center));
 	}
 
 	override public function update(elapsed_seconds:Float) {
@@ -111,7 +111,8 @@ class DesignerScene extends HudScene {
 		if(label_model != null){
 			label_model.erase();
 		}
-		label_model = text.word_make(720, 20, label_text, Theme.drawing_lines);
+		var width_container = bounds_components.width;
+		label_model = ui.text.word_make(720, 20, label_text, Theme.drawing_lines, width_container);
 	}
 
 	function handle_mouse_press_left() {
@@ -127,11 +128,7 @@ class DesignerScene extends HudScene {
 		designer.start_drawing_line(mouse_position);
 	}
 
-	function handle_mouse_release_left() {
-		if(designer.point_is_outside_grid(mouse_position)){
-			ui.handle_mouse_release();
-		}
-
+	override function mouse_release_main() {
 		designer.stop_drawing_line(mouse_position);
 	}
 
@@ -143,12 +140,12 @@ class DesignerScene extends HudScene {
 	}
 
 	function ui_setup() {
-		var color:RGBA = Theme.drawing_lines;
+		// var color:RGBA = Theme.drawing_lines;
 		var gap = 10;
-		var width_button = Std.int(text.font.width_character * 10);
-		var height_button = text.font.height_model + gap;
-		var x_button = bounds.width - width_button - gap;
-		var y_button = gap * 5;
+		// var width_button = Std.int(text.font.width_character * 10);
+		// var height_button = text.font.height_model + gap;
+		// var x_button = bounds.width - width_button - gap;
+		// var y_button = gap * 5;
 
 		var add_space:Void->Void = () -> ui.y_offset_increase(gap * 2);
 
