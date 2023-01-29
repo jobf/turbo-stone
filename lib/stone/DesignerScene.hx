@@ -128,11 +128,7 @@ class DesignerScene extends HudScene {
 		designer.start_drawing_line(mouse_position);
 	}
 
-	function handle_mouse_release_left() {
-		if(designer.point_is_outside_grid(mouse_position)){
-			ui.handle_mouse_release();
-		}
-
+	override function mouse_release_main() {
 		designer.stop_drawing_line(mouse_position);
 	}
 
