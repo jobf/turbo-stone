@@ -1,7 +1,6 @@
 import stone.core.Models.Serialize;
 import stone.Theme;
 import stone.core.Models.Deserialize;
-import stone.core.Models.FileModel;
 import stone.DesignerScene;
 import stone.core.Storage;
 import peote.view.Display;
@@ -9,7 +8,6 @@ import peote.view.PeoteView;
 import stone.core.Engine;
 import stone.input.Input;
 import stone.LoadingScene;
-import stone.FileStorageScene;
 import stone.graphics.implementation.Graphics;
 import lime.graphics.RenderContext;
 import haxe.CallStack;
@@ -89,15 +87,14 @@ class Main extends Application {
 			var index_end_of_list = file_list.length - 1;
 			var file_name = file_list[index_end_of_list];
 			var file_latest = storage.file_load(file_name);
-			trace(file_latest.content);
+			// trace(file_latest.content);
 			var has_valid_file = file_latest != null && file_latest.content.length > 0;
 			if(has_valid_file){
 				var file = Deserialize.parse_file_contents(file_latest.content);
-				var hud_graphics = new Graphics(display_hud, viewport_window);
-				init_scene = game -> new DesignerScene(hud_graphics, game, viewport_window, Theme.bg_scene, file, file_name);
+				init_scene = game -> new DesignerScene(game, viewport_window, Theme.bg_scene, file, file_name);
 
 				#if testoverview
-				init_scene = game -> new Overview(implementation_graphics, game, viewport_window, Theme.bg_scene, file);
+				init_scene = game -> new Overview(game, viewport_window, Theme.bg_scene, file);
 				#end
 			}
 		}

@@ -17,59 +17,26 @@ import stone.input.Controller;
 import stone.util.EnumMacros;
 import stone.text.CodePage;
 
-class DesignerScene extends Scene {
+class DesignerScene extends HudScene {
 	var grid_center_x:Int;
 	var grid_center_y:Int;
 	var mouse_position:Vector;
 	var designer:Designer;
 	var divisions_total:Int = 8;
-	var bounds_components:RectangleGeometry;
-	var bounds_grid:RectangleGeometry;
-	var graphics_hud:Graphics;
 	var file:FileModel;
 	var file_name:String;
-	var font:Font;
-	var text:Text;
-	var ui:Ui;
 	var label_model:Word;
-	var help:Dialog;
 
-	public function new(graphics_hud:Graphics, game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel, file_name:String) {
+	public function new(game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel, file_name:String) {
 		super(game, bounds, color);
-		this.graphics_hud = graphics_hud;
 		this.file = file;
 		this.file_name = file_name;
 	}
 
-	public function init() {
-		font = font_load_embedded(18);
-		text = new Text(font, graphics_hud);
-
-		var width_button = Std.int(font.width_model * 9);
-		var margin_top = font.height_model * 2;
-
-		bounds_components = {
-			y: margin_top,
-			x: bounds.width - width_button,
-			width: width_button,
-			height: bounds.height
-		}
-
-		bounds_grid = {
-			y: 0,
-			x: 0,
-			width: bounds.width - width_button,
-			height: bounds.height
-		}
-
-		ui = new Ui(
-			graphics_hud,
-			bounds_components,
-			bounds_grid
-		);
+	override public function init() {
+		super.init();
 
 		game.input.on_mouse_move.add(mouse_position -> {
-			ui.handle_mouse_moved(mouse_position);
 			if(designer.point_is_outside_grid(mouse_position)){
 				game.input.mouse_cursor_show();
 			}
@@ -84,14 +51,9 @@ class DesignerScene extends Scene {
 			case _:
 		});
 
-		game.input.on_released.add(button -> switch button {
-			case MOUSE_LEFT: handle_mouse_release_left();
-			case _:
-		});
-
 		mouse_position = game.input.mouse_position;
-		grid_center_x = Std.int(bounds_grid.width * 0.5);
-		grid_center_y = Std.int(bounds_grid.width * 0.5);
+		grid_center_x = Std.int(bounds_main.width * 0.5);
+		grid_center_y = Std.int(bounds_main.width * 0.5);
 
 		var size_segment = divisions_calculate_size_segment();
 		grid_draw(size_segment);
@@ -108,7 +70,7 @@ class DesignerScene extends Scene {
 			}
 		}
 
-		designer = new Designer(size_segment, game.graphics, bounds_grid, file);
+		designer = new Designer(size_segment, game.graphics, bounds_main, file);
 
 		ui_setup();
 
@@ -126,32 +88,22 @@ class DesignerScene extends Scene {
 			}
 		}
 
-		for (x in 0...Std.int(bounds_grid.width / size_segment) + 1) {
+		for (x in 0...Std.int(bounds_main.width / size_segment) + 1) {
 			var x_ = Std.int(x * size_segment);
-			lines_grid.push(game.graphics.make_line(x_, 0, x_, bounds_grid.height, Theme.grid_lines));
+			lines_grid.push(game.graphics.make_line(x_, 0, x_, bounds_main.height, Theme.grid_lines));
 		}
 
-		for (y in 0...Std.int(bounds_grid.height / size_segment)) {
+		for (y in 0...Std.int(bounds_main.height / size_segment)) {
 			var y_ = Std.int(y * size_segment);
-			lines_grid.push(game.graphics.make_line(0, y_, bounds_grid.width, y_, Theme.grid_lines));
+			lines_grid.push(game.graphics.make_line(0, y_, bounds_main.width, y_, Theme.grid_lines));
 		}
 
-		lines_grid.push(game.graphics.make_line(0, grid_center_y, bounds_grid.width, grid_center_y, Theme.grid_lines_center));
-		lines_grid.push(game.graphics.make_line(grid_center_x, 0, grid_center_x, bounds_grid.height, Theme.grid_lines_center));
+		lines_grid.push(game.graphics.make_line(0, grid_center_y, bounds_main.width, grid_center_y, Theme.grid_lines_center));
+		lines_grid.push(game.graphics.make_line(grid_center_x, 0, grid_center_x, bounds_main.height, Theme.grid_lines_center));
 	}
 
-	public function update(elapsed_seconds:Float) {
+	override public function update(elapsed_seconds:Float) {
 		designer.update_mouse_pointer(mouse_position);
-	}
-
-	public function draw() {
-		text.draw();
-		graphics_hud.draw();
-	}
-
-	public function close() {
-		ui.clear();
-		graphics_hud.close();
 	}
 
 	function label_update(){
@@ -191,15 +143,6 @@ class DesignerScene extends Scene {
 	}
 
 	function ui_setup() {
-	
-		var actions:Map<stone.core.Button, Action> = [
-		
-			KEY_D => {
-				on_pressed: () -> delete_line_under_mouse(),
-				name: "DELETE"
-			}
-		];
-
 		var color:RGBA = Theme.drawing_lines;
 		var gap = 10;
 		var width_button = Std.int(text.font.width_character * 10);
@@ -207,26 +150,15 @@ class DesignerScene extends Scene {
 		var x_button = bounds.width - width_button - gap;
 		var y_button = gap * 5;
 
-		var add_button:(stone.core.Button, Action) -> Void = (button_key, action) -> {
-			var button = ui.make_button(
-				{
-					// on_hover: on_hover,
-					// on_highlight: on_highlight,
-					// on_erase: on_erase,
-					on_click: component -> action.on_pressed()
-				},
-				action.name,
-				Theme.fg_ui_component,
-				Theme.bg_ui_component
-			);
-
-			// button.on_click = () -> action.on_pressed();
-			actions[button_key] = action;
-			y_button += gap + text.font.height_model + gap;
-		}
-
-		// var add_space:Void->Void = () -> y_button += gap * 2;
 		var add_space:Void->Void = () -> ui.y_offset_increase(gap * 2);
+
+		add_button(KEY_D, {
+			on_pressed: () -> {
+				delete_line_under_mouse();
+			},
+			name: "DELETE"
+		});
+
 
 		add_button(KEY_LEFT, {
 			on_pressed: () -> {
@@ -314,27 +246,6 @@ class DesignerScene extends Scene {
 			name: "FILES"
 		});
 
-		add_space();
-		
-		add_button(KEY_H, {
-			on_pressed: () -> {
-				if(help == null){
-					var help_text = [for(pair in actions.keyValueIterator()) '${pair.key} : ${pair.value.name}'];
-
-					help = ui.make_dialog(
-						help_text,
-						Theme.fg_ui_component,
-						Theme.bg_dialog
-					);
-
-					help.on_erase.add(s -> {
-						help = null;
-					});
-				}
-			},
-			name: "SECRETS"
-		});
-
 		game.input.on_pressed.add(button -> {
 			if (actions.exists(button)) {
 				actions[button].on_pressed();
@@ -351,7 +262,7 @@ class DesignerScene extends Scene {
 	}
 
 	function divisions_calculate_size_segment() {
-		return Std.int(bounds_grid.height / divisions_total);
+		return Std.int(bounds_main.height / divisions_total);
 	}
 
 	function grid_set_granularity(direction:Int) {
