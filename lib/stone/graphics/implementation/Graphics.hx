@@ -132,8 +132,10 @@ class Graphics extends GraphicsAbstract {
 	}
 
 	public function close() {
-		fills.clear(fill -> fill.erase());
-		lines.clear(line -> line.erase());
+		buffer_fills.clear(true, true);
+		buffer_lines.clear(true, true);
+		// fills.clear(fill -> fill.erase());
+		// lines.clear(line -> line.erase());
 	}
 
 	public function display_add(display_additional:Display) {
