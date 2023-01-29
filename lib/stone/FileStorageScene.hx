@@ -32,13 +32,12 @@ class FileStorageScene extends HudScene {
 		game.storage.on_drop_file.add(file_json -> list_files());
 		path_file_selected = "";
 
-		file_list = new FileList(game.graphics_layer_init, bounds_main, file_name -> file_set_selected(file_name));
-
-		var gap = 10;
-		var width_button = Std.int(ui.text.font.width_character * 10);
-		var height_button = ui.text.font.height_model + gap;
-		var x_button = bounds.width - width_button - gap;
-
+		file_list = new FileList(
+			game.graphics_layer_init,
+			bounds_main,
+			file_name -> file_set_selected(file_name)
+		);
+	
 		add_button(KEY_N, {
 			on_pressed: () -> {
 				var file:FileJSON = game.storage.file_new("");
@@ -86,12 +85,7 @@ class FileStorageScene extends HudScene {
 		var button_edit = add_button(KEY_E, {
 			on_pressed: () -> {
 				if (path_file_selected.length > 0) {
-					var hud_bounds:RectangleGeometry = {
-						x: 0,
-						y: 0,
-						width: bounds.width,
-						height: bounds.height
-					}
+
 
 					var file = game.storage.file_load(path_file_selected);
 					var models = Deserialize.parse_file_contents(file.content);
@@ -100,7 +94,7 @@ class FileStorageScene extends HudScene {
 							models: []
 						}
 					}
-					var init_scene:Game->Scene = game -> new DesignerScene(game, hud_bounds, Theme.bg_scene, models, file.name);
+					var init_scene:Game->Scene = game -> new DesignerScene(game, bounds, Theme.bg_scene, models, file.name);
 					game.scene_change(init_scene);
 				}
 			},
@@ -173,16 +167,12 @@ class FileList{
 	public var ui(default, null):Ui;
 	var on_file_select:String->Void;
 	var labels:Array<Label> = [];
-	public function new(graphics:GraphicsConstructor, bounds_file_list:RectangleGeometry, on_file_select:String->Void){
+	public function new(graphics:GraphicsConstructor, bounds_main:RectangleGeometry,  on_file_select:String->Void){
+		// file list only has components listed in the main area, so bounds_component is actually bounds_main
 		ui = new Ui(
 			graphics,
-			bounds_file_list,
-			{
-				y: 0,
-				x: 0,
-				width: bounds_file_list.width,
-				height: bounds_file_list.height
-			}
+			bounds_main,
+			bounds_main
 		);
 		this.on_file_select = on_file_select;
 	}
