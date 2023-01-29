@@ -47,13 +47,10 @@ class HudScene extends Scene {
 			}
 		});
 
-		graphics_main = cast game.graphics;
-		var display_hud = new Display(bounds_viewport.x, bounds_viewport.y, bounds_viewport.width, bounds_viewport.height);
-		graphics_main.display_add(display_hud);
-		graphics_hud = new Graphics(display_hud, bounds_viewport);
-
-		text = new Text(font_load_embedded(24), game.graphics);
-
+		graphics_main = cast game.graphics_layer_init();
+		graphics_hud = cast game.graphics_layer_init();
+		var graphics_hud_dialog = game.graphics_layer_init();
+		text = new Text(font_load_embedded(24), game.graphics_layer_init());
 		
 		bounds_main = {
 			y: 0,
@@ -73,6 +70,7 @@ class HudScene extends Scene {
 
 		ui = new Ui(
 			graphics_hud,
+			graphics_hud_dialog,
 			bounds_components,
 			bounds_main
 		);
@@ -155,7 +153,7 @@ class HudScene extends Scene {
 
 	public function close() {
 		ui.clear();
-		graphics_hud.close();
+		// graphics_hud.close();
 	}
 
 	function mouse_press_ui(){

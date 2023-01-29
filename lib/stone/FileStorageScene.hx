@@ -32,7 +32,7 @@ class FileStorageScene extends HudScene {
 		game.storage.on_drop_file.add(file_json -> list_files());
 		path_file_selected = "";
 
-		file_list = new FileList(game.graphics, bounds_main, file_name -> file_set_selected(file_name));
+		file_list = new FileList(graphics_main, bounds_main, file_name -> file_set_selected(file_name));
 
 		var gap = 10;
 		var width_button = Std.int(text.font.width_character * 10);
@@ -92,9 +92,6 @@ class FileStorageScene extends HudScene {
 						width: bounds.width,
 						height: bounds.height
 					}
-					var display_hud = new Display(0, 0, hud_bounds.width, hud_bounds.height);
-					var graphics:Graphics = cast game.graphics;
-					graphics.display_add(display_hud);
 
 					var file = game.storage.file_load(path_file_selected);
 					var models = Deserialize.parse_file_contents(file.content);
@@ -179,6 +176,7 @@ class FileList{
 	public function new(graphics:GraphicsAbstract, bounds_file_list:RectangleGeometry, on_file_select:String->Void){
 		ui = new Ui(
 			graphics,
+			graphics, // can be same because it never uses dialog
 			bounds_file_list,
 			{
 				y: 0,

@@ -19,7 +19,7 @@ class LoadingScene extends Scene {
 
 	public function init() {
 		var font = font_load_embedded();
-		text = new Text(font, game.graphics);
+		text = new Text(font, game.graphics_layer_init());
 		test = text.word_make(0, 200, "LOADING . . .", Theme.drawing_lines, Std.int(bounds.width * 0.5));
 	}
 

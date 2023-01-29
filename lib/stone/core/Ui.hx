@@ -10,6 +10,8 @@ class Ui {
 	var dialog:Null<Dialog> = null;
 
 	var graphics:GraphicsAbstract;
+	var graphics_dialog:GraphicsAbstract;
+
 	var text:Text;
 	var components:ComponentsCollection;
 
@@ -21,9 +23,11 @@ class Ui {
 
 	var height_component:Int;
 	
-	public function new(graphics:GraphicsAbstract, bounds_components:RectangleGeometry, bounds_dialog:RectangleGeometry) {
+	public function new(graphics:GraphicsAbstract, graphics_dialog:GraphicsAbstract, bounds_components:RectangleGeometry, bounds_dialog:RectangleGeometry) {
 		this.graphics = graphics;
-		text = new Text(font_load_embedded(24), graphics);
+		this.graphics_dialog = graphics_dialog;
+
+		text = new Text(font_load_embedded(24), graphics_dialog);
 
 		height_component = Std.int(text.font.height_model * 1.5);
 		this.bounds_components = bounds_components;
@@ -99,7 +103,7 @@ class Ui {
 	public function make_dialog(lines_text:Array<String>, color_fg:RGBA, color_bg:RGBA, buttons:Array<ButtonModel>=null):Dialog {
 		if(dialog == null){
 			components.hide();
-			dialog = new Dialog(bounds_dialog, bounds_components, height_component, lines_text, color_fg, color_bg, graphics, text, buttons);
+			dialog = new Dialog(bounds_dialog, bounds_components, height_component, lines_text, color_fg, color_bg, graphics_dialog, text, buttons);
 			dialog.on_erase.add(s -> {
 				this.dialog = null;
 				components.show();

@@ -29,7 +29,7 @@ class Overview extends HudScene {
 		
 		var draw_central_lines = false;
 		
-		Grid.grid_draw(game.graphics.make_line, model_size, x_center, y_center, width_grid, height_grid, draw_central_lines);
+		Grid.grid_draw(graphics_main.make_line, model_size, x_center, y_center, width_grid, height_grid, draw_central_lines);
 
 		var model_bounds:RectangleGeometry = {
 			y: 0,
@@ -47,7 +47,7 @@ class Overview extends HudScene {
 			var index_model = total_columns * r;
 			for(i in 0...total_columns){
 				model_bounds.x = i * model_size;
-				game.graphics.map_figure(file.models[index_model], translation);
+				graphics_main.map_figure(file.models[index_model], translation);
 				index_model++;
 			}
 			model_bounds.x = 0;
