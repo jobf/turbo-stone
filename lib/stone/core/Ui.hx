@@ -4,15 +4,17 @@ import stone.text.Text;
 import stone.core.GraphicsAbstract;
 import stone.core.Engine;
 import stone.ui.Components;
+import stone.graphics.implementation.Graphics;
 
 class Ui {
 
 	var dialog:Null<Dialog> = null;
 
-	var graphics:GraphicsAbstract;
+	var graphics_main:GraphicsAbstract;
 	var graphics_dialog:GraphicsAbstract;
+	var graphics_text:GraphicsAbstract;
 
-	var text:Text;
+	public var text(default, null):Text;
 	var components:ComponentsCollection;
 
 	var x_mouse:Int;
@@ -22,21 +24,29 @@ class Ui {
 	var bounds_dialog:RectangleGeometry;
 
 	var height_component:Int;
-	
-	public function new(graphics:GraphicsAbstract, graphics_dialog:GraphicsAbstract, bounds_components:RectangleGeometry, bounds_dialog:RectangleGeometry) {
-		this.graphics = graphics;
-		this.graphics_dialog = graphics_dialog;
+	var graphics_new_layer:GraphicsConstructor;
 
-		text = new Text(font_load_embedded(24), graphics_dialog);
+	public function new(graphics_new_layer:GraphicsConstructor, bounds_components:RectangleGeometry, bounds_dialog:RectangleGeometry) {
+		this.graphics_new_layer = graphics_new_layer;
+		this.graphics_main = graphics_new_layer();
+		this.graphics_dialog = graphics_new_layer();
+		this.graphics_text = graphics_new_layer();
 
+		// var peote_graphics:Graphics = cast graphics;
+		// text = new Text(font_load_embedded(24), graphics_dialog);
+		text = new Text(font_load_embedded(24), graphics_text);
 		height_component = Std.int(text.font.height_model * 1.5);
 		this.bounds_components = bounds_components;
 		this.bounds_dialog = bounds_dialog;
-		this.components = new ComponentsCollection(graphics, text, bounds_components, bounds_dialog, height_component);
+		this.components = new ComponentsCollection(graphics_new_layer, bounds_components, bounds_dialog, height_component);
 	}
 
 	public function draw(){
+		// trace('dare');
 		text.draw();
+		if(dialog != null){
+			dialog.draw();
+		}
 	}
 
 	public function make_slider(interactions:Interactions, label:String, color_fg:RGBA, color_bg:RGBA):Slider {
@@ -103,7 +113,7 @@ class Ui {
 	public function make_dialog(lines_text:Array<String>, color_fg:RGBA, color_bg:RGBA, buttons:Array<ButtonModel>=null):Dialog {
 		if(dialog == null){
 			components.hide();
-			dialog = new Dialog(bounds_dialog, bounds_components, height_component, lines_text, color_fg, color_bg, graphics_dialog, text, buttons);
+			dialog = new Dialog(bounds_dialog, bounds_components, height_component, lines_text, color_fg, color_bg, graphics_new_layer, buttons);
 			dialog.on_erase.add(s -> {
 				this.dialog = null;
 				components.show();
@@ -174,11 +184,11 @@ class ComponentsCollection{
 
 	public var y_start_offset:Int = 0;
 
-	public function new(graphics:GraphicsAbstract, text:Text, bounds_components:RectangleGeometry, bounds_dialog:RectangleGeometry, height_component:Int, y_align_is_top:Bool=true){
+	public function new(graphics_new_layer:GraphicsConstructor, bounds_components:RectangleGeometry, bounds_dialog:RectangleGeometry, height_component:Int, y_align_is_top:Bool=true){
 		sliders = [];
 		clickers = [];
-		this.graphics = graphics;
-		this.text = text;
+		this.graphics = graphics_new_layer();
+		this.text =  new Text(font_load_embedded(24), graphics_new_layer());
 		this.bounds_components = bounds_components;
 		this.bounds_dialog = bounds_dialog;
 		this.height_component = height_component;

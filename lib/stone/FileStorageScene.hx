@@ -32,11 +32,11 @@ class FileStorageScene extends HudScene {
 		game.storage.on_drop_file.add(file_json -> list_files());
 		path_file_selected = "";
 
-		file_list = new FileList(graphics_main, bounds_main, file_name -> file_set_selected(file_name));
+		file_list = new FileList(game.graphics_layer_init, bounds_main, file_name -> file_set_selected(file_name));
 
 		var gap = 10;
-		var width_button = Std.int(text.font.width_character * 10);
-		var height_button = text.font.height_model + gap;
+		var width_button = Std.int(ui.text.font.width_character * 10);
+		var height_button = ui.text.font.height_model + gap;
 		var x_button = bounds.width - width_button - gap;
 
 		add_button(KEY_N, {
@@ -81,7 +81,7 @@ class FileStorageScene extends HudScene {
 			name: "EXPORT",
 		});
 
-		ui.y_offset_increase(text.font.height_model);
+		ui.y_offset_increase(ui.text.font.height_model);
 
 		var button_edit = add_button(KEY_E, {
 			on_pressed: () -> {
@@ -173,10 +173,9 @@ class FileList{
 	public var ui(default, null):Ui;
 	var on_file_select:String->Void;
 	var labels:Array<Label> = [];
-	public function new(graphics:GraphicsAbstract, bounds_file_list:RectangleGeometry, on_file_select:String->Void){
+	public function new(graphics:GraphicsConstructor, bounds_file_list:RectangleGeometry, on_file_select:String->Void){
 		ui = new Ui(
 			graphics,
-			graphics, // can be same because it never uses dialog
 			bounds_file_list,
 			{
 				y: 0,

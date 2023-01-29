@@ -11,14 +11,15 @@ class TestUi extends Scene {
 	public function init() {
 		font = font = font_load_embedded(24);
 
-		text = new Text(font, game.graphics);
+		// var ui_bg_graphics = game.graphics_layer_init();
+		var ui_fg_graphics = game.graphics_layer_init();
+		text = new Text(font, ui_fg_graphics);
 		
 		var width_button = Std.int(font.width_model * 9);
 		var height_button = Std.int(font.height_model * 1.5);
 		
 		ui = new Ui(
-			game.graphics,
-			text,
+			game.graphics_layer_init,
 			{
 				y: 0,
 				x: 0,

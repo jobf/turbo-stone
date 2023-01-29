@@ -17,14 +17,17 @@ class Graphics extends GraphicsAbstract {
 	var moon_buffer:Buffer<Sprite>;
 	var moon_program:Program;
 	var display:Display;
+	var graphics_layer_init:GraphicsConstructor;
 
 	public var buffer_lines(default, null):Buffer<Line>;
 
 	var buffer_fills:Buffer<Rectangle>;
 
-	public function new(display:Display, viewport_bounds:RectangleGeometry) {
+	public function new(display:Display, viewport_bounds:RectangleGeometry, graphics_layer_init:GraphicsConstructor) {
 		super(viewport_bounds);
 		this.display = display;
+		this.graphics_layer_init = graphics_layer_init;
+
 		buffer_fills = new Buffer<Rectangle>(256, 256, true);
 		var rectangleProgram = new Program(buffer_fills);
 		display.addProgram(rectangleProgram);
@@ -135,5 +138,9 @@ class Graphics extends GraphicsAbstract {
 
 	public function display_add(display_additional:Display) {
 		display.peoteView.addDisplay(display_additional);
+	}
+
+	public function graphics_new_layer():GraphicsAbstract{
+		return graphics_layer_init();
 	}
 }

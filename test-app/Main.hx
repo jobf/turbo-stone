@@ -27,7 +27,7 @@ class Main extends Application {
 	var elapsed_seconds:Float = 0;
 	var game:Game;
 
-	var implementation_graphics:Graphics;
+	// var implementation_graphics:Graphics;
 	var implementation_input:Input;
 
 	override function onWindowCreate() {
@@ -43,7 +43,7 @@ class Main extends Application {
 				throw("Sorry, only works with OpenGL.");
 		}
 	}
-
+	var init_layer :GraphicsConstructor;
 	public function init(window:Window) {
 		var viewport_window:RectangleGeometry = {
 			y: 0,
@@ -108,16 +108,16 @@ class Main extends Application {
 		#if testfiles
 		init_scene = game -> new FileStorageScene(game, viewport_window, Theme.bg_scene);
 		#end
-		init_scene = game -> new FileStorageScene(game, viewport_window, Theme.bg_scene);
+
 		var init_scene_loader:Game->Scene = game -> new LoadingScene(preloader, init_scene, game, viewport_window, Theme.bg_scene);
 
-		var init_layer :GraphicsConstructor = () -> {
+		init_layer  = () -> {
 			var display = new Display(0, 0, 800, 640);
 			peoteview.addDisplay(display);
-			return new Graphics(display, viewport_window);
+			return new Graphics(display, viewport_window, init_layer);
 		}
 
-		game = new Game(init_scene_loader, init_layer,implementation_input, storage);
+		game = new Game(init_scene_loader, init_layer, implementation_input, storage);
 
 		isReady = true;
 	}

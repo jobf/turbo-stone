@@ -246,10 +246,13 @@ class Dialog {
 
 	public var on_erase(default, null):Event<String>;
 
-	public function new(bounds_dialog:RectangleGeometry, bounds_components:RectangleGeometry, height_component:Int, lines_text:Array<String>, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text, actions:Array<ButtonModel>=null) {
+	public function new(bounds_dialog:RectangleGeometry, bounds_components:RectangleGeometry, height_component:Int, lines_text:Array<String>, color_fg:RGBA, color_bg:RGBA, graphics_layer_init:GraphicsConstructor, actions:Array<ButtonModel>=null) {
 		on_erase = new Event();
 		var y_align_is_top = false;
-			components= new ComponentsCollection(graphics, text, bounds_components, bounds_dialog, height_component, y_align_is_top);
+		var graphics_bg = graphics_layer_init();
+		var graphics_fg = graphics_layer_init();
+		var text = new Text(font_load_embedded(24), graphics_fg);
+			components= new ComponentsCollection(graphics_layer_init, bounds_components, bounds_dialog, height_component, y_align_is_top);
 		if(actions == null){
 			this.actions = [];
 		}
@@ -282,7 +285,7 @@ class Dialog {
 		var x_background = bounds_dialog.x + width_center;
 		var y_background = Std.int(bounds_dialog.y + height_center - (height_background_center * 0.5));
 
-		background = graphics.make_fill(
+		background = graphics_bg.make_fill(
 			x_background,
 			y_background,
 			width_background,
@@ -364,4 +367,6 @@ class Dialog {
 		on_erase.removeAll();
 	}
 
+	public function draw(){
+	}
 }

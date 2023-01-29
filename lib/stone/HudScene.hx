@@ -20,9 +20,9 @@ import stone.core.InputAbstract;
 using StringTools;
 
 class HudScene extends Scene {
-	var text:Text;
+	// var text:Text;
 	var ui:Ui;
-	var font:Font;
+	// var font:Font;
 	var actions:Map<Button, Action>;
 	var graphics_main:Graphics;
 	var graphics_hud:Graphics;
@@ -49,8 +49,7 @@ class HudScene extends Scene {
 
 		graphics_main = cast game.graphics_layer_init();
 		graphics_hud = cast game.graphics_layer_init();
-		var graphics_hud_dialog = game.graphics_layer_init();
-		text = new Text(font_load_embedded(24), game.graphics_layer_init());
+		// text = new Text(font_load_embedded(24), game.graphics_layer_init());
 		
 		bounds_main = {
 			y: 0,
@@ -58,7 +57,7 @@ class HudScene extends Scene {
 			width: bounds.height,
 			height: bounds.height
 		}
-
+		
 		var width_components = Std.int(bounds.width - bounds.height);
 		
 		bounds_components = {
@@ -67,10 +66,11 @@ class HudScene extends Scene {
 			width: width_components,
 			height: bounds.height
 		}
-
+		
+		// var graphics_hud_dialog = game.graphics_layer_init();
+		// var graphics_hud_dialog_text = game.graphics_layer_init();
 		ui = new Ui(
-			graphics_hud,
-			graphics_hud_dialog,
+			game.graphics_layer_init,
 			bounds_components,
 			bounds_main
 		);
@@ -146,9 +146,9 @@ class HudScene extends Scene {
 	}
 
 	public function draw() {
-		text.draw();
+		// text.draw();
 		ui.draw();
-		graphics_hud.draw();
+		// graphics_hud.draw();
 	}
 
 	public function close() {

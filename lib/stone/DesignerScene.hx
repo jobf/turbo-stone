@@ -111,7 +111,7 @@ class DesignerScene extends HudScene {
 		if(label_model != null){
 			label_model.erase();
 		}
-		label_model = text.word_make(720, 20, label_text, Theme.drawing_lines);
+		label_model = ui.text.word_make(720, 20, label_text, Theme.drawing_lines);
 	}
 
 	function handle_mouse_press_left() {
@@ -143,12 +143,12 @@ class DesignerScene extends HudScene {
 	}
 
 	function ui_setup() {
-		var color:RGBA = Theme.drawing_lines;
+		// var color:RGBA = Theme.drawing_lines;
 		var gap = 10;
-		var width_button = Std.int(text.font.width_character * 10);
-		var height_button = text.font.height_model + gap;
-		var x_button = bounds.width - width_button - gap;
-		var y_button = gap * 5;
+		// var width_button = Std.int(text.font.width_character * 10);
+		// var height_button = text.font.height_model + gap;
+		// var x_button = bounds.width - width_button - gap;
+		// var y_button = gap * 5;
 
 		var add_space:Void->Void = () -> ui.y_offset_increase(gap * 2);
 

@@ -56,13 +56,13 @@ class Text {
 		var width_label = text.length * font.width_character;
 		var width_label_center = width_label * 0.5;
 		var width_char_center = font.width_character * 0.5;
-		x = Std.int(x + x_center - width_label_center + width_char_center);
+		var x_word = Std.int(x + x_center - width_label_center + width_char_center);
 		var drawings:Array<Drawing> = [];
 		for (i in 0...text.length) {
 			var text_upper = text.toUpperCase();
 			var char_code = text_upper.charCodeAt(i);
-			// trace('code $char_code letter ${String.fromCharCode(char_code)}');
-			drawings.push(drawing_create(font.models[char_code], x + font.width_character * i, y, color));
+			var x_drawing = x + (font.width_character * i) - width_label;
+			drawings.push( drawing_create(font.models[char_code], x_drawing, y, color));
 		}
 
 		words.push({
