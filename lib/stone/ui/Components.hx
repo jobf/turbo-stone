@@ -24,8 +24,7 @@ class Label extends InteractiveComponent{
 		return is_toggled;
 	}
 	public function new(label:String, interactions:Interactions, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text) {
-		var x_label_centered = false;
-		super(label, interactions, geometry, color_fg, color_bg, graphics, text, x_label_centered,  0, true);
+		super(label, interactions, geometry, color_fg, color_bg, graphics, text, LEFT,  0, true);
 	}
 
 	override function click() {
@@ -47,8 +46,7 @@ class Toggle extends InteractiveComponent{
 		return is_toggled;
 	}
 	public function new(label:String, interactions:Interactions, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text, is_enabled_:Bool) {
-		var x_label_centered = false;
-		super(label, interactions, geometry, color_fg, color_bg, graphics, text, x_label_centered);
+		super(label, interactions, geometry, color_fg, color_bg, graphics, text, LEFT);
 		var width_track = text.font.width_character;
 		var y_track = geometry.y + Std.int(geometry.height * 0.5);
 		var x_track = Std.int(x_background + (geometry.width * 0.5) - (width_track + text.font.width_character));
@@ -77,10 +75,9 @@ class Slider extends InteractiveComponent{
 	public var on_move:Float->Void = f -> trace('on_move $f');
 
 	public function new(label:String, interactions:Interactions, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text) {
-		var x_label_centered = false;
 		var y_label_offset:Int = Std.int(text.font.height_model * 0.5);
 		geometry.height += text.font.height_model;
-		super(label, interactions, geometry, color_fg, color_bg, graphics, text, x_label_centered, -y_label_offset);
+		super(label, interactions, geometry, color_fg, color_bg, graphics, text, LEFT, -y_label_offset);
 		var width_track = geometry.width - (text.font.width_model);// * 2);
 		var y_track = geometry.y + Std.int(geometry.height * 0.5) + y_label_offset;
 		var x_track = Std.int(x_background + (geometry.width * 0.5) - (width_track + text.font.width_character));
@@ -140,7 +137,7 @@ class InteractiveComponent {
 	var y_background:Int;
 	var label:Word;
 	var is_enabled = true;
-	public function new(label:String, interactions:Interactions, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text, x_label_centered:Bool=true, y_label_offset:Int=0, alpha_idle_is_transparent:Bool=false) {
+	public function new(label:String, interactions:Interactions, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text, align:Align=CENTER, y_label_offset:Int=0, alpha_idle_is_transparent:Bool=false) {
 		this.interactions = interactions;
 
 		x_center = Std.int(geometry.width * 0.5);
@@ -158,12 +155,8 @@ class InteractiveComponent {
 		background.color.a = alpha_idle;
 		var x_label = x_background;
 		var y_label = y_background + y_label_offset;
-		if(!x_label_centered){
-			var width_label = (1 + label.length) * text.font.width_character;
-			x_label = Std.int(geometry.width - (width_label * 0.5));
-		}
-		
-		this.label = text.word_make(x_label, y_label, label, color_fg);
+		var width_label = (1 + label.length) * text.font.width_character;
+		this.label = text.word_make(x_label, y_label, label, color_fg, geometry.width, align);
 	}
 
 	public function reset(){
@@ -302,7 +295,8 @@ class Dialog {
 				x_label,
 				y_label,
 				line.toUpperCase(),
-				color_fg
+				color_fg,
+				width_background
 			));
 			y_label += text.font.height_model + gap;
 		}

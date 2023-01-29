@@ -5,6 +5,12 @@ import stone.core.Models;
 import stone.core.GraphicsAbstract;
 import stone.editing.Drawing;
 
+enum Align{
+	CENTER;
+	LEFT;
+	RIGHT;
+}
+
 @:structInit
 class Font {
 	public var models:Array<Array<LineModel>>;
@@ -52,16 +58,28 @@ class Text {
 		}
 	}
 
-	public function word_make(x:Int, y:Int, text:String, color:RGBA, x_center:Int = 0):Word {
+	// todo - make x_center_of_container actually x_left_of_container?
+	public function word_make(x_center_of_container:Int, y:Int, text:String, color:RGBA, width_container:Int, align:Align=CENTER):Word {
+		// trace('word: $text x: $x_center_of_container , y: $y width: $width_container ');
+
 		var width_label = text.length * font.width_character;
 		var width_label_center = width_label * 0.5;
 		var width_char_center = font.width_character * 0.5;
-		var x_word = Std.int(x + x_center - width_label_center + width_char_center);
+
+		var width_container_center = width_container * 0.5;
+
+		var x_word_offset = switch align {
+			case CENTER: -(width_label_center) + width_char_center;
+			case LEFT: -width_container_center + font.width_character;
+			case RIGHT: (width_container - width_label) - width_container_center;
+		}
+
+		var x_word = Std.int(x_center_of_container + x_word_offset);
 		var drawings:Array<Drawing> = [];
 		for (i in 0...text.length) {
 			var text_upper = text.toUpperCase();
 			var char_code = text_upper.charCodeAt(i);
-			var x_drawing = x + (font.width_character * i) - width_label;
+			var x_drawing = x_word + (font.width_character * i);
 			drawings.push( drawing_create(font.models[char_code], x_drawing, y, color));
 		}
 

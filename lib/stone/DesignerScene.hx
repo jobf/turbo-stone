@@ -111,7 +111,8 @@ class DesignerScene extends HudScene {
 		if(label_model != null){
 			label_model.erase();
 		}
-		label_model = ui.text.word_make(720, 20, label_text, Theme.drawing_lines);
+		var width_container = bounds_components.width;
+		label_model = ui.text.word_make(720, 20, label_text, Theme.drawing_lines, width_container);
 	}
 
 	function handle_mouse_press_left() {
