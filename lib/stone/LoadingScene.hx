@@ -25,10 +25,10 @@ class LoadingScene extends Scene {
 	public function update(elapsed_seconds:Float) {}
 
 	public function draw() {
-		text.draw();
+		// text.draw();
 	}
 
 	public function close() {
-		test.erase();
+		// test.erase();
 	}
 }
