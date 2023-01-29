@@ -1,3 +1,4 @@
+import stone.FileStorageScene;
 import stone.core.Models.Serialize;
 import stone.Theme;
 import stone.core.Models.Deserialize;
@@ -62,7 +63,6 @@ class Main extends Application {
 		implementation_input = new Input(window);
 		implementation_graphics.set_color(Theme.bg_scene);
 		
-		var init_scene:Game->Scene;
 
 		var storage = new Storage(window);
 		var file_list = storage.file_paths();
@@ -83,6 +83,7 @@ class Main extends Application {
 			trace(file_list[0]);
 		}
 
+		var init_scene:Game->Scene;
 		if(file_list.length > 0){
 			var index_end_of_list = file_list.length - 1;
 			var file_name = file_list[index_end_of_list];
