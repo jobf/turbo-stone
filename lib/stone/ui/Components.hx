@@ -245,7 +245,7 @@ class Dialog {
 		var graphics_bg = graphics_layer_init();
 		var graphics_fg = graphics_layer_init();
 		var text = new Text(font_load_embedded(24), graphics_fg);
-			components= new ComponentsCollection(graphics_layer_init, bounds_components, bounds_dialog, height_component, y_align_is_top);
+		components= new ComponentsCollection(graphics_layer_init, bounds_components, bounds_dialog, height_component, y_align_is_top);
 		if(actions == null){
 			this.actions = [];
 		}

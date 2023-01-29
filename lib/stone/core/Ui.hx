@@ -79,11 +79,11 @@ class Ui {
 		);
 	}
 
-	public function make_button(interactions:Interactions, label:String, color_fg:RGBA, color_bg:RGBA):Button {
+	public function make_button(interactions:Interactions, label:String, color_fg:RGBA, color_bg:RGBA, y_offset:Int=0):Button {
 		return components.make_button(
 			interactions,
 			{
-				y: bounds_components.y,
+				y: bounds_components.y + y_offset,
 				x: bounds_components.x,
 				width: bounds_components.width,
 				height: height_component
@@ -274,8 +274,10 @@ class ComponentsCollection{
 	}
 
 	function offset_y_component(geometry:RectangleGeometry){
+		var y_offset = geometry.y;
+
 		if(y_align_is_top){
-			geometry.y = bounds_components.y + (height_component * (clickers.length + sliders.length)) + y_start_offset;
+			geometry.y = bounds_components.y + (height_component * (clickers.length + sliders.length)) + y_start_offset + y_offset;
 		}
 		else{
 			geometry.y = bounds_components.height - height_component - (height_component * (clickers.length + sliders.length));

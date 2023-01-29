@@ -100,7 +100,7 @@ class HudScene extends Scene {
 		});
 	}
 
-	function add_button(key:Button, action:Action):stone.ui.Components.Button {
+	function add_button(key:Button, action:Action, y_offset:Int=0):stone.ui.Components.Button {
 		actions[key] = action;
 		return ui.make_button(
 			{
@@ -111,30 +111,35 @@ class HudScene extends Scene {
 			},
 			action.name,
 			Theme.fg_ui_component,
-			Theme.bg_ui_component
+			Theme.bg_ui_component,
+			y_offset
 		);
 	}
 
 	public function init() {
 		// override me
-		add_button(KEY_H, {
-			on_pressed: () -> {
-				if(help == null){
-					var help_text = [for(pair in actions.keyValueIterator()) '${pair.key} : ${pair.value.name}'];
+		add_button(
+			KEY_H,
+			{
+				on_pressed: () -> {
+					if(help == null){
+						var help_text = [for(pair in actions.keyValueIterator()) '${pair.key} : ${pair.value.name}'];
 
-					help = ui.make_dialog(
-						help_text,
-						Theme.fg_ui_component,
-						Theme.bg_dialog
-					);
+						help = ui.make_dialog(
+							help_text,
+							Theme.fg_ui_component,
+							Theme.bg_dialog
+						);
 
-					help.on_erase.add(s -> {
-						help = null;
-					});
-				}
+						help.on_erase.add(s -> {
+							help = null;
+						});
+					}
+				},
+				name: "SECRETS"
 			},
-			name: "SECRETS"
-		});
+			604 // todo - better control over button y align?
+		);
 	}
 
 	public function update(elapsed_seconds:Float) {
