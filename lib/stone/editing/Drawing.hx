@@ -2,8 +2,10 @@ package stone.editing;
 
 import stone.editing.Editor;
 import stone.core.GraphicsAbstract;
-import stone.graphics.implementation.Graphics;
 import stone.core.Models;
+
+
+using stone.editing.Editor.GraphicsExtensions;
 
 @:structInit
 class Prototype{

@@ -141,8 +141,8 @@ class Graphics extends GraphicsAbstract {
 		display.peoteView.addDisplay(display_additional);
 	}
 
-	public function graphics_new_layer():GraphicsAbstract{
-		return graphics_layer_init();
+	public function graphics_new_layer(width:Int, height:Int):GraphicsAbstract{
+		return graphics_layer_init(width, height);
 	}
 
 	public function readPixels():UInt8Array{
@@ -150,5 +150,14 @@ class Graphics extends GraphicsAbstract {
 		display.peoteView.setFramebuffer(display, texture);
 		display.peoteView.renderToTexture(display);
 		return texture.readPixelsUInt8(0, 0, display.width, display.height);
+	}
+
+	public function scroll_x(amount:Int){
+		display.xOffset += amount;
+	}
+
+
+	public function scroll_y(amount:Int){
+		display.yOffset += amount;
 	}
 }

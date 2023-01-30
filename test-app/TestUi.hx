@@ -12,7 +12,7 @@ class TestUi extends Scene {
 		font = font = font_load_embedded(24);
 
 		// var ui_bg_graphics = game.graphics_layer_init();
-		var ui_fg_graphics = game.graphics_layer_init();
+		var ui_fg_graphics = game.graphics_layer_init(bounds.width, bounds.height);
 		text = new Text(font, ui_fg_graphics);
 		
 		var width_button = Std.int(font.width_model * 9);

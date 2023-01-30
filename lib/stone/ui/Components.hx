@@ -242,10 +242,10 @@ class Dialog {
 	public function new(bounds_dialog:RectangleGeometry, bounds_components:RectangleGeometry, height_component:Int, lines_text:Array<String>, color_fg:RGBA, color_bg:RGBA, graphics_layer_init:GraphicsConstructor, actions:Array<ButtonModel>=null) {
 		on_erase = new Event();
 		var y_align_is_top = false;
-		var graphics_bg = graphics_layer_init();
-		var graphics_fg = graphics_layer_init();
+		var graphics_bg = graphics_layer_init(800, 640);
+		var graphics_fg = graphics_layer_init(800, 640);
 		var text = new Text(font_load_embedded(24), graphics_fg);
-		components= new ComponentsCollection(graphics_layer_init, bounds_components, bounds_dialog, height_component, y_align_is_top);
+		components= new ComponentsCollection(graphics_layer_init, bounds_dialog, bounds_components, height_component, y_align_is_top);
 		if(actions == null){
 			this.actions = [];
 		}

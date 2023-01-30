@@ -50,17 +50,23 @@ class Main extends Application {
 		var viewport_window:RectangleGeometry = {
 			y: 0,
 			x: 0,
-			width: window.width,
-			height: window.height
+			width: 800,
+			height: 640
 		}
 
 		peoteview = new PeoteView(window);
 		implementation_input = new Input(window);
 
-		init_layer = () -> {
-			var display = new Display(0, 0, 800, 640);
+		init_layer = (width:Int, height:Int) -> {
+			var bounds:RectangleGeometry = {
+				x: 0,
+				y: 0,
+				width: width,
+				height: height
+			}
+			var display = new Display(0, 0, width, height);
 			peoteview.addDisplay(display);
-			return new Graphics(display, viewport_window, init_layer);
+			return new Graphics(display, bounds, init_layer);
 		}
 
 		var storage = new Storage(window);
@@ -107,7 +113,7 @@ class Main extends Application {
 				var init_scene:Game->Scene = switch start {
 					case DESIGN: game -> new DesignerScene(game, viewport_window, Theme.bg_scene, file, file_name);
 					case STORAGE: game -> new FileStorageScene(game, viewport_window, Theme.bg_scene);
-					case OVERVIEW: game -> new Overview(game, viewport_window, Theme.bg_scene, file, file_name);
+					case OVERVIEW: game -> new OverviewScene(game, viewport_window, Theme.bg_scene, file, file_name);
 					case TESTUI: game -> new TestUi(game, viewport_window, Theme.bg_scene);
 				};
 

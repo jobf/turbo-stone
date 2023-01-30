@@ -4,7 +4,7 @@ import stone.core.Storage;
 import stone.core.InputAbstract;
 import stone.core.GraphicsAbstract;
 
-typedef GraphicsConstructor = Void -> GraphicsAbstract
+typedef GraphicsConstructor = (width:Int, height:Int) -> GraphicsAbstract
 
 class Game {
 	var current_scene:Scene;
@@ -52,8 +52,8 @@ class Game {
 		}
 	}
 
-	public function graphics_layer_init():GraphicsAbstract{
-		var layer = graphics_constructor();
+	public function graphics_layer_init(width:Int, height:Int):GraphicsAbstract{
+		var layer = graphics_constructor(width, height);
 		graphics_layers.push(layer);
 		return layer;
 	}

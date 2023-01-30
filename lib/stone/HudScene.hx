@@ -45,8 +45,8 @@ class HudScene extends Scene {
 			}
 		});
 
-		graphics_main = cast game.graphics_layer_init();
-		graphics_hud = cast game.graphics_layer_init();
+		graphics_main = cast game.graphics_layer_init(bounds.width, bounds.height);
+		graphics_hud = cast game.graphics_layer_init(bounds.width, bounds.height);
 		
 		bounds_main = {
 			y: 0,
@@ -101,7 +101,7 @@ class HudScene extends Scene {
 	}
 
 	function add_space(){
-		var gap = 10;
+		var gap = 8;
 		ui.y_offset_increase(gap * 2);
 	}
 

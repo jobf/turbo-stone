@@ -28,9 +28,10 @@ class Ui {
 
 	public function new(graphics_new_layer:GraphicsConstructor, bounds_main:RectangleGeometry, bounds_components:RectangleGeometry) {
 		this.graphics_new_layer = graphics_new_layer;
-		this.graphics_main = graphics_new_layer();
-		this.graphics_dialog = graphics_new_layer();
-		this.graphics_text = graphics_new_layer();
+		// todo pass main bounds sizes in
+		this.graphics_main = graphics_new_layer(800, 640);
+		this.graphics_dialog = graphics_new_layer(800, 640);
+		this.graphics_text = graphics_new_layer(800, 640);
 		text = new Text(font_load_embedded(24), graphics_text);
 
 		height_component = Std.int(text.font.height_model * 1.5);
@@ -127,6 +128,9 @@ class Ui {
 				components.show();
 			});
 		}
+
+
+		trace('dialog x ${bounds_main.x} dialog y ${bounds_main.y}');
 		return dialog;
 	}
 
@@ -195,8 +199,9 @@ class ComponentsCollection{
 	public function new(graphics_new_layer:GraphicsConstructor, bounds_main:RectangleGeometry, bounds_components:RectangleGeometry, height_component:Int, y_align_is_top:Bool=true){
 		sliders = [];
 		clickers = [];
-		this.graphics = graphics_new_layer();
-		this.text =  new Text(font_load_embedded(24), graphics_new_layer());
+		// todo pass window bounds size in 
+		this.graphics = graphics_new_layer(800, 640);
+		this.text =  new Text(font_load_embedded(24), graphics_new_layer(800, 640));
 
 		this.bounds_main = bounds_main;
 		this.bounds_components = bounds_components;
@@ -274,6 +279,7 @@ class ComponentsCollection{
 	}
 
 	function offset_y_component(geometry:RectangleGeometry){
+		// var y_offset = 0;
 		var y_offset = geometry.y;
 
 		if(y_align_is_top){
@@ -328,7 +334,7 @@ class ComponentsCollection{
 		}
 
 		offset_y_component(geometry);
-
+		trace('button x ${geometry.x} button y ${geometry.y} $label');
 		var button = new Button( label, interactions, geometry, color_fg, color_bg, graphics, text);
 		clickers.push(button);
 		return button;
@@ -342,6 +348,7 @@ class ComponentsCollection{
 		}
 		
 		offset_y_component(geometry);
+		trace('label x ${geometry.x} label y ${geometry.y} $label_text');
 
 		var label = new Label(label_text, interactions, geometry, color_fg, color_bg, graphics, text);
 		clickers.push(label);

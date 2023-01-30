@@ -48,6 +48,14 @@ class DesignerScene extends HudScene {
 		game.input.on_pressed.add(button -> switch button {
 			case MOUSE_LEFT: handle_mouse_press_left();
 			case MOUSE_MIDDLE: delete_line_under_mouse();
+			case KEY_A: graphics_hud.scroll_x(128); // left
+			case KEY_D: graphics_hud.scroll_x(-128); // right
+			case KEY_W: graphics_hud.scroll_y(128); // up
+			case KEY_S: graphics_hud.scroll_y(-128); // down
+			// case KEY_A: graphics_main.scroll_x(128); // left
+			// case KEY_D: graphics_main.scroll_x(-128); // right
+			// case KEY_W: graphics_main.scroll_y(128); // up
+			// case KEY_S: graphics_main.scroll_y(-128); // down
 			case _:
 		});
 
@@ -167,7 +175,7 @@ class DesignerScene extends HudScene {
 
 		add_button(KEY_G, {
 			on_pressed: () -> {
-				game.scene_change(game -> new Overview(game, bounds, color, file, file_name));
+				game.scene_change(game -> new OverviewScene(game, bounds, color, file, file_name));
 			},
 			name: "OVERVIEW"
 		});		
