@@ -1,8 +1,9 @@
 package stone.graphics.implementation;
 
+import lime.utils.UInt8Array;
 import lime.graphics.Image;
 import stone.graphics.Fill;
-import stone.graphics.LineCPU;
+import stone.graphics.Line;
 import stone.core.Engine;
 import stone.core.GraphicsAbstract;
 import stone.core.Vector;
@@ -53,14 +54,19 @@ class Graphics extends GraphicsAbstract {
 	}
 
 	public function make_line(from_x:Float, from_y:Float, to_x:Float, to_y:Float, color:RGBA):AbstractLine {
-		var element_line = new Line(from_x, from_y, 1, 1, 0, cast color);
+		var element_line = new Line(
+			Std.int(from_x),
+			Std.int(from_y),
+			Std.int(to_x),
+			Std.int(to_y),
+			cast color
+		);
+		
 		buffer_lines.addElement(element_line);
 
-		var element_line_head = make_rectangle(Std.int(from_x), Std.int(from_y), size_cap, size_cap, color);
-		var element_line_tail = make_rectangle(Std.int(from_x), Std.int(from_y), size_cap, size_cap, color);
-
-		element_line.timeAStart = 0.0;
-		element_line.timeADuration = 3.0;
+		var color_cap = 0x00000000;
+		var element_line_head = make_rectangle(Std.int(from_x), Std.int(from_y), size_cap, size_cap, color_cap);
+		var element_line_tail = make_rectangle(Std.int(from_x), Std.int(from_y), size_cap, size_cap, color_cap);
 
 		var line_clean_up:PeoteLine -> Void = line -> {
 			buffer_lines.removeElement(line.element);
