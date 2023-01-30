@@ -1,3 +1,5 @@
+import stone.Theme;
+import stone.DesignerScene;
 import stone.util.DateExtensions;
 import stone.HudScene;
 import stone.core.Engine;
@@ -10,10 +12,12 @@ using stone.editing.Editor.GraphicsExtensions;
 
 class Overview extends HudScene {
 	var file:FileModel;
-	
-	public function new(game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel) {
+	var file_name:String;
+
+	public function new(game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel, file_name:String) {
 		super(game, bounds, color);
 		this.file = file;
+		this.file_name = file_name;
 	}
 
 	override function init() {
@@ -54,6 +58,16 @@ class Overview extends HudScene {
 			model_bounds.x = 0;
 			model_bounds.y += model_size;
 		}
+
+		add_button(KEY_E, {
+			on_pressed: () -> {
+				var init_scene:Game->Scene = game -> new DesignerScene(game, bounds, Theme.bg_scene, file, file_name);
+				game.scene_change(init_scene);
+			},
+			name: "EDIT"
+		});
+
+		add_space();
 
 		add_button(KEY_X, {
 			on_pressed: () -> {

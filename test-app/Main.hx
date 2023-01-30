@@ -107,7 +107,7 @@ class Main extends Application {
 				var init_scene:Game->Scene = switch start {
 					case DESIGN: game -> new DesignerScene(game, viewport_window, Theme.bg_scene, file, file_name);
 					case STORAGE: game -> new FileStorageScene(game, viewport_window, Theme.bg_scene);
-					case OVERVIEW: game -> new Overview(game, viewport_window, Theme.bg_scene, file);
+					case OVERVIEW: game -> new Overview(game, viewport_window, Theme.bg_scene, file, file_name);
 					case TESTUI: game -> new TestUi(game, viewport_window, Theme.bg_scene);
 				};
 

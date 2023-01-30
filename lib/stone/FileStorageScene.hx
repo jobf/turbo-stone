@@ -85,8 +85,6 @@ class FileStorageScene extends HudScene {
 		var button_edit = add_button(KEY_E, {
 			on_pressed: () -> {
 				if (path_file_selected.length > 0) {
-
-
 					var file = game.storage.file_load(path_file_selected);
 					var models = Deserialize.parse_file_contents(file.content);
 					if(models == null){

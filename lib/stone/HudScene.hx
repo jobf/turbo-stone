@@ -100,6 +100,11 @@ class HudScene extends Scene {
 		});
 	}
 
+	function add_space(){
+		var gap = 10;
+		ui.y_offset_increase(gap * 2);
+	}
+
 	function add_button(key:Button, action:Action, y_offset:Int=0):stone.ui.Components.Button {
 		actions[key] = action;
 		return ui.make_button(
@@ -116,6 +121,10 @@ class HudScene extends Scene {
 		);
 	}
 
+	function get_commands():Array<String>{
+		return [for(pair in actions.keyValueIterator()) '${pair.key} : ${pair.value.name}'];
+	}
+
 	public function init() {
 		// override me
 		add_button(
@@ -123,8 +132,8 @@ class HudScene extends Scene {
 			{
 				on_pressed: () -> {
 					if(help == null){
-						var help_text = [for(pair in actions.keyValueIterator()) '${pair.key} : ${pair.value.name}'];
-
+						var help_text = get_commands();
+						trace(help_text);
 						help = ui.make_dialog(
 							help_text,
 							Theme.fg_ui_component,

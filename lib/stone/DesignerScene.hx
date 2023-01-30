@@ -140,22 +140,12 @@ class DesignerScene extends HudScene {
 	}
 
 	function ui_setup() {
-		// var color:RGBA = Theme.drawing_lines;
-		var gap = 10;
-		// var width_button = Std.int(text.font.width_character * 10);
-		// var height_button = text.font.height_model + gap;
-		// var x_button = bounds.width - width_button - gap;
-		// var y_button = gap * 5;
-
-		var add_space:Void->Void = () -> ui.y_offset_increase(gap * 2);
-
 		add_button(KEY_D, {
 			on_pressed: () -> {
 				delete_line_under_mouse();
 			},
 			name: "DELETE"
 		});
-
 
 		add_button(KEY_LEFT, {
 			on_pressed: () -> {
@@ -172,6 +162,15 @@ class DesignerScene extends HudScene {
 			},
 			name: "NEXT"
 		});
+
+		add_space();
+
+		add_button(KEY_G, {
+			on_pressed: () -> {
+				game.scene_change(game -> new Overview(game, bounds, color, file, file_name));
+			},
+			name: "OVERVIEW"
+		});		
 
 		add_space();
 
