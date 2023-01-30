@@ -157,4 +157,11 @@ class Graphics extends GraphicsAbstract {
 	public function graphics_new_layer():GraphicsAbstract{
 		return graphics_layer_init();
 	}
+
+	public function readPixels():UInt8Array{
+		var texture = new Texture(display.width, display.height);
+		display.peoteView.setFramebuffer(display, texture);
+		display.peoteView.renderToTexture(display);
+		return texture.readPixelsUInt8(0, 0, display.width, display.height);
+	}
 }

@@ -1,3 +1,4 @@
+import stone.util.DateExtensions;
 import stone.HudScene;
 import stone.core.Engine;
 import stone.core.GraphicsAbstract;
@@ -53,5 +54,16 @@ class Overview extends HudScene {
 			model_bounds.x = 0;
 			model_bounds.y += model_size;
 		}
+
+		add_button(KEY_X, {
+			on_pressed: () -> {
+				var time_stamp = DateExtensions.to_time_stamp(Date.now());
+				var path = '$time_stamp.png';
+				@:privateAccess
+				stone.file.PNG.dump(graphics_main.readPixels(), graphics_main.display.width, graphics_main.display.height, path);
+			},
+			name: "PNG"
+		});
 	}
 }
+
