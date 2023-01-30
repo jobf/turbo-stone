@@ -14,9 +14,6 @@ class Graphics extends GraphicsAbstract {
 	var fills:Array<PeoteFill> = [];
 	var size_cap:Int = 1;
 	var angle_cap:Int = -45;
-	var moon_texture:Texture;
-	var moon_buffer:Buffer<Sprite>;
-	var moon_program:Program;
 	var display:Display;
 	var graphics_layer_init:GraphicsConstructor;
 
@@ -29,28 +26,13 @@ class Graphics extends GraphicsAbstract {
 		this.display = display;
 		this.graphics_layer_init = graphics_layer_init;
 
-		buffer_fills = new Buffer<Rectangle>(256, 256, true);
+		buffer_fills = new Buffer<Rectangle>(4096, 1024, true);
 		var rectangleProgram = new Program(buffer_fills);
 		display.addProgram(rectangleProgram);
 
-		buffer_lines = new Buffer<Line>(256, 256, true);
+		buffer_lines = new Buffer<Line>(4096, 1024, true);
 		var lineProgram = new Program(buffer_lines);
 		display.addProgram(lineProgram);
-
-		moon_buffer = new Buffer<Sprite>(1, 1, false);
-		moon_program = new Program(moon_buffer);
-		display.addProgram(moon_program);
-	}
-
-	public function add_moon(image:Image):Sprite {
-		moon_texture = new Texture(image.width, image.height);
-		moon_texture.setImage(image);
-
-		moon_program.addTexture(moon_texture, "custom");
-		moon_program.snapToPixel(1);
-		var moon = new Sprite(320, 320, 1015, 1015);
-		moon_buffer.addElement(moon);
-		return moon;
 	}
 
 	public function make_line(from_x:Float, from_y:Float, to_x:Float, to_y:Float, color:RGBA):AbstractLine {
@@ -135,7 +117,6 @@ class Graphics extends GraphicsAbstract {
 		}
 		buffer_fills.update();
 		buffer_lines.update();
-		moon_buffer.update();
 	}
 
 	public function translate_mouse(x:Float, y:Float):Vector {
