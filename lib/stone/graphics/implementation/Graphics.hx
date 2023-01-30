@@ -1,7 +1,5 @@
 package stone.graphics.implementation;
 
-import lime.utils.UInt8Array;
-import lime.graphics.Image;
 import stone.graphics.Fill;
 import stone.graphics.Line;
 import stone.core.Engine;
@@ -145,11 +143,13 @@ class Graphics extends GraphicsAbstract {
 		return graphics_layer_init(width, height);
 	}
 
-	public function readPixels():UInt8Array{
+	public function readPixels():Null<haxe.io.UInt8Array>{
 		var texture = new Texture(display.width, display.height);
 		display.peoteView.setFramebuffer(display, texture);
 		display.peoteView.renderToTexture(display);
-		return texture.readPixelsUInt8(0, 0, display.width, display.height);
+		// causes SIGNAL 11
+		// var pixel_data = texture.readPixelsUInt8(0, 0, temp.width, temp.height);
+		return null;
 	}
 
 	public function scroll_x(amount:Int){

@@ -7,6 +7,7 @@ import stone.core.GraphicsAbstract;
 import stone.core.Models;
 import stone.editing.Grid;
 import stone.editing.Overview;
+import stone.file.PNG;
 
 using stone.util.DateExtensions;
 
@@ -52,20 +53,22 @@ class OverviewScene extends HudScene {
 			on_pressed: () -> {
 				var size_tile = 128;
 				var size_texture = size_tile * 16;
-				
-				var graphics:Graphics = cast graphics_main.graphics_new_layer(size_texture, size_texture);
-				
-				Overview.render_models(file.models, size_tile, graphics);
-				
-				var time_stamp = Date.now().to_time_stamp();
-				var path = '$time_stamp.png';
 
-				@:privateAccess
-				stone.file.PNG.dump(graphics.readPixels(), size_texture, size_texture, path);
-				
+				var graphics:Graphics = cast graphics_main.graphics_new_layer(size_texture, size_texture);
+
+				Overview.render_models(file.models, size_tile, graphics);
+
+				var data_pixels = graphics.readPixels();
+
+				if(data_pixels != null){
+					var time_stamp = Date.now().to_time_stamp();
+					var file_name = '$time_stamp.png';
+					var png_bytes = PNG.lime_bytes(data_pixels, size_texture, size_texture, file_name);
+					game.storage.export_bytes(png_bytes, file_name);
+				}
+
 				@:privateAccess
 				graphics.display.peoteView.removeDisplay(graphics.display);
-
 			},
 			name: "PNG"
 		});

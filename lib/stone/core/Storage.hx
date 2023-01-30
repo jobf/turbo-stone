@@ -1,5 +1,6 @@
 package stone.core;
 
+import haxe.io.Bytes;
 import stone.file.FileStorage;
 import lime.ui.Window;
 import haxe.io.Path;
@@ -75,6 +76,17 @@ class Storage {
 		storage.file_save(file);
 	}
 
+	public function export_bytes(bytes_image:Bytes, file_name:String) {
+		#if web
+		// todo release blob bytes
+		// stone.util.Browser.release_blob_string(bytes_image, path_file);
+		#else
+		var output =  sys.io.File.write(file_name, true);
+		output.writeBytes(bytes_image, 0, bytes_image.length);
+		output.close();
+		#end
+	}
+
 	public function file_new(content:String):FileJSON {
 		var time_stamp = Date.now().to_time_stamp();
 		return {
@@ -90,13 +102,7 @@ class Storage {
 	public function export(path_file) {
 		#if web
 		var file:FileJSON = storage.file_load(path_file);
-		var blob = new js.html.Blob([file.content]);
-		var url = js.html.URL.createObjectURL(blob);
-		var anchor = js.Browser.document.createAnchorElement();
-		anchor.href = url;
-		anchor.download = path_file;
-		anchor.click();
-		js.html.URL.revokeObjectURL(url);
+		stone.util.Browser.release_blob_string(file.content, path_file);
 		#end
 	}
 
