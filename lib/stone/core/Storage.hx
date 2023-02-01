@@ -78,8 +78,7 @@ class Storage {
 
 	public function export_bytes(bytes_image:Bytes, file_name:String) {
 		#if web
-		// todo release blob bytes
-		// stone.util.Browser.release_blob_string(bytes_image, path_file);
+		stone.util.Browser.release_blob_bytes(bytes_image, file_name);
 		#else
 		var output =  sys.io.File.write(file_name, true);
 		output.writeBytes(bytes_image, 0, bytes_image.length);

@@ -151,9 +151,7 @@ class Graphics extends GraphicsAbstract {
 		var texture = new Texture(display.width, display.height);
 		display.peoteView.setFramebuffer(display, texture);
 		display.peoteView.renderToTexture(display);
-		// causes SIGNAL 11
-		// var pixel_data = texture.readPixelsUInt8(0, 0, temp.width, temp.height);
-		return null;
+		return texture.readPixelsUInt8(0, 0, display.width, display.height);
 	}
 
 	public function scroll_x(amount:Int){
