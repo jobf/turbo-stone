@@ -1,21 +1,17 @@
 package stone;
 
-import stone.ui.Components;
+import stone.ui.Interactive.overlaps_rectangle;
 import stone.core.GraphicsAbstract.RGBA;
 import stone.core.GraphicsAbstract.AbstractLine;
 import stone.text.Text;
 import stone.core.Engine;
-import stone.core.Ui;
 import stone.file.FileStorage.FileJSON;
-import stone.graphics.implementation.PeoteLine;
-import stone.graphics.implementation.Graphics;
 import stone.editing.Editor;
 import stone.FileStorageScene;
 import stone.core.Models;
-import stone.core.InputAbstract;
-import stone.input.Controller;
 import stone.util.EnumMacros;
 import stone.text.CodePage;
+import stone.ui.Tray;
 
 class DesignerScene extends HudScene {
 	var grid_center_x:Int;
@@ -28,7 +24,186 @@ class DesignerScene extends HudScene {
 	var label_model:Word;
 
 	public function new(game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel, file_name:String) {
-		super(game, bounds, color);
+		var tray_sections:Array<Section> = [
+			{ // hidden commands
+				contents:[
+					{
+						role: BUTTON,
+						label: "DRAG TO DRAW",
+						key_code: MOUSE_LEFT,
+						interactions: {
+							on_click: interactive -> {
+								if(overlaps_rectangle(bounds_main, game.input.mouse_position)){
+									designer.start_drawing_line(game.input.mouse_position);
+								}
+							}
+						},
+						show_in_tray: false,
+					},
+					{
+						role: BUTTON,
+						label: "DELETE LINE UNDER CURSOR",
+						key_code: MOUSE_MIDDLE,
+						interactions: {
+							on_click: interactive -> {
+								delete_line_under_mouse();
+							}
+						},
+						show_in_tray: false,
+					},
+					{
+						role: BUTTON,
+						label: "DELETE LINE UNDER CURSOR",
+						key_code: KEY_D,
+						interactions: {
+							on_click: interactive -> {
+								delete_line_under_mouse();
+							}
+						},
+						show_in_tray: false,
+					},
+				]
+			},
+			{
+				contents: [
+
+					{
+						role: BUTTON,
+						label: "PREVIOUS",
+						key_code: KEY_LEFT,
+						interactions: {
+							on_click: interactive -> {
+								designer.set_active_figure(-1);
+								label_update();
+							}
+						}
+					},
+					{
+						role: BUTTON,
+						label: "NEXT",
+						key_code: KEY_RIGHT,
+						interactions: {
+							on_click: interactive -> {
+								designer.set_active_figure(1);
+								label_update();
+							}
+						}
+					}
+				]
+			},
+			{
+				contents: [
+					{
+						role: BUTTON,
+						label: "COPY",
+						key_code: KEY_C,
+						interactions: {
+							on_click: interactive -> {
+								designer.buffer_copy();
+							}
+						}
+					},
+					{
+						role: BUTTON,
+						label: "PASTE",
+						key_code: KEY_V,
+						interactions: {
+							on_click: interactive -> {
+								designer.buffer_paste();
+							}
+						}
+					},
+					{
+						role: BUTTON,
+						label: "CLEAR",
+						key_code: KEY_R,
+						interactions: {
+							on_click: interactive -> {
+								designer.lines_remove();
+							}
+						}
+					}
+				]
+			},
+			{
+				contents: [
+					{
+						role: BUTTON,
+						label: "GRID LESS",
+						interactions: {
+							on_click: interactive -> {
+								grid_set_granularity(-1);
+							}
+						}
+					},
+					{
+						role: BUTTON,
+						label: "GRID MORE",
+						interactions: {
+							on_click: interactive -> {
+								grid_set_granularity(1);
+							}
+						}
+					},
+					// {
+					// 	role: BUTTON,
+					// 	label: "GRID TOGGLE",
+					// 	interactions: {
+					// 		on_click: interactive -> {
+
+					// 		}
+					// 	}
+					// }
+				]
+			},
+			{
+				contents: [
+					{
+						role: BUTTON,
+						label: "SAVE",
+						key_code: KEY_S,
+						interactions: {
+							on_click: interactive -> {
+								save_file();
+							}
+						},
+						confirmation: {
+							message: 'CONFIRM SAVE?',
+							confirm: "YES",
+							cancel: "NO"
+						}
+					}
+				]
+			},
+			{
+				contents: [
+					{
+						role: BUTTON,
+						label: "FILES",
+						interactions: {
+							on_click: interactive -> {
+								game.scene_change(game -> new FileStorageScene(game, bounds, color));
+							}
+						},
+						confirmation: {
+							message: 'UNSAVED CHANGES\nWILL BE\nLOST',
+							confirm: "CONTINUE",
+						}
+					},
+					{
+						role: BUTTON,
+						label: "OVERVIEW",
+						interactions: {
+							on_click: interactive -> {
+								game.scene_change(game -> new OverviewScene(game, bounds, color, file, file_name));
+							}
+						}
+					}
+				]
+			},
+		];
+
+		super(game, bounds, color, tray_sections, 32);
 		this.file = file;
 		this.file_name = file_name;
 	}
@@ -43,20 +218,6 @@ class DesignerScene extends HudScene {
 			else{
 				game.input.mouse_cursor_hide();
 			}
-		});
-
-		game.input.on_pressed.add(button -> switch button {
-			case MOUSE_LEFT: handle_mouse_press_left();
-			case MOUSE_MIDDLE: delete_line_under_mouse();
-			case KEY_A: graphics_hud.scroll_x(128); // left
-			case KEY_D: graphics_hud.scroll_x(-128); // right
-			case KEY_W: graphics_hud.scroll_y(128); // up
-			case KEY_S: graphics_hud.scroll_y(-128); // down
-			// case KEY_A: graphics_main.scroll_x(128); // left
-			// case KEY_D: graphics_main.scroll_x(-128); // right
-			// case KEY_W: graphics_main.scroll_y(128); // up
-			// case KEY_S: graphics_main.scroll_y(-128); // down
-			case _:
 		});
 
 		mouse_position = game.input.mouse_position;
@@ -80,9 +241,18 @@ class DesignerScene extends HudScene {
 
 		designer = new Designer(size_segment, graphics_main, bounds_main, file);
 
-		ui_setup();
-
 		label_update();
+	}
+
+	function save_file(){
+		var file_content = Serialize.to_string(file);
+
+		var file:FileJSON = {
+			name: file_name,
+			content: file_content
+		}
+
+		game.storage.file_save(file);
 	}
 
 	var lines_grid:Array<AbstractLine> = [];
@@ -119,17 +289,13 @@ class DesignerScene extends HudScene {
 		if(label_model != null){
 			label_model.erase();
 		}
-		var width_container = bounds_components.width;
+		var width_container = bounds_tray.width;
+		@:privateAccess
 		label_model = ui.text.word_make(720, 20, label_text, Theme.drawing_lines, width_container);
 	}
 
 	function handle_mouse_press_left() {
 		if(designer.point_is_outside_grid(mouse_position)){
-			ui.handle_mouse_click();
-			return;
-		}
-
-		if(ui.dialog_is_active()){
 			return;
 		}
 
@@ -140,129 +306,18 @@ class DesignerScene extends HudScene {
 		designer.stop_drawing_line(mouse_position);
 	}
 
-	function delete_line_under_mouse(){
-		if(ui.dialog_is_active()){
-			return;
+	override function mouse_moved(mouse_position:Vector) {
+		if(designer.isDrawingLine){
+			if(!overlaps_rectangle(bounds_main, mouse_position)){
+				designer.stop_drawing_line(mouse_position);
+			}
 		}
-		designer.line_under_cursor_remove();
+
+		super.mouse_moved(mouse_position);
 	}
 
-	function ui_setup() {
-		add_button(KEY_D, {
-			on_pressed: () -> {
-				delete_line_under_mouse();
-			},
-			name: "DELETE"
-		});
-
-		add_button(KEY_LEFT, {
-			on_pressed: () -> {
-				designer.set_active_figure(-1);
-				label_update();
-			},
-			name: "PREVIOUS"
-		});
-
-		add_button(KEY_RIGHT, {
-			on_pressed: () -> {
-				designer.set_active_figure(1);
-				label_update();
-			},
-			name: "NEXT"
-		});
-
-		add_space();
-
-		add_button(KEY_G, {
-			on_pressed: () -> {
-				game.scene_change(game -> new OverviewScene(game, bounds, color, file, file_name));
-			},
-			name: "OVERVIEW"
-		});		
-
-		add_space();
-
-		add_button(KEY_C, {
-			on_pressed: () -> designer.buffer_copy(),
-			name: "COPY"
-		});
-
-		add_button(KEY_V, {
-			on_pressed: () -> designer.buffer_paste(),
-			name: "PASTE"
-		});
-
-		// add_button(KEY_N, {
-		// 	on_pressed: () -> designer.add_new_figure(),
-		// 	name: "NEW"
-		// });
-
-		add_button(KEY_R, {
-			on_pressed: () -> designer.lines_remove(),
-			name: "CLEAR"
-		});
-		
-		add_space();
-		
-		add_button(KEY_O, {
-			on_pressed: () -> grid_set_granularity(-1),
-			name: "GRID LESS"
-		});
-
-		add_button(KEY_P, {
-			on_pressed: () -> grid_set_granularity(1),
-			name: "GRID MORE"
-		});
-
-		add_space();
-		
-		add_button(KEY_S, {
-			on_pressed: () -> {
-				var file_content = Serialize.to_string(file);
-				var file:FileJSON = {
-					name: file_name,
-					content: file_content
-				}
-
-				game.storage.file_save(file);
-			},
-			name: "SAVE"
-		});
-
-		// revert to last save??
-		// add_button(KEY_, {
-		// 	on_pressed: () -> {},
-		// 	name: "REVERT"
-		// });
-
-		add_button(KEY_F, {
-			on_pressed: () -> {
-				var warning_save = ui.make_dialog(
-					["UNSAVED CHANGES WILL BE LOST", "CONTINUE TO FILE BROWSER?"],
-					Theme.fg_ui_component,
-					Theme.bg_dialog,
-					[{
-						text: "YES",
-						action: () -> game.scene_change(game -> new FileStorageScene(game, bounds, color))
-					}]
-				);
-			},
-			name: "FILES"
-		});
-
-		game.input.on_pressed.add(button -> {
-			if (actions.exists(button)) {
-				actions[button].on_pressed();
-			}
-		});
-		
-		game.input.on_released.add(button -> {
-			if (actions.exists(button)) {
-				actions[button].on_released();
-			}
-		});
-
-
+	function delete_line_under_mouse(){
+		designer.line_under_cursor_remove();
 	}
 
 	function divisions_calculate_size_segment() {

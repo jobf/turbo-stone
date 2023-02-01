@@ -100,3 +100,4 @@ class RectangleGeometry {
 	public var width:Int;
 	public var height:Int;
 }
+

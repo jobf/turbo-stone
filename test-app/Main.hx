@@ -97,7 +97,7 @@ class Main extends Application {
 		start = TESTUI;
 		#end
 
-		#if testfiles
+		#if teststorage
 		start = STORAGE;
 		#end
 
@@ -114,7 +114,7 @@ class Main extends Application {
 					case DESIGN: game -> new DesignerScene(game, viewport_window, Theme.bg_scene, file, file_name);
 					case STORAGE: game -> new FileStorageScene(game, viewport_window, Theme.bg_scene);
 					case OVERVIEW: game -> new OverviewScene(game, viewport_window, Theme.bg_scene, file, file_name);
-					case TESTUI: game -> new TestUi(game, viewport_window, Theme.bg_scene);
+					case TESTUI: game -> new TestTray(game, viewport_window, 0x332036FF);
 				};
 
 				var init_scene_loader:Game->Scene = game -> new LoadingScene(preloader, init_scene, game, viewport_window, Theme.bg_scene);

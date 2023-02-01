@@ -3,210 +3,24 @@ package stone.core;
 import stone.text.Text;
 import stone.core.GraphicsAbstract;
 import stone.core.Engine;
-import stone.ui.Components;
+import stone.ui.Interactive;
 import stone.graphics.implementation.Graphics;
 
-class Ui {
-
-	var dialog:Null<Dialog> = null;
-
-	var graphics_main:GraphicsAbstract;
-	var graphics_dialog:GraphicsAbstract;
-	var graphics_text:GraphicsAbstract;
-
-	public var text(default, null):Text;
-	var components:ComponentsCollection;
-
-	var x_mouse:Int;
-	var y_mouse:Int;
-
-	var bounds_components:RectangleGeometry;
-	var bounds_main:RectangleGeometry;
-
-	var height_component:Int;
-	var graphics_new_layer:GraphicsConstructor;
-
-	public function new(graphics_new_layer:GraphicsConstructor, bounds_main:RectangleGeometry, bounds_components:RectangleGeometry) {
-		this.graphics_new_layer = graphics_new_layer;
-		// todo pass main bounds sizes in
-		this.graphics_main = graphics_new_layer(800, 640);
-		this.graphics_dialog = graphics_new_layer(800, 640);
-		this.graphics_text = graphics_new_layer(800, 640);
-		text = new Text(font_load_embedded(24), graphics_text);
-
-		height_component = Std.int(text.font.height_model * 1.5);
-		this.bounds_components = bounds_components;
-		this.bounds_main = bounds_main;
-
-		this.components = new ComponentsCollection(graphics_new_layer, bounds_components, bounds_main, height_component);
-	}
-
-	public function draw(){
-		// trace('dare');
-		text.draw();
-		if(dialog != null){
-			dialog.draw();
-		}
-	}
-
-	public function make_slider(interactions:Interactions, label:String, color_fg:RGBA, color_bg:RGBA):Slider {
-		return components.make_slider(
-			interactions,
-			{
-				y: bounds_components.y,
-				x: bounds_components.x,
-				width: bounds_components.width,
-				height: height_component
-			},
-			label,
-			color_fg,
-			color_bg
-		);
-	}
-
-	public function make_toggle(interactions:Interactions, label:String, color_fg:RGBA, color_bg:RGBA, is_enabled:Bool):Toggle {
-		return components.make_toggle(
-			interactions,
-			{
-				y: bounds_components.y,
-				x: bounds_components.x,
-				width: bounds_components.width,
-				height: height_component
-			},
-			label,
-			color_fg,
-			color_bg,
-			is_enabled
-		);
-	}
-
-	public function make_button(interactions:Interactions, label:String, color_fg:RGBA, color_bg:RGBA, y_offset:Int=0):Button {
-		return components.make_button(
-			interactions,
-			{
-				y: bounds_components.y + y_offset,
-				x: bounds_components.x,
-				width: bounds_components.width,
-				height: height_component
-			},
-			label,
-			color_fg,
-			color_bg
-		);
-	}
-
-	public function make_label(interactions:Interactions, label:String, color_fg:RGBA, color_bg:RGBA):Label {
-		return components.make_label(
-			interactions,
-			{
-				y: bounds_components.y,
-				x: bounds_components.x,
-				width: bounds_components.width,
-				height: height_component
-			},
-			label,
-			color_fg,
-			color_bg
-		);
-	}
-
-	public function make_dialog(lines_text:Array<String>, color_fg:RGBA, color_bg:RGBA, buttons:Array<ButtonModel>=null):Dialog {
-		if(dialog == null){
-			components.hide();
-			dialog = new Dialog(
-				bounds_main,
-				bounds_components,
-				height_component,
-				lines_text,
-				color_fg,
-				color_bg,
-				graphics_new_layer,
-				buttons
-			);
-			dialog.on_erase.add(s -> {
-				this.dialog = null;
-				components.show();
-			});
-		}
-
-
-		trace('dialog x ${bounds_main.x} dialog y ${bounds_main.y}');
-		return dialog;
-	}
-
-	public function handle_mouse_click() {
-		if(dialog == null){
-			components.handle_mouse_click(x_mouse, y_mouse);
-		}
-		else{
-			dialog.handle_mouse_click(x_mouse, y_mouse);
-		}
-	}
-
-	public function handle_mouse_release() {
-		if(dialog == null){
-			components.handle_mouse_release();
-		}
-		else{
-			dialog.handle_mouse_release();
-		}
-	}
-
-	public function handle_mouse_moved(mouse_position:Vector) {
-		x_mouse = Std.int(mouse_position.x);
-		y_mouse = Std.int(mouse_position.y);
-
-		if(dialog_is_active()){
-			dialog.handle_mouse_moved(x_mouse, y_mouse);
-		}
-		else{
-			components.handle_mouse_moved(x_mouse, y_mouse);
-		}
-	}
-
-	public function dialog_is_active():Bool{
-		return dialog != null;
-	}
-
-	public function clear() {
-		if(dialog != null){
-			dialog.erase();
-		}
-		components.clear();
-	}
-
-	public function y_offset_increase(amount:Int){
-		components.y_start_offset += amount;
-	}
-}
-
-
-class ComponentsCollection{
+class Ui{
 	var sliders(default, null):Array<Slider>;
-	var clickers(default, null):Array<InteractiveComponent>;
+	var clickers(default, null):Array<Interactive>;
 	
 	var graphics:GraphicsAbstract;
 	var text:Text;
 
-	var bounds_main:RectangleGeometry;
-	var bounds_components:RectangleGeometry;
-
-	var height_component:Int;
-	var y_align_is_top:Bool;
-
 	public var y_start_offset:Int = 0;
 
-	public function new(graphics_new_layer:GraphicsConstructor, bounds_main:RectangleGeometry, bounds_components:RectangleGeometry, height_component:Int, y_align_is_top:Bool=true){
+	public function new(graphics_new_layer:GraphicsConstructor){
 		sliders = [];
 		clickers = [];
 		// todo pass window bounds size in 
 		this.graphics = graphics_new_layer(800, 640);
 		this.text =  new Text(font_load_embedded(24), graphics_new_layer(800, 640));
-
-		this.bounds_main = bounds_main;
-		this.bounds_components = bounds_components;
-		this.height_component = height_component;
-		this.y_align_is_top = y_align_is_top;
 	}
 
 	public function handle_mouse_click(x_mouse:Int, y_mouse:Int){
@@ -231,6 +45,7 @@ class ComponentsCollection{
 		for (toggle in clickers) {
 			toggle.release();
 		}
+
 	}
 
 	public function handle_mouse_moved(x_mouse:Int, y_mouse:Int){
@@ -258,8 +73,9 @@ class ComponentsCollection{
 
 
 	public function hide(){
-		for (component in clickers) {
-			component.hide();
+		// trace('hide all');
+		for (interactive in clickers) {
+			interactive.hide();
 		}
 
 		for (slider in sliders) {
@@ -267,39 +83,45 @@ class ComponentsCollection{
 		}
 	}
 
-
-	public function show(){
-		for (component in clickers) {
-			component.show();
+	public function show(force_refresh:Bool=false){
+		for (interactive in clickers) {
+			var is_not_showing = !interactive.is_enabled;
+			if(is_not_showing || force_refresh){
+				if(interactive.model.conditions != null){
+					var condition_is_true = interactive.model.conditions();
+					if(condition_is_true){
+						interactive.show();
+					}
+					else{
+						interactive.hide();
+					}
+				}else{
+					interactive.show();
+				}
+			}
 		}
 
-		for (slider in sliders) {
-			slider.show();
+		for (interactive in sliders) {
+			if(!interactive.is_enabled){
+				if(interactive.model.conditions != null && interactive.model.conditions()){
+					interactive.show();
+				}
+			}
+			else{
+				interactive.show();
+			}
 		}
 	}
 
-	function offset_y_component(geometry:RectangleGeometry){
-		// var y_offset = 0;
-		var y_offset = geometry.y;
-
-		if(y_align_is_top){
-			geometry.y = bounds_components.y + (height_component * (clickers.length + sliders.length)) + y_start_offset + y_offset;
-		}
-		else{
-			geometry.y = bounds_components.height - height_component - (height_component * (clickers.length + sliders.length));
-		}
-	}
-
-	public function make_slider(interactions:Interactions, geometry:RectangleGeometry, label:String, color_fg:RGBA, color_bg:RGBA):Slider {
-		var on_erase = interactions.on_erase;
-		interactions.on_erase = (component:InteractiveComponent) -> {
-			sliders.remove(cast component);
-			// on_erase(component);
+	public function make_slider(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA):Slider {
+		var on_erase = model.interactions.on_erase;
+		model.interactions.on_erase = (interactive:Interactive) -> {
+			sliders.remove(cast interactive);
+			on_erase(interactive);
 		}
 
-		offset_y_component(geometry);
-
-		var slider = new Slider(label, interactions,
+		var slider = new Slider(
+			model,
 			geometry,
 			color_fg,
 			color_bg,
@@ -312,46 +134,66 @@ class ComponentsCollection{
 	}
 
 
-	public function make_toggle(interactions:Interactions, geometry:RectangleGeometry, label:String, color_fg:RGBA, color_bg:RGBA, is_enabled:Bool):Toggle {
-		var on_erase = interactions.on_erase;
-		interactions.on_erase = (component:InteractiveComponent) -> {
-			clickers.remove(component);
-			on_erase(component);
+	public function make_toggle(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, is_enabled:Bool):Toggle {
+		var on_erase = model.interactions.on_erase;
+		model.interactions.on_erase = (interactive:Interactive) -> {
+			clickers.remove(interactive);
+			on_erase(interactive);
 		}
 
-		offset_y_component(geometry);
 
-		var toggle = new Toggle(label, interactions, geometry, color_fg, color_bg, graphics, text, is_enabled);
+		var toggle = new Toggle(model, geometry, color_fg, color_bg, graphics, text, is_enabled);
 		clickers.push(toggle);
 		return toggle;
 	}
 
-	public function make_button(interactions:Interactions, geometry:RectangleGeometry, label:String, color_fg:RGBA, color_bg:RGBA):Button {
-		var on_erase = interactions.on_erase;
-		interactions.on_erase = (component:InteractiveComponent) -> {
-			clickers.remove(component);
-			// on_erase(component);
+	public function make_button(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA):Button {
+		var on_erase = model.interactions.on_erase;
+		model.interactions.on_erase = (interactive:Interactive) -> {
+			clickers.remove(interactive);
+			// on_erase(interactive);
 		}
 
-		offset_y_component(geometry);
-		trace('button x ${geometry.x} button y ${geometry.y} $label');
-		var button = new Button( label, interactions, geometry, color_fg, color_bg, graphics, text);
+		// trace('button x ${geometry.x} button y ${geometry.y} $label');
+		var button = new Button(model, geometry, color_fg, color_bg, graphics, text);
 		clickers.push(button);
 		return button;
 	}
 
-	public function make_label(interactions:Interactions, geometry:RectangleGeometry, label_text:String, color_fg:RGBA, color_bg:RGBA):Label {
-		var on_erase = interactions.on_erase;
-		interactions.on_erase = (component:InteractiveComponent) -> {
-			clickers.remove(cast component);
-			// on_erase(component);
+	public function make_label(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA):Label {
+		var on_erase = model.interactions.on_erase;
+		model.interactions.on_erase = (interactive:Interactive) -> {
+			clickers.remove(cast interactive);
+			// on_erase(interactive);
 		}
 		
-		offset_y_component(geometry);
-		trace('label x ${geometry.x} label y ${geometry.y} $label_text');
+		// trace('label x ${geometry.x} label y ${geometry.y} $label_text');
 
-		var label = new Label(label_text, interactions, geometry, color_fg, color_bg, graphics, text);
+		var label = new Label(model, geometry, color_fg, color_bg, graphics, text);
 		clickers.push(label);
 		return label;
 	}
+
+	public function make_dialog_text(message:String, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA):TextArea{
+		var x_center = Std.int(geometry.x + geometry.width * 0.5);
+		var y_center = Std.int(geometry.y + geometry.height * 0.5);
+		var lines = message.split("\n");
+		var y_text = Std.int(geometry.y + geometry.height * 0.5) - Std.int((lines.length * text.font.height_model) * 0.5);
+		var words:Array<Word> = [for (line in lines) text.word_make(x_center, y_text+=text.font.height_model, line, color_fg, geometry.width)];
+
+		return {
+			text: words,
+			background: graphics.make_fill(x_center, y_center, geometry.width, geometry.height, color_bg)
+		}
+	}
+
+	function erase(interactives:Array<Interactive>){
+		interactives.clear(interactive -> interactive.erase);
+	}
+}
+
+@:structInit
+class TextArea{
+	public var text:Array<Word>;
+	public var background:AbstractFillRectangle;
 }

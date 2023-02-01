@@ -1,6 +1,5 @@
 package stone.graphics.implementation;
 
-import stone.graphics.implementation.Graphics;
 import stone.graphics.Fill;
 import stone.graphics.Line;
 

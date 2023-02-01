@@ -1,9 +1,8 @@
-import stone.core.Models;
 import stone.core.GraphicsAbstract;
 import stone.editing.Editor;
 
 class Entity {
-	public var motion(default, null):MotionComponent;
+	public var motion(default, null):MotionInteractive;
 
 	public var lines:Polygon;
 
@@ -19,7 +18,7 @@ class Entity {
 
 	public function new(model:Array<Vector>, x:Int, y:Int, rotation_speed:Float, graphics:GraphicsAbstract) {
 		// set up motion
-		motion = new MotionComponent(x, y);
+		motion = new MotionInteractive(x, y);
 		this.rotation_speed = rotation_speed;
 		rotation_direction = Math.random() > 0.5 ? -1 : 1;
 		// set up lines

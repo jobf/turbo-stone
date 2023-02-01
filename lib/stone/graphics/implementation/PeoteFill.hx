@@ -1,8 +1,6 @@
 package stone.graphics.implementation;
 
-import stone.graphics.implementation.Graphics;
 import stone.graphics.Fill;
-
 import stone.core.GraphicsAbstract;
 
 class PeoteFill extends AbstractFillRectangle {

@@ -87,7 +87,7 @@ class Polygon {
 abstract class AbstractParticle {
 	var size:Int;
 	var color:RGBA;
-	var motion:MotionComponent;
+	var motion:MotionInteractive;
 	var lifetime_seconds:Float;
 	var lifetime_seconds_remaining:Float;
 
@@ -99,7 +99,7 @@ abstract class AbstractParticle {
 		this.lifetime_seconds = lifetime_seconds;
 		this.lifetime_seconds_remaining = lifetime_seconds;
 		is_expired = false;
-		this.motion = new MotionComponent(x, y);
+		this.motion = new MotionInteractive(x, y);
 	}
 
 	public function update(elapsed_seconds:Float) {
