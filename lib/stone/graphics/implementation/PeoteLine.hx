@@ -1,7 +1,7 @@
 package stone.graphics.implementation;
 
 import stone.graphics.Fill;
-import stone.graphics.Line;
+import stone.graphics.LineCPU;
 
 import stone.core.GraphicsAbstract;
 
@@ -17,10 +17,10 @@ class PeoteLine extends AbstractLine {
 	var remove_from_buffer:PeoteLine->Void;
 	var is_erased:Bool = false;
 
-	public var element(default, null):Line;
+	public var element(default, null):LineCPU;
 	public var thick(get, set):Int;
 
-	public function new(point_from:Vector, point_to:Vector, element:Line, remove_from_buffer:PeoteLine->Void, head:Rectangle, end:Rectangle, color:Color) {
+	public function new(point_from:Vector, point_to:Vector, element:LineCPU, remove_from_buffer:PeoteLine->Void, head:Rectangle, end:Rectangle, color:Color) {
 		super(point_from, point_to, cast color);
 		this.element = element;
 		this.remove_from_buffer = remove_from_buffer;
@@ -33,10 +33,8 @@ class PeoteLine extends AbstractLine {
 	public function draw():Void {
 		element.c = cast color;
 
-		element.from_x = Std.int(point_from.x);
-		element.from_y = Std.int(point_from.y);
-		element.to_x = Std.int(point_to.x);
-		element.to_y = Std.int(point_to.y);
+		element.set_start(Std.int(point_from.x), Std.int(point_from.y));
+		element.set_end(Std.int(point_to.x), Std.int(point_to.y));
 		element.thick = thick;
 
 		head.x = point_from.x;
@@ -72,6 +70,6 @@ class PeoteLine extends AbstractLine {
 		this.end.h = cap_size;
 		this.end.color.a = 40;
 
-		return element.w;
+		return element.thick;
 	}
 }

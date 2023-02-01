@@ -1,7 +1,7 @@
 package stone.graphics.implementation;
 
 import stone.graphics.Fill;
-import stone.graphics.Line;
+import stone.graphics.LineCPU;
 import stone.core.Engine;
 import stone.core.GraphicsAbstract;
 import stone.core.Vector;
@@ -15,7 +15,7 @@ class Graphics extends GraphicsAbstract {
 	var display:Display;
 	var graphics_layer_init:GraphicsConstructor;
 
-	public var buffer_lines(default, null):Buffer<Line>;
+	public var buffer_lines(default, null):Buffer<LineCPU>;
 
 	var buffer_fills:Buffer<Rectangle>;
 
@@ -28,17 +28,21 @@ class Graphics extends GraphicsAbstract {
 		var rectangleProgram = new Program(buffer_fills);
 		display.addProgram(rectangleProgram);
 
-		buffer_lines = new Buffer<Line>(4096, 1024, true);
+		buffer_lines = new Buffer<LineCPU>(4096, 1024, true);
 		var lineProgram = new Program(buffer_lines);
 		display.addProgram(lineProgram);
 	}
 
 	public function make_line(from_x:Float, from_y:Float, to_x:Float, to_y:Float, color:RGBA):AbstractLine {
-		var element_line = new Line(
+
+		var thick:Int = 2;
+		var element_line = new LineCPU
+		(
 			Std.int(from_x),
 			Std.int(from_y),
 			Std.int(to_x),
 			Std.int(to_y),
+			thick,
 			cast color
 		);
 		
