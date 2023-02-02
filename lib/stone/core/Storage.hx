@@ -27,7 +27,10 @@ class Storage {
 	public var on_drop_file:Event<FileJSON>;
 
 	public function file_paths():Array<String> {
-		return storage.file_paths();
+		var file_path_list = storage.file_paths();
+		var valid_file_paths = file_path_list.filter(s -> s.length > 0);
+		// todo - this shouldn't be needed, e.g. do not let invalid file paths enter the file ?
+		return valid_file_paths;
 	}
 
 	function path_to_name(path:Path):String {
