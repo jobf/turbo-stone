@@ -146,13 +146,12 @@ class Tray {
 		var help_lines:Array<String> = [];
 		for (section in sections) {
 			for (model in section.contents) {
-				// var key_code = model.key_code == null ? "" : '$model.key_code ';
 				if(model.key_code == null){
-					help_lines.push(model.label);
+					continue;
 				}
-				else{
-					help_lines.push(model.key_code + ' ' + model.label);
-				}
+				var key_code = model.key_code + '';
+				var key_label = StringTools.lpad(key_code, " ", 15);
+				help_lines.push(key_label + '  ' + model.label);
 			}
 		}
 		var help_text = help_lines.join("\n");
@@ -163,6 +162,7 @@ class Tray {
 				{
 					role: BUTTON,
 					label: "SECRETS",
+					dialog_text_align: LEFT,
 					confirmation: {
 						message: help_text,
 					}
@@ -247,7 +247,7 @@ class Tray {
 					dialog_buttons.push(item);
 				}
 
-				dialog_text = ui.make_dialog_text(model.confirmation.message, tray_model.dialog_boundary, tray_model.color_fg, Theme.bg_dialog);
+				dialog_text = ui.make_dialog_text(model.confirmation.message, tray_model.dialog_boundary, tray_model.color_fg, Theme.bg_dialog, model.dialog_text_align);
 			}
 
 		}

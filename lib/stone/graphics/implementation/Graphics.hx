@@ -12,7 +12,7 @@ class Graphics extends GraphicsAbstract {
 	var fills:Array<PeoteFill> = [];
 	var size_cap:Int = 1;
 	var angle_cap:Int = -45;
-	var display:Display;
+	public var display(default, null):Display;
 	var graphics_layer_init:GraphicsConstructor;
 
 	public var buffer_lines(default, null):Buffer<LineCPU>;
@@ -147,19 +147,20 @@ class Graphics extends GraphicsAbstract {
 		return graphics_layer_init(width, height);
 	}
 
-	public function readPixels():Null<haxe.io.UInt8Array>{
-		var texture = new Texture(display.width, display.height);
-		display.peoteView.setFramebuffer(display, texture);
-		display.peoteView.renderToTexture(display);
-		return texture.readPixelsUInt8(0, 0, display.width, display.height);
-	}
-
+	
 	public function scroll_x(amount:Int){
 		display.xOffset += amount;
 	}
-
-
+	
+	
 	public function scroll_y(amount:Int){
 		display.yOffset += amount;
 	}
+}
+
+function readPixels(display:Display):Null<haxe.io.UInt8Array>{
+	var texture = new Texture(display.width, display.height);
+	display.peoteView.setFramebuffer(display, texture);
+	display.peoteView.renderToTexture(display);
+	return texture.readPixelsUInt8(0, 0, display.width, display.height);
 }

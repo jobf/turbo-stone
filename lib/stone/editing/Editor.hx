@@ -78,7 +78,7 @@ class Designer {
 
 	public var file(default, null):FileModel;
 
-	var translation:EditorTranslation;
+	public var translation(default, null):EditorTranslation;
 
 	public var isDrawingLine(default, null):Bool = false;
 	public var figure(default, null):Figure;

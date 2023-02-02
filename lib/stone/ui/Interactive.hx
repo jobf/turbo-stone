@@ -128,6 +128,7 @@ class InteractiveModel {
 	public var show_in_tray:Bool = true;
 	public var interactions:Interactions = {};
 	public var confirmation:Null<DialogModel> = null;
+	public var dialog_text_align:Align = CENTER;
 	public var conditions:Null<()->Bool> = null;
 	public var key_code:Null<stone.core.InputAbstract.Button> = null;
 	public var sort_order:Int = 0;

@@ -174,12 +174,12 @@ class Ui{
 		return label;
 	}
 
-	public function make_dialog_text(message:String, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA):TextArea{
+	public function make_dialog_text(message:String, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, text_align:Align=CENTER):TextArea{
 		var x_center = Std.int(geometry.x + geometry.width * 0.5);
 		var y_center = Std.int(geometry.y + geometry.height * 0.5);
 		var lines = message.split("\n");
 		var y_text = Std.int(geometry.y + geometry.height * 0.5) - Std.int((lines.length * text.font.height_model) * 0.5);
-		var words:Array<Word> = [for (line in lines) text.word_make(x_center, y_text+=text.font.height_model, line, color_fg, geometry.width)];
+		var words:Array<Word> = [for (line in lines) text.word_make(x_center, y_text+=text.font.height_model, line, color_fg, geometry.width, text_align)];
 
 		return {
 			text: words,

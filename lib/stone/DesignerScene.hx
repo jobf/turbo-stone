@@ -12,6 +12,12 @@ import stone.core.Models;
 import stone.util.EnumMacros;
 import stone.text.CodePage;
 import stone.ui.Tray;
+import stone.file.PNG;
+import stone.graphics.implementation.Graphics;
+
+
+using stone.util.DateExtensions;
+using stone.editing.Editor.GraphicsExtensions;
 
 class DesignerScene extends HudScene {
 	var grid_center_x:Int;
@@ -24,6 +30,11 @@ class DesignerScene extends HudScene {
 	var label_model:Word;
 
 	public function new(game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel, file_name:String) {
+		var device = "BROWSER";
+		#if !web
+		device = "DISK";
+		#end
+
 		var tray_sections:Array<Section> = [
 			{ // hidden commands
 				contents:[
@@ -121,6 +132,10 @@ class DesignerScene extends HudScene {
 							on_click: interactive -> {
 								designer.lines_remove();
 							}
+						},
+						confirmation: {
+							message: 'CLEAR ALL LINES FROM DISPLAY ?',
+							confirm: 'CLEAR',
 						}
 					}
 				]
@@ -168,7 +183,21 @@ class DesignerScene extends HudScene {
 							}
 						},
 						confirmation: {
-							message: 'CONFIRM SAVE?',
+							message: 'SAVE ALL CHANGES TO $device ?',
+							confirm: "YES",
+							cancel: "NO"
+						}
+					},
+					{
+						role: BUTTON,
+						label: "PNG",
+						interactions: {
+							on_click: interactive -> {
+								export_png();
+							}
+						},
+						confirmation: {
+							message: 'EXPORT PNG TO DISK ?',
 							confirm: "YES",
 							cancel: "NO"
 						}
@@ -253,6 +282,25 @@ class DesignerScene extends HudScene {
 		}
 
 		game.storage.file_save(file);
+	}
+
+	function export_png(){
+		var width_png:Int = bounds_main.height;
+		var height_png:Int = bounds_main.height;
+
+		var graphics:Graphics = cast graphics_main.graphics_new_layer(width_png, height_png);
+		var figure = graphics.map_figure(file.models[designer.model_index], designer.translation);
+		
+		var data_pixels = readPixels(graphics.display);
+
+		if(data_pixels != null){
+			var time_stamp = Date.now().to_time_stamp();
+			var file_name = '$time_stamp.png';
+			var png_bytes = PNG.lime_bytes(data_pixels, width_png, height_png, file_name);
+			game.storage.export_bytes(png_bytes, file_name);
+		}
+
+		graphics.display.peoteView.removeDisplay(graphics.display);
 	}
 
 	var lines_grid:Array<AbstractLine> = [];

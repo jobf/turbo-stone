@@ -85,7 +85,7 @@ class OverviewScene extends HudScene {
 
 		Overview.render_models(file.models, size_tile, graphics);
 
-		var data_pixels = graphics.readPixels();
+		var data_pixels = readPixels(graphics.display);
 
 		if(data_pixels != null){
 			var time_stamp = Date.now().to_time_stamp();
@@ -94,7 +94,6 @@ class OverviewScene extends HudScene {
 			game.storage.export_bytes(png_bytes, file_name);
 		}
 
-		@:privateAccess
 		graphics.display.peoteView.removeDisplay(graphics.display);
 	}
 }
