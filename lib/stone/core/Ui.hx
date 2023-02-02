@@ -39,11 +39,9 @@ class Ui{
 		}
 
 		for (interactive in labels) {
-			if(interactive.model.label_change == null){
-				continue;
+			if(interactive.model.label_change != null){
+				interactive.change_text(interactive.model.label_change());
 			}
-
-			interactive.change_text(interactive.model.label_change());
 		}
 	}
 

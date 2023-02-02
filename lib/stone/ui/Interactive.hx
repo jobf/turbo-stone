@@ -36,19 +36,25 @@ class Label extends Interactive{
 class LabelToggle extends Interactive{
 	public var on_change:Bool->Void = b -> trace('on_change $b');
 	public var is_toggled(default, set):Bool;
+
 	function set_is_toggled(v:Bool):Bool{
 		is_toggled = v;
 		on_change(is_toggled);
 		return is_toggled;
 	}
+
 	public function new(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text) {
 		super(model, geometry, color_fg, color_bg, graphics, text, LEFT,  0, true);
 	}
 
 	override function click() {
 		super.click();
-		is_toggled = !is_toggled;
+		set_is_toggled(!is_toggled);
 		highlight(is_toggled);
+	}
+
+	override function reset() {
+		set_is_toggled(false);
 	}
 }
 
@@ -58,6 +64,7 @@ class Toggle extends Interactive{
 	var handle:AbstractFillRectangle;
 	public var on_change:Bool->Void = b -> trace('on_change $b');
 	public var is_toggled(default, set):Bool;
+
 	function set_is_toggled(v:Bool):Bool{
 		is_toggled = v;
 		on_change(is_toggled);
@@ -78,7 +85,7 @@ class Toggle extends Interactive{
 
 	override function click() {
 		super.click();
-		is_toggled = !is_toggled;
+		set_is_toggled(!is_toggled);
 		handle_move();
 	}
 
@@ -86,6 +93,10 @@ class Toggle extends Interactive{
 		var x_handle = is_toggled ? track.point_to.x : track.point_from.x;
 		handle.x = x_handle;
 		trace('handle_move ${handle.x}');
+	}
+
+	override function reset() {
+		set_is_toggled(false);
 	}
 }
 

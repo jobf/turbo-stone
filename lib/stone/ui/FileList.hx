@@ -117,7 +117,10 @@ class FileList{
 	public function handle_mouse_click(x_mouse:Int, y_mouse:Int){
 		for (label in labels) {
 			label.highlight(false);
+			label.hover(false);
+			label.reset();
 		}
+
 		ui.handle_mouse_click(x_mouse, y_mouse);
 	}
 }
