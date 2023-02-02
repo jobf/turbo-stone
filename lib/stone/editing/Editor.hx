@@ -74,6 +74,7 @@ class Designer {
 	var size_segment:Int;
 	var size_segment_half:Int;
 	var graphics:Graphics;
+	var mouse_pointer_graphics:CursorGraphics;
 	var bounds_grid:RectangleGeometry;
 
 	public var file(default, null):FileModel;
@@ -88,11 +89,20 @@ class Designer {
 		granularity_set(size_segment);
 		this.graphics = cast graphics;
 		this.bounds_grid = bounds_grid;
+		mouse_pointer_graphics = new CursorGraphics(this.graphics.display);
 		var mouse_pointer_size = Std.int(size_segment * 0.5);
-		mouse_pointer = graphics.make_fill(0, 0, mouse_pointer_size, mouse_pointer_size, Theme.cursor);
+		mouse_pointer = mouse_pointer_graphics.make_fill(0, 0, mouse_pointer_size, mouse_pointer_size, Theme.cursor);
 		mouse_pointer.rotation = 45;
 		translation = new EditorTranslation(bounds_grid, 1, 1);
 		figure_init();
+	}
+
+	public function erase(){
+		mouse_pointer_graphics.erase();
+	}
+
+	public function draw() {
+		mouse_pointer_graphics.draw();
 	}
 
 	public function granularity_set(size_segment:Int) {

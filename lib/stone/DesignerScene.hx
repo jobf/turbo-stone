@@ -274,6 +274,16 @@ class DesignerScene extends HudScene {
 		ui.show();
 	}
 
+	override function draw() {
+		super.draw();
+		designer.draw();
+	}
+
+	override function close() {
+		super.close();
+		designer.erase();
+	}
+
 	function save_file(){
 		var file_content = Serialize.to_string(file);
 
