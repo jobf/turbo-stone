@@ -74,16 +74,21 @@ class Main extends Application {
 		var file_list = storage.file_paths();
 
 		if (file_list.length <= 0) {
-			var file_name = '${Date.now().to_time_stamp()}.json';
-
-			storage.file_save({
-				name: file_name,
-				content: Serialize.to_string(init_empty_file())
-			});
-
+			var file_empty = storage.file_new();
+			storage.file_save(file_empty);
 			file_list = storage.file_paths();
-		} else {
-			trace(file_list[0]);
+		}
+		else{
+			var index_end_of_list = file_list.length - 1;
+			var file_name = file_list[index_end_of_list];
+			var file_latest = storage.file_load(file_name);
+			var has_valid_file = file_latest != null && file_latest.content.length > 0;
+			if(!has_valid_file){
+				// make sure to save new file if we needed to make one
+				var file_empty = storage.file_new();
+				storage.file_save(file_empty);
+				file_list = storage.file_paths();
+			}
 		}
 
 		var start:SceneStart = DESIGN;
@@ -104,24 +109,11 @@ class Main extends Application {
 			var index_end_of_list = file_list.length - 1;
 			var file_name = file_list[index_end_of_list];
 			var file_latest = storage.file_load(file_name);
-			var has_valid_file = file_latest != null && file_latest.content.length > 0;
-
-			var file:FileModel = has_valid_file
-				? Deserialize.parse_file_contents(file_latest.content)
-				: init_empty_file();
-
-			if(!has_valid_file){
-				// make sure to save new file if we needed to make one
-				file_name = '${Date.now().to_time_stamp()}.json';
-				storage.file_save({
-					name: file_name,
-					content: Serialize.to_string(file)
-				});
-			}
+			var file:FileModel = Deserialize.parse_file_contents(file_latest.content);
 
 			var init_scene:Game->Scene = switch start {
 				case DESIGN: game -> new DesignerScene(game, viewport_window, Theme.bg_scene, file, file_name);
-				case STORAGE: game -> new FileStorageScene(game, viewport_window, Theme.bg_scene);
+				case STORAGE: game -> new FileStorageScene(game, viewport_window, Theme.bg_scene, file_name);
 				case OVERVIEW: game -> new OverviewScene(game, viewport_window, Theme.bg_scene, file, file_name);
 				case TESTUI: game -> new TestTray(game, viewport_window, 0x332036FF);
 			};
@@ -133,16 +125,6 @@ class Main extends Application {
 		}
 		else{
 			trace('something went very wrong * sad face *');
-		}
-	}
-
-	function init_empty_file():FileModel {
-		return {
-			models: [for(i in 0...256) {
-				name: "",
-				lines: [],
-				index: i
-			} ]
 		}
 	}
 

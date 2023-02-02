@@ -211,7 +211,7 @@ class DesignerScene extends HudScene {
 						label: "FILES",
 						interactions: {
 							on_click: interactive -> {
-								game.scene_change(game -> new FileStorageScene(game, bounds, color));
+								game.scene_change(game -> new FileStorageScene(game, bounds, color, file_name));
 							}
 						},
 						confirmation: {

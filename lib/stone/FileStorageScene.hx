@@ -12,6 +12,7 @@ import stone.file.FileStorage;
 import stone.core.Engine.Scene;
 import stone.text.Text;
 import stone.ui.Tray;
+import stone.ui.FileList;
 
 using StringTools;
 
@@ -22,7 +23,7 @@ class FileStorageScene extends HudScene {
 	var file_list:FileList;
 	var file_selected_buttons:Array<stone.ui.Interactive.Button>;
 
-	public function new(game:Game, bounds:RectangleGeometry, color:RGBA){
+	public function new(game:Game, bounds:RectangleGeometry, color:RGBA, file_name_selected:String){
 		var tray_sections:Array<Section> = [
 			{
 				contents: [
@@ -33,8 +34,7 @@ class FileStorageScene extends HudScene {
 							on_click: interactive -> {
 								file_new();
 							}
-						},
-						conditions: () -> !has_file_path_selected()
+						}
 					},
 					{
 						role: BUTTON,
@@ -77,21 +77,23 @@ class FileStorageScene extends HudScene {
 				]
 			}
 		];
-
-
+		
 		super(game, bounds, color, tray_sections);
+
+		trace('file_set_selected(file_name_selected) $file_name_selected');
+		file_set_selected(file_name_selected);
 	}
 
 	function file_new(){
-		var file:FileJSON = game.storage.file_new("");
+		var file:FileJSON = game.storage.file_new();
 		game.storage.file_save(file);
-		list_files();
+		list_files(file.name);
 	}
 
 	function file_delete(){
 		game.storage.file_delete(path_file_selected);
 		path_file_selected = "";
-		list_files();
+		list_files(path_file_selected);
 	}
 
 	function file_export(){
@@ -120,7 +122,13 @@ class FileStorageScene extends HudScene {
 
 	override public function init() {
 
-		game.storage.on_drop_file.add(file_json -> list_files());
+		game.storage.on_drop_file.add(file_json -> 
+			{
+				path_file_selected = file_json.name;
+				list_files(file_json.name);
+
+			});
+
 		path_file_selected = "";
 
 		file_list = new FileList(
@@ -138,19 +146,19 @@ class FileStorageScene extends HudScene {
 			// button_edit,
 		];
 
-		list_files();
-
 		super.init();
+
+		list_files(path_file_selected);
 	}
 
 	function file_set_selected(path_file:String) {
 		path_file_selected = path_file;
 	}
 
-	function list_files() {
+	function list_files(path_file_selected:String) {
 		var paths = game.storage.file_paths();
-		file_list.list_files(paths);
-		// ui_refresh();
+		file_list.list_files(paths, path_file_selected);
+		ui.show();
 	}
 
 	override public function draw() {
@@ -180,96 +188,5 @@ class FileStorageScene extends HudScene {
 		var x_mouse = Std.int(mouse_position.x);
 		var y_mouse = Std.int(mouse_position.y);
 		file_list.ui.handle_mouse_moved(x_mouse, y_mouse);
-	}
-}
-
-class FileList{
-	public var ui(default, null):Ui;
-	var on_file_select:String->Void;
-	var labels:Array<Interactive> = [];
-	var bounds:RectangleGeometry;
-
-	public function new(graphics_init:GraphicsConstructor, bounds:RectangleGeometry,  on_file_select:String->Void){
-		// file list only has interactives listed in the main area, so bounds_interactive is actually bounds_main
-		this.bounds = bounds;
-		ui = new Ui(graphics_init);
-		this.on_file_select = on_file_select;
-	}
-
-	public function draw(){
-	}
-
-	public function close(){
-		ui.clear();
-	}
-
-	public function list_files(file_names:Array<String>) {
-		var length_labels = labels.length;
-		while (length_labels-- > 0) {
-			var label = labels.pop();
-			label.erase();
-		}
-
-		var font = font_load_embedded(24);
-		var height_button = Std.int(font.height_model * 1.5);
-		var width_button = bounds.width;
-
-		var bounds_interactive:RectangleGeometry = {
-			y: 0,
-			x: 0,
-			width: width_button,
-			height: height_button
-		}
-
-		trace('listing files');
-		for (n => path in file_names) {
-			// trace(path);
-			var label = path;
-
-			var label_geometry:RectangleGeometry = {
-				y: bounds.y + (n * height_button),
-				x: bounds.x,
-				width: bounds_interactive.width,
-				height: bounds_interactive.height
-			}
-
-			var model:InteractiveModel = {
-				role: LABEL_TOGGLE(true),
-				label: label,
-				interactions: {
-					// on_hover: on_hover,
-					on_highlight: should_highlight-> {
-						if(should_highlight){
-							buttons_file_selected(path);
-						}
-						else{
-							buttons_file_selected("");
-						}
-					},
-				}
-			}
-			var interactive = ui.make_label(model, label_geometry, Theme.drawing_lines, Theme.bg_ui_interactive_label, false);
-			@:privateAccess
-			trace('label ${interactive.background.x} ${interactive.background.x} ${interactive.background.width} ${interactive.background.height}');
-			labels.push(interactive);
-		}
-	}
-
-	
-	public function reset_hover(){
-		for (label in labels) {
-			label.hover(false);
-		}
-	}
-
-	function buttons_file_selected(path:String){
-		on_file_select(path);
-	}
-
-	public function handle_mouse_click(x_mouse:Int, y_mouse:Int){
-		for (label in labels) {
-			label.highlight(false);
-		}
-		ui.handle_mouse_click(x_mouse, y_mouse);
 	}
 }

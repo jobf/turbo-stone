@@ -5,6 +5,7 @@ import stone.file.FileStorage;
 import lime.ui.Window;
 import haxe.io.Path;
 import stone.core.Event;
+import stone.core.Models;
 
 class Storage {
 	var storage:FileStorage;
@@ -89,11 +90,11 @@ class Storage {
 		#end
 	}
 
-	public function file_new(content:String):FileJSON {
+	public function file_new():FileJSON {
 		var time_stamp = Date.now().to_time_stamp();
 		return {
-			name: '$time_stamp.json',
-			content: content
+			name: '$time_stamp.fileJSON',
+			content: Serialize.to_string(init_empty_file())
 		}
 	}
 
@@ -114,5 +115,15 @@ class Storage {
 			// todo : init new, store and return
 		}
 		return item;
+	}
+
+	function init_empty_file():FileModel {
+		return {
+			models: [for(i in 0...256) {
+				name: "",
+				lines: [],
+				index: i
+			} ]
+		}
 	}
 }
