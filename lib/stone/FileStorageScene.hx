@@ -19,9 +19,8 @@ using StringTools;
 class FileStorageScene extends HudScene {
 	var x_label = 40;
 	var y_label = 40;
-	var path_file_selected:String = "";
+	var file_key_selected:String = "";
 	var file_list:FileList;
-	var file_selected_buttons:Array<stone.ui.Interactive.Button>;
 
 	public function new(game:Game, bounds:RectangleGeometry, color:RGBA, file_name_selected:String){
 		var tray_sections:Array<Section> = [
@@ -50,6 +49,7 @@ class FileStorageScene extends HudScene {
 						},
 						conditions: () -> return has_file_path_selected()
 					},
+					#if web
 					{
 						role: BUTTON,
 						label: "EXPORT",
@@ -60,6 +60,7 @@ class FileStorageScene extends HudScene {
 						},
 						conditions: () -> has_file_path_selected()
 					}
+					#end
 				]
 			},
 			{
@@ -85,51 +86,48 @@ class FileStorageScene extends HudScene {
 	}
 
 	function file_new(){
-		var file:FileJSON = game.storage.file_new();
-		game.storage.file_save(file);
-		list_files(file.name);
+		var file_container = game.storage.file_new();
+		game.storage.file_save(file_container);
+		list_files(file_container.key);
 	}
 
 	function file_delete(){
-		game.storage.file_delete(path_file_selected);
-		path_file_selected = "";
-		list_files(path_file_selected);
+		game.storage.file_delete(file_key_selected);
+		file_key_selected = "";
+		list_files(file_key_selected);
 	}
 
 	function file_export(){
-		if (path_file_selected.length > 0) {
-			game.storage.export(path_file_selected);
+		if (file_key_selected.length > 0) {
+			game.storage.export(file_key_selected);
 		}
 	}
 
 	function file_edit(){
-		if (path_file_selected.length > 0) {
-			var file = game.storage.file_load(path_file_selected);
-			var models = Deserialize.parse_file_contents(file.content);
+		if (file_key_selected.length > 0) {
+			var file = game.storage.file_load(file_key_selected);
+			var models = Deserialize.parse_file_contents(file.json.content);
 			if(models == null){
 				models = {
 					models: []
 				}
 			}
-			var init_scene:Game->Scene = game -> new DesignerScene(game, bounds, Theme.bg_scene, models, file.name);
+			var init_scene:Game->Scene = game -> new DesignerScene(game, bounds, Theme.bg_scene, models, file_key_selected);
 			game.scene_change(init_scene);
 		}
 	}
 
 	function has_file_path_selected():Bool{
-		return path_file_selected.length > 0;
+		return file_key_selected.length > 0;
 	}
 
 	override public function init() {
+		game.storage.on_drop_file.add(container -> {
+			file_key_selected = container.key;
+			list_files(file_key_selected);
+		});
 
-		game.storage.on_drop_file.add(file_json -> 
-			{
-				path_file_selected = file_json.name;
-				list_files(file_json.name);
-
-			});
-
-		path_file_selected = "";
+		file_key_selected = "";
 
 		file_list = new FileList(
 			game.graphics_layer_init,
@@ -140,24 +138,18 @@ class FileStorageScene extends HudScene {
 			}
 		);
 	
-		file_selected_buttons = [
-			// button_delete,
-			// button_export,
-			// button_edit,
-		];
-
 		super.init();
 
-		list_files(path_file_selected);
+		list_files(file_key_selected);
 	}
 
 	function file_set_selected(path_file:String) {
-		path_file_selected = path_file;
+		file_key_selected = path_file;
 	}
 
-	function list_files(path_file_selected:String) {
+	function list_files(file_key_selected:String) {
 		var paths = game.storage.file_paths();
-		file_list.list_files(paths, path_file_selected);
+		file_list.list_files(paths, file_key_selected);
 		ui.show();
 	}
 

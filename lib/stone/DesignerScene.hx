@@ -1,5 +1,7 @@
 package stone;
 
+import haxe.io.Path;
+import stone.file.FileStorage.FileContainer;
 import stone.ui.Interactive.overlaps_rectangle;
 import stone.core.GraphicsAbstract.RGBA;
 import stone.core.GraphicsAbstract.AbstractLine;
@@ -26,10 +28,10 @@ class DesignerScene extends HudScene {
 	var designer:Designer;
 	var divisions_total:Int = 8;
 	var file:FileModel;
-	var file_name:String;
+	var file_list_key:String;
 	var label_model:Word;
 
-	public function new(game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel, file_name:String) {
+	public function new(game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel, file_list_key:String) {
 		var device = "BROWSER";
 		#if !web
 		device = "DISK";
@@ -211,7 +213,7 @@ class DesignerScene extends HudScene {
 						label: "FILES",
 						interactions: {
 							on_click: interactive -> {
-								game.scene_change(game -> new FileStorageScene(game, bounds, color, file_name));
+								game.scene_change(game -> new FileStorageScene(game, bounds, color, file_list_key));
 							}
 						},
 						confirmation: {
@@ -224,7 +226,7 @@ class DesignerScene extends HudScene {
 						label: "OVERVIEW",
 						interactions: {
 							on_click: interactive -> {
-								game.scene_change(game -> new OverviewScene(game, bounds, color, file, file_name));
+								game.scene_change(game -> new OverviewScene(game, bounds, color, file, file_list_key));
 							}
 						}
 					}
@@ -234,7 +236,7 @@ class DesignerScene extends HudScene {
 
 		super(game, bounds, color, tray_sections);
 		this.file = file;
-		this.file_name = file_name;
+		this.file_list_key = file_list_key;
 	}
 
 	override public function init() {
@@ -275,12 +277,15 @@ class DesignerScene extends HudScene {
 	function save_file(){
 		var file_content = Serialize.to_string(file);
 
-		var file:FileJSON = {
-			name: file_name,
-			content: file_content
+		var file_container:FileContainer = {
+			key: file_list_key,
+			json: {
+				file_path: '$file_list_key.json',
+				content: file_content
+			}
 		}
 
-		game.storage.file_save(file);
+		game.storage.file_save(file_container);
 	}
 
 	function export_png(){

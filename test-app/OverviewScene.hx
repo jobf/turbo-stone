@@ -14,9 +14,9 @@ using stone.util.DateExtensions;
 
 class OverviewScene extends HudScene {
 	var file:FileModel;
-	var file_name:String;
+	var file_list_key:String;
 
-	public function new(game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel, file_name:String) {
+	public function new(game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel, file_list_key:String) {
 		var tray_sections:Array<Section> = [
 			{
 				contents: [
@@ -26,7 +26,7 @@ class OverviewScene extends HudScene {
 						key_code: KEY_E,
 						interactions: {
 							on_click: interactive -> {
-								var init_scene:Game->Scene = game -> new DesignerScene(game, bounds, Theme.bg_scene, file, file_name);
+								var init_scene:Game->Scene = game -> new DesignerScene(game, bounds, Theme.bg_scene, file, file_list_key);
 								game.scene_change(init_scene);
 							}
 						},
@@ -55,7 +55,7 @@ class OverviewScene extends HudScene {
 		];
 		super(game, bounds, color, tray_sections);
 		this.file = file;
-		this.file_name = file_name;
+		this.file_list_key = file_list_key;
 	}
 
 	override function init() {

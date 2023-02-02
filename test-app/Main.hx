@@ -82,7 +82,7 @@ class Main extends Application {
 			var index_end_of_list = file_list.length - 1;
 			var file_name = file_list[index_end_of_list];
 			var file_latest = storage.file_load(file_name);
-			var has_valid_file = file_latest != null && file_latest.content.length > 0;
+			var has_valid_file = file_latest != null && file_latest.json.content.length > 0;
 			if(!has_valid_file){
 				// make sure to save new file if we needed to make one
 				var file_empty = storage.file_new();
@@ -109,7 +109,7 @@ class Main extends Application {
 			var index_end_of_list = file_list.length - 1;
 			var file_name = file_list[index_end_of_list];
 			var file_latest = storage.file_load(file_name);
-			var file:FileModel = Deserialize.parse_file_contents(file_latest.content);
+			var file:FileModel = Deserialize.parse_file_contents(file_latest.json.content);
 
 			var init_scene:Game->Scene = switch start {
 				case DESIGN: game -> new DesignerScene(game, viewport_window, Theme.bg_scene, file, file_name);

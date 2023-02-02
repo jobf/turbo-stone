@@ -35,10 +35,13 @@ class FileList{
 	}
 
 	public function list_files(file_names:Array<String>, pre_select_path:String="") {
-		var length_labels = labels.length;
-		while (length_labels-- > 0) {
-			var label = labels.pop();
-			label.erase();
+		// first clear any existing labels
+		if(labels.length > 0){
+			var length_labels = labels.length;
+			while (length_labels-- > 0) {
+				var label = labels.pop();
+				label.erase();
+			}
 		}
 
 		var font = font_load_embedded(24);
@@ -53,41 +56,44 @@ class FileList{
 		}
 
 		trace('listing files');
-		for (n => path in file_names) {
-			// trace(path);
-			var label = path;
-
-			var label_geometry:RectangleGeometry = {
-				y: bounds.y + (n * height_button),
-				x: bounds.x,
-				width: bounds_interactive.width,
-				height: bounds_interactive.height
-			}
-
-			var model:InteractiveModel = {
-				role: LABEL_TOGGLE(true),
-				label: label,
-				interactions: {
-					// on_hover: on_hover,
-					on_highlight: should_highlight-> {
-						if(should_highlight){
-							buttons_file_selected(path);
-						}
-						else{
-							buttons_file_selected("");
-						}
-					},
+		if(file_names.length > 0){
+			for (n => path in file_names) {
+				// trace(path);
+				var label = path;
+	
+				var label_geometry:RectangleGeometry = {
+					y: bounds.y + (n * height_button),
+					x: bounds.x,
+					width: bounds_interactive.width,
+					height: bounds_interactive.height
 				}
+	
+				var model:InteractiveModel = {
+					role: LABEL_TOGGLE(true),
+					label: label,
+					interactions: {
+						// on_hover: on_hover,
+						on_highlight: should_highlight-> {
+							if(should_highlight){
+								buttons_file_selected(path);
+							}
+							else{
+								buttons_file_selected("");
+							}
+						},
+					}
+				}
+				var interactive = ui.make_label(model, label_geometry, Theme.drawing_lines, Theme.bg_ui_interactive_label, false);
+				@:privateAccess
+				trace('label ${interactive.background.x} ${interactive.background.x} ${interactive.background.width} ${interactive.background.height}');
+				labels.push(interactive);
 			}
-			var interactive = ui.make_label(model, label_geometry, Theme.drawing_lines, Theme.bg_ui_interactive_label, false);
-			@:privateAccess
-			trace('label ${interactive.background.x} ${interactive.background.x} ${interactive.background.width} ${interactive.background.height}');
-			labels.push(interactive);
+			
+			if(pre_select_path.length <= 0){
+				pre_select_path = file_names[file_names.length -1];
+			}
 		}
 
-		if(pre_select_path.length <= 0){
-			pre_select_path = file_names[file_names.length -1];
-		}
 
 		if(pre_select_path.length > 0){
 			trace(' pre select $pre_select_path');
