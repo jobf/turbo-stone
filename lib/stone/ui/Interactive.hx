@@ -227,12 +227,14 @@ class Interactive {
 	public function hide() {
 		is_enabled = false;
 		background.color.a = 10;
+		label.hide();
 	}
 
 
 	public function show() {
 		is_enabled = true;
 		background.color.a = alpha_idle;
+		label.show();
 	}
 
 	public function highlight(should_highlight:Bool) {

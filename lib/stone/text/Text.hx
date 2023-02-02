@@ -123,6 +123,21 @@ class Word {
 			drawing.draw();
 		}
 	}
+	public function hide(){
+		for (drawing in drawings) {
+			for (line in drawing.lines) {
+				line.color.a = 0;
+			}
+		}
+	}
+
+	public function show(){
+		for (drawing in drawings) {
+			for (line in drawing.lines) {
+				line.color.a = 255;
+			}
+		}
+	}
 }
 
 typedef MakeWord = (x:Int, y:Int, text:String, color:RGBA, ?x_center_offset:Null<Int>) -> Word;
