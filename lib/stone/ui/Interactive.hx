@@ -14,7 +14,7 @@ class Button extends Interactive{
 
 class Label extends Interactive{
 	public function new(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text) {
-		super(model, geometry, color_fg, color_bg, graphics, text, LEFT,  0, true);
+		super(model, geometry, color_fg, color_bg, graphics, text, LEFT,  0, false);
 	}
 
 	override function click() {
@@ -223,6 +223,7 @@ class Interactive {
 		alpha_highlight = alpha_idle_is_transparent ? Std.int(color_bg.a * 0.3) : color_bg.a;
 		alpha_hover = alpha_idle_is_transparent ?  Std.int(color_bg.a * 0.2) : Std.int(color_bg.a * 0.9);
 		background.color.a = alpha_idle;
+
 		var x_label = x_background;
 		var y_label = y_background + y_label_offset;
 		var width_label = (1 + model.label.length) * text.font.width_character;
