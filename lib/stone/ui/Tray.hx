@@ -88,6 +88,8 @@ class Tray {
 					make_button(model, item_geometry, bg_color);
 				case LABEL:
 					make_label(model, item_geometry, bg_color);
+				case LABEL_TOGGLE(enabled):
+					make_label(model, item_geometry, bg_color, enabled);
 				case TOGGLE(enabled):
 					make_toggle(model, item_geometry, bg_color, enabled);
 				case SLIDER:
@@ -120,6 +122,8 @@ class Tray {
 					make_button(model, item_geometry, bg_color);
 				case LABEL:
 					make_label(model, item_geometry, bg_color);
+				case LABEL_TOGGLE(enabled):
+					make_label(model, item_geometry, bg_color, enabled);
 				case TOGGLE(enabled):
 					make_toggle(model, item_geometry, bg_color, enabled);
 				case SLIDER:
@@ -154,21 +158,23 @@ class Tray {
 				help_lines.push(key_label + '  ' + model.label);
 			}
 		}
-		var help_text = help_lines.join("\n");
 
-		sections.push({
-			sort_order: 999,
-			contents: [
-				{
-					role: BUTTON,
-					label: "SECRETS",
-					dialog_text_align: LEFT,
-					confirmation: {
-						message: help_text,
+		if(help_lines.length > 0){
+			var help_text = help_lines.join("\n");
+			sections.push({
+				sort_order: 999,
+				contents: [
+					{
+						role: BUTTON,
+						label: "SECRETS",
+						dialog_text_align: LEFT,
+						confirmation: {
+							message: help_text,
+						}
 					}
-				}
-			]
-		});
+				]
+			});
+		}
 	}
 
 	inline function make_button(model:InteractiveModel, item_geometry:RectangleGeometry, color_bg:RGBA):stone.ui.Interactive.Button {
@@ -255,12 +261,13 @@ class Tray {
 		return action_button;
 	}
 
-	inline function make_label(model:InteractiveModel, item_geometry:RectangleGeometry, color_bg:RGBA):stone.ui.Interactive.Label {
+	inline function make_label(model:InteractiveModel, item_geometry:RectangleGeometry, color_bg:RGBA, is_toggled:Null<Bool> = null):stone.ui.Interactive {
 		return ui.make_label(
 			model,
 			item_geometry,
 			tray_model.color_fg,
-			color_bg
+			color_bg,
+			is_toggled
 		);
 	}
 

@@ -9,6 +9,7 @@ import stone.graphics.implementation.Graphics;
 class Ui{
 	var sliders(default, null):Array<Slider>;
 	var clickers(default, null):Array<Interactive>;
+	var labels(default, null):Array<Interactive>;
 	
 	var graphics:GraphicsAbstract;
 	var text:Text;
@@ -18,6 +19,7 @@ class Ui{
 	public function new(graphics_new_layer:GraphicsConstructor){
 		sliders = [];
 		clickers = [];
+		labels = [];
 		// todo pass window bounds size in 
 		this.graphics = graphics_new_layer(800, 640);
 		this.text =  new Text(font_load_embedded(24), graphics_new_layer(800, 640));
@@ -34,6 +36,14 @@ class Ui{
 			if (toggle.overlaps_background(x_mouse, y_mouse)) {
 					toggle.click();
 			}
+		}
+
+		for (interactive in labels) {
+			if(interactive.model.label_change == null){
+				continue;
+			}
+
+			interactive.change_text(interactive.model.label_change());
 		}
 	}
 
@@ -69,6 +79,7 @@ class Ui{
 	public function clear() {
 		sliders.clear(slider -> slider.erase());
 		clickers.clear(clicker -> clicker.erase());
+		labels.clear(interactive -> interactive.erase());
 	}
 
 
@@ -78,8 +89,12 @@ class Ui{
 			interactive.hide();
 		}
 
-		for (slider in sliders) {
-			slider.hide();
+		for (interactive in sliders) {
+			interactive.hide();
+		}
+
+		for (interactive in labels) {
+			interactive.hide();
 		}
 	}
 
@@ -99,6 +114,10 @@ class Ui{
 					interactive.show();
 				}
 			}
+		}
+
+		for (interactive in labels) {
+			interactive.show();
 		}
 
 		for (interactive in sliders) {
@@ -160,18 +179,29 @@ class Ui{
 		return button;
 	}
 
-	public function make_label(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA):Label {
+	public function make_label(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, is_toggled:Null<Bool> = null):Interactive {
+		
+		if(is_toggled == null){
+			var on_erase = model.interactions.on_erase;
+			model.interactions.on_erase = (interactive:Interactive) -> {
+				labels.remove(cast interactive);
+				// on_erase(interactive);
+			}
+			var label = new Label(model, geometry, color_fg, color_bg, graphics, text);
+			labels.push(label);
+			label.show();
+			return label;
+		}
+
 		var on_erase = model.interactions.on_erase;
 		model.interactions.on_erase = (interactive:Interactive) -> {
 			clickers.remove(cast interactive);
 			// on_erase(interactive);
 		}
-		
-		// trace('label x ${geometry.x} label y ${geometry.y} $label_text');
-
-		var label = new Label(model, geometry, color_fg, color_bg, graphics, text);
-		clickers.push(label);
-		return label;
+		trace('label toggle ${model.label}');
+		var label_toggle = new LabelToggle(model, geometry, color_fg, color_bg, graphics, text);
+		clickers.push(label_toggle);
+		return label_toggle;
 	}
 
 	public function make_dialog_text(message:String, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, text_align:Align=CENTER):TextArea{

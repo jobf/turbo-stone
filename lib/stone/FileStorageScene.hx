@@ -186,7 +186,7 @@ class FileStorageScene extends HudScene {
 class FileList{
 	public var ui(default, null):Ui;
 	var on_file_select:String->Void;
-	var labels:Array<Label> = [];
+	var labels:Array<Interactive> = [];
 	var bounds:RectangleGeometry;
 
 	public function new(graphics_init:GraphicsConstructor, bounds:RectangleGeometry,  on_file_select:String->Void){
@@ -234,7 +234,7 @@ class FileList{
 			}
 
 			var model:InteractiveModel = {
-				role: LABEL,
+				role: LABEL_TOGGLE(true),
 				label: label,
 				interactions: {
 					// on_hover: on_hover,
@@ -248,7 +248,7 @@ class FileList{
 					},
 				}
 			}
-			var interactive = ui.make_label(model, label_geometry, Theme.drawing_lines, Theme.bg_ui_interactive_label);
+			var interactive = ui.make_label(model, label_geometry, Theme.drawing_lines, Theme.bg_ui_interactive_label, false);
 			@:privateAccess
 			trace('label ${interactive.background.x} ${interactive.background.x} ${interactive.background.width} ${interactive.background.height}');
 			labels.push(interactive);

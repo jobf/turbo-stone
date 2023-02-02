@@ -36,8 +36,9 @@ class DesignerScene extends HudScene {
 		#end
 
 		var tray_sections:Array<Section> = [
-			{ // hidden commands
-				contents:[
+			{
+				contents: [
+					// hidden commands
 					{
 						role: BUTTON,
 						label: "DRAG TO DRAW",
@@ -73,11 +74,12 @@ class DesignerScene extends HudScene {
 						},
 						show_in_tray: false,
 					},
-				]
-			},
-			{
-				contents: [
-
+					// visible commands
+					{
+						role: LABEL,
+						label: " / ",
+						label_change: ()-> format_model_index()
+					},
 					{
 						role: BUTTON,
 						label: "PREVIOUS",
@@ -85,7 +87,6 @@ class DesignerScene extends HudScene {
 						interactions: {
 							on_click: interactive -> {
 								designer.set_active_figure(-1);
-								label_update();
 							}
 						}
 					},
@@ -96,7 +97,6 @@ class DesignerScene extends HudScene {
 						interactions: {
 							on_click: interactive -> {
 								designer.set_active_figure(1);
-								label_update();
 							}
 						}
 					}
@@ -232,7 +232,7 @@ class DesignerScene extends HudScene {
 			},
 		];
 
-		super(game, bounds, color, tray_sections, 32);
+		super(game, bounds, color, tray_sections);
 		this.file = file;
 		this.file_name = file_name;
 	}
@@ -269,8 +269,7 @@ class DesignerScene extends HudScene {
 		}
 
 		designer = new Designer(size_segment, graphics_main, bounds_main, file);
-
-		label_update();
+		ui.show();
 	}
 
 	function save_file(){
@@ -332,14 +331,12 @@ class DesignerScene extends HudScene {
 		designer.update_mouse_pointer(mouse_position);
 	}
 
-	function label_update(){
-		var label_text = '${designer.model_index}/${file.models.length - 1}';
-		if(label_model != null){
-			label_model.erase();
+	function format_model_index():String{
+		if(designer == null || file == null){
+			return "-";
 		}
-		var width_container = bounds_tray.width;
-		@:privateAccess
-		label_model = ui.text.word_make(720, 20, label_text, Theme.drawing_lines, width_container);
+
+		return '${designer.model_index}/${file.models.length - 1}';
 	}
 
 	function handle_mouse_press_left() {

@@ -24,7 +24,7 @@ class HudScene extends Scene {
 	var actions:Map<Button, Action>;
 	var graphics_main:Graphics;
 
-	public function new(game:Game, bounds_viewport:RectangleGeometry, color:RGBA, sections:Array<Section>, tray_offset_y:Int=0){
+	public function new(game:Game, bounds_viewport:RectangleGeometry, color:RGBA, sections:Array<Section>){
 		super(game, bounds_viewport, color);
 		graphics_main = cast game.graphics_layer_init(bounds.width, bounds.height);
 
@@ -40,7 +40,7 @@ class HudScene extends Scene {
 		}
 
 		bounds_tray = {
-			y: tray_offset_y,
+			y: 0,
 			x: bounds_main.width,
 			width: bounds.width - bounds_main.width,
 			height: bounds.height

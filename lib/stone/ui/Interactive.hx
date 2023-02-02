@@ -13,8 +13,27 @@ class Button extends Interactive{
 
 
 class Label extends Interactive{
-	var track:AbstractLine;
-	var handle:AbstractFillRectangle;
+	public function new(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text) {
+		super(model, geometry, color_fg, color_bg, graphics, text, LEFT,  0, true);
+	}
+
+	override function click() {
+	}
+
+	override function hover(is_mouse_over:Bool) {
+	}
+
+	override function highlight(should_highlight:Bool) {
+	}
+
+	override function show() {
+		super.show();
+		super.highlight(true);
+	}
+}
+
+
+class LabelToggle extends Interactive{
 	public var on_change:Bool->Void = b -> trace('on_change $b');
 	public var is_toggled(default, set):Bool;
 	function set_is_toggled(v:Bool):Bool{
@@ -32,6 +51,7 @@ class Label extends Interactive{
 		highlight(is_toggled);
 	}
 }
+
 
 class Toggle extends Interactive{
 	var track:AbstractLine;
@@ -116,6 +136,7 @@ class ButtonModel{
 enum InteractiveRole{
 	BUTTON;
 	LABEL;
+	LABEL_TOGGLE(enabled:Bool);
 	TOGGLE(enabled:Bool);
 	SLIDER;
 }
@@ -129,6 +150,7 @@ class InteractiveModel {
 	public var interactions:Interactions = {};
 	public var confirmation:Null<DialogModel> = null;
 	public var dialog_text_align:Align = CENTER;
+	public var label_change:Null<Void->String> = null;
 	public var conditions:Null<()->Bool> = null;
 	public var key_code:Null<stone.core.InputAbstract.Button> = null;
 	public var sort_order:Int = 0;
@@ -160,12 +182,14 @@ class Interactive {
 	var alpha_idle:Int ;
 	public var is_clicked(default, null):Bool = false;
 	var is_highlighted:Bool = false;
-	// var interactions:Interactions;
 	var x_center:Int;
 	var y_center:Int;
 	var x_background:Int;
 	var y_background:Int;
 	var label:Word;
+	var text:Text;
+	var color_fg:RGBA;
+
 	public var is_enabled(default, null):Bool = true;
 	public var height(get,never):Int;
 	function get_height():Int{
@@ -173,7 +197,8 @@ class Interactive {
 	}
 	public function new(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text, align:Align=CENTER, y_label_offset:Int=0, alpha_idle_is_transparent:Bool=false) {
 		this.model = model;
-
+		this.text = text;
+		this.color_fg = color_fg;
 		x_center = Std.int(geometry.width * 0.5);
 		y_center = Std.int(geometry.height * 0.5);
 
@@ -234,6 +259,9 @@ class Interactive {
 	public function show() {
 		is_enabled = true;
 		background.color.a = alpha_idle;
+		if(model.label_change != null){
+			change_text(model.label_change());
+		}
 		label.show();
 	}
 
@@ -257,6 +285,11 @@ class Interactive {
 			background.color.a = is_mouse_over ? alpha_hover : alpha_idle;
 		}
 		model.interactions.on_hover(is_mouse_over);
+	}
+
+	public function change_text(next_text:String){
+		// trace('change');
+		text.change(label, next_text, Std.int(background.x), Std.int(background.y), Std.int(background.width), color_fg);
 	}
 
 	public function overlaps_background(x_mouse:Int, y_mouse:Int):Bool {

@@ -169,25 +169,25 @@ class Designer {
 	}
 
 	function erase_figure_graphics() {
-		trace('clearing figure with ${figure.lines.length} lines');
+		// trace('clearing figure with ${figure.lines.length} lines');
 		// todo refactor to have separate graphics buffer for lines in designer
 		// graphics.buffer_lines.clear(true, true);
 		for (i in 0...figure.lines.length) {
 			line_erase(figure.lines[i]);
 		}
-		trace('cleared figure');
-		trace('has remaining lines ${figure.lines.length}');
-		trace('has remaining points ${figure.model.length}');
+		// trace('cleared figure');
+		// trace('has remaining lines ${figure.lines.length}');
+		// trace('has remaining points ${figure.model.length}');
 	}
 
 	public function set_active_figure(direction:Int) {
 		erase_figure_graphics();
 		var index_next = (model_index + direction);
 		index_next = (index_next % file.models.length + file.models.length) % file.models.length;
-		trace('next figure $index_next');
+		// trace('next figure $index_next');
 
 		model_index = index_next;
-		trace('show ${model_name()}');
+		// trace('show ${model_name()}');
 
 		figure = graphics.map_figure(file.models[model_index], translation);
 	}
@@ -229,7 +229,7 @@ class Designer {
 	}
 
 	public function line_erase(line:AbstractLine) {
-		trace('designer clean line $line');
+		// trace('designer clean line $line');
 		line.erase();
 	}
 
