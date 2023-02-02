@@ -1,6 +1,5 @@
 package stone.graphics.implementation;
 
-import stone.graphics.implementation.Graphics;
 import stone.graphics.Fill;
 import stone.graphics.LineCPU;
 
@@ -18,12 +17,10 @@ class PeoteLine extends AbstractLine {
 	var remove_from_buffer:PeoteLine->Void;
 	var is_erased:Bool = false;
 
-	public var element(default, null):Line;
-	public var rotation_override:Null<Float>;
-
+	public var element(default, null):LineCPU;
 	public var thick(get, set):Int;
 
-	public function new(point_from:Vector, point_to:Vector, element:Line, remove_from_buffer:PeoteLine->Void, head:Rectangle, end:Rectangle, color:Color) {
+	public function new(point_from:Vector, point_to:Vector, element:LineCPU, remove_from_buffer:PeoteLine->Void, head:Rectangle, end:Rectangle, color:Color) {
 		super(point_from, point_to, cast color);
 		this.element = element;
 		this.remove_from_buffer = remove_from_buffer;
@@ -34,30 +31,19 @@ class PeoteLine extends AbstractLine {
 	}
 
 	public function draw():Void {
-		element.color = cast color;
+		element.c = cast color;
 
-		a = point_to.x - point_from.x;
-		b = point_to.y - point_from.y;
-
-		// line thickness
-		element.w = thick;
-
-		// line length - note we add the thickness, otherwise so it finishes too short
-		element.h = Std.int(Math.sqrt(a * a + b * b)) + thick;
-
-		element.x = Std.int(point_from.x);
-		element.y = Std.int(point_from.y);
-
-		element.rotation = rotation_override == null ? Math.atan2(point_from.x - point_to.x,
-			-(point_from.y - point_to.y)) * (180 / Math.PI) : rotation_override;
+		element.set_start(Std.int(point_from.x), Std.int(point_from.y));
+		element.set_end(Std.int(point_to.x), Std.int(point_to.y));
+		element.thick = thick;
 
 		head.x = point_from.x;
 		head.y = point_from.y;
-		head.rotation = element.rotation - 45;
+		head.rotation = -45;
 
 		end.x = point_to.x;
 		end.y = point_to.y;
-		end.rotation = element.rotation - 45;
+		end.rotation = -45;
 	}
 
 	public function erase():Void {
@@ -68,13 +54,13 @@ class PeoteLine extends AbstractLine {
 	}
 
 	function get_thick():Int {
-		return element.w;
+		return element.thick;
 	}
 
 	var cap_offset:Float = 0.3;
 
 	function set_thick(value:Int):Int {
-		element.w = value;
+		element.thick = value;
 		var cap_size = thick * 0;
 		this.head.w = cap_size;
 		this.head.h = cap_size;
@@ -84,6 +70,6 @@ class PeoteLine extends AbstractLine {
 		this.end.h = cap_size;
 		this.end.color.a = 40;
 
-		return element.w;
+		return element.thick;
 	}
 }

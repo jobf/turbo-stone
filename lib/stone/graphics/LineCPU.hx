@@ -3,44 +3,61 @@ package stone.graphics;
 import peote.view.Element;
 import peote.view.Color;
 
+class LineCPU implements Element
+{
+	@posX var from_x:Int;
+	@posY var from_y:Int;
+	var to_x:Int;
+	var to_y:Int;
 
-
-class Line implements Element {
-	@rotation public var rotation:Float = 0.0;
-	@sizeX @varying public var w:Int;
-	@sizeY @varying public var h:Int;
-	@color @anim("ColorFade") public var color:Color;
-	@posX public var x:Int;
-	@posY public var y:Int;
-
-	// (rotation offset)
-	@pivotX @formula("w * 0.5")public var px:Int = 0;
-	@pivotY @formula("w * 0.5") public var py:Int = 0;
-
+	@sizeX var length:Int = 1;
+	// rotation around pivot point
+	@rotation var r:Float;
+	
+	// calculated pivot
+	@pivotX @formula("thick * 0.5") var px:Int;
+	@pivotY @formula("thick * 0.5") var py:Int;
+	
 	var OPTIONS = {alpha: true};
 
-	// params for blinking alpha
-	// @custom("alpha") @varying @anim("A", "pingpong") public var alpha:Float;
-	@custom("alpha") @varying @constEnd(1.0) @anim("A", "pingpong") public var alpha:Float;
+	@sizeY public var thick:Int = 1;
+	@color public var c:Color;
 
-	public function new(positionX:Float, positionY:Float, width:Float, height:Float, rotation:Float = 0, color:Color = 0x556677ff) {
-		this.x = Std.int(positionX);
-		this.y = Std.int(positionY);
-		this.w = Std.int(width);
-		this.h = Std.int(height);
-		this.color = color;
-		this.rotation = rotation;
+	public function new(from_x:Int, from_y:Int, to_x:Int, to_y:Int, thick:Int, color:Color) {
+		this.thick = thick;
+		c = color;
+
+		this.from_x = from_x;
+		this.from_y = from_y;
+		this.to_x = to_x;
+		this.to_y = to_y;
+
+		rotate();
 	}
 
-	public function setFlashing(isFlashing:Bool) {
-		// todo - adhere to previously set alpha
-		if (isFlashing) {
-			alphaStart = 0.0;
-			// animate Color from red to yellow
-			animColorFade(Color.RED, Color.GREEN);
-			timeColorFade(0.0, 1.0); // from start-time (0.0) and during 1 seconds
-		} else {
-			alphaStart = 1.0;
-		}
+	inline function rotate() {
+		var a = from_x - to_x;
+		var b = from_y - to_y;
+
+		// note we add the thickness to length, otherwise so it finishes too short
+		length = Std.int(Math.sqrt(a * a + b * b)) + thick;
+		r = Math.atan2(to_x - from_x, -(to_y - from_y)) * (180 / Math.PI) - 90;
+	}
+
+	public function set_start(x:Int, y:Int) {
+		this.from_x = x;
+		this.from_y = y;
+		rotate();
+	}
+
+	public function set_end(x:Int, y:Int) {
+		this.to_x = x;
+		this.to_y = y;
+		rotate();
+	}
+
+	public function set_rotation(r:Float) {
+		this.r = r;
+		rotate();
 	}
 }

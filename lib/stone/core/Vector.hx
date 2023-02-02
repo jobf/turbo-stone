@@ -7,7 +7,7 @@ class Vector {
 	public var y:Float;
 }
 
-class MotionComponent {
+class MotionInteractive {
 	public function new(x:Int, y:Int) {
 		position = {
 			x: x,
@@ -72,15 +72,15 @@ class MotionComponent {
 	public var deceleration:Vector;
 }
 
-class MotionComponentLogic {
+class MotionInteractiveLogic {
 	/**
-	 * Updates the speed and position of the MotionComponent 
+	 * Updates the speed and position of the MotionInteractive 
 	 * 2 deltas are calculated per axis to "help with higher fidelity framerate-independent motion.
 	 * Based on FlxObject UpdateMotion https://github.com/HaxeFlixel/flixel/blob/dev/flixel/FlxObject.hx#L882
-	 * @param motion				The motion component to be updated
+	 * @param motion				The motion interactive to be updated
 	 * @param elapsed_seconds	The amount of time passed since last update frame
 	**/
-	public static function compute_motion(motion:MotionComponent, elapsed_seconds:Float) {
+	public static function compute_motion(motion:MotionInteractive, elapsed_seconds:Float) {
 		// update x axis position and speed
 		var vel_delta = 0.5 * (compute_axis(motion.velocity.x, motion.acceleration.x, motion.deceleration.x, motion.velocity_maximum.x, elapsed_seconds)
 			- motion.velocity.x);

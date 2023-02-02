@@ -4,19 +4,21 @@ import stone.core.Storage;
 import stone.core.InputAbstract;
 import stone.core.GraphicsAbstract;
 
+typedef GraphicsConstructor = (width:Int, height:Int) -> GraphicsAbstract
 
 class Game {
 	var current_scene:Scene;
 
-	public var graphics(default, null):GraphicsAbstract;
+	var graphics_layers : Array<GraphicsAbstract>;
+	var graphics_constructor(default, null):GraphicsConstructor;
 	public var input(default, null):InputAbstract;
 	public var storage(default, null):Storage;
 
-	public function new(scene_constructor:Game->Scene, graphics:GraphicsAbstract, input:InputAbstract, storage:Storage) {
-		this.graphics = graphics;
+	public function new(scene_constructor:Game->Scene, graphics_constructor:GraphicsConstructor, input:InputAbstract, storage:Storage) {
 		this.input = input;
 		this.storage = storage;
-
+		graphics_layers = [];
+		this.graphics_constructor = graphics_constructor;
 		scene_init(scene_constructor);
 	}
 
@@ -34,7 +36,7 @@ class Game {
 
 	public function scene_change(scene_constructor:Game->Scene) {
 		if (current_scene != null) {
-			graphics.close();
+			graphics_layers.clear(layer -> layer.close());
 			current_scene.close();
 			input.on_pressed.removeAll();
 			input.on_released.removeAll();
@@ -45,7 +47,15 @@ class Game {
 
 	public function draw() {
 		current_scene.draw();
-		graphics.draw();
+		for (layer in graphics_layers) {
+			layer.draw();
+		}
+	}
+
+	public function graphics_layer_init(width:Int, height:Int):GraphicsAbstract{
+		var layer = graphics_constructor(width, height);
+		graphics_layers.push(layer);
+		return layer;
 	}
 }
 
@@ -90,3 +100,4 @@ class RectangleGeometry {
 	public var width:Int;
 	public var height:Int;
 }
+

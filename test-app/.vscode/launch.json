@@ -1,0 +1,15 @@
+
+
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "HashLink",
+			"type": "hl",
+			"request": "launch",
+			"hl": "${workspaceFolder}/dist/hl/bin/Main",
+			"cwd": "${workspaceFolder}/dist/hl/bin",
+			"program": "${workspaceFolder}/dist/hl/bin/hlboot.dat"
+		},
+	]
+}

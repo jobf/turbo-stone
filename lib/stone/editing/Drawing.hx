@@ -2,8 +2,10 @@ package stone.editing;
 
 import stone.editing.Editor;
 import stone.core.GraphicsAbstract;
-import stone.graphics.implementation.Graphics;
 import stone.core.Models;
+
+
+using stone.editing.Editor.GraphicsExtensions;
 
 @:structInit
 class Prototype{
@@ -28,10 +30,16 @@ class Drawing{
 
 	public var lines:Array<AbstractLine> = [];
 	public function new(prototypeModel:Prototype, x:Float, y:Float, make_line:MakeLine, model_translation:EditorTranslation, color:Int = 0x2C8D49ff) {
+		if(prototypeModel == null || prototypeModel.model_lines == null)
+		{
+			return;
+		}
+
 		this.x = x;
 		this.y = y;
 		this.prototypeModel = prototypeModel;
 		this.model_translation = model_translation;
+		
 		for (line_proto in prototypeModel.model_lines) {
 			var from_:Vector ={
 				x: (line_proto.from.x),
@@ -47,6 +55,7 @@ class Drawing{
 			var line =  make_line(from.x, from.y, to.x, to.y, color);
 			lines.push(line);
 		}
+		draw();
 	}
 
 	function translate(line_proto:LineModel, line_drawing:AbstractLine, rotation_sin:Float, rotation_cos:Float){
@@ -80,6 +89,9 @@ class Drawing{
 
 		var rotation_sin = Math.sin(rotation);
 		var rotation_cos = Math.cos(rotation);
+		if(prototypeModel.model_lines == null){
+			return;
+		}
 		for (n => proto in prototypeModel.model_lines) {
 			translate(proto, lines[n], rotation_sin, rotation_cos);
 		}

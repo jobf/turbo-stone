@@ -1,7 +1,7 @@
+import stone.FileStorageScene;
 import stone.core.Models.Serialize;
 import stone.Theme;
 import stone.core.Models.Deserialize;
-import stone.core.Models.FileModel;
 import stone.DesignerScene;
 import stone.core.Storage;
 import peote.view.Display;
@@ -9,7 +9,6 @@ import peote.view.PeoteView;
 import stone.core.Engine;
 import stone.input.Input;
 import stone.LoadingScene;
-import stone.FileStorageScene;
 import stone.graphics.implementation.Graphics;
 import lime.graphics.RenderContext;
 import haxe.CallStack;
@@ -28,7 +27,7 @@ class Main extends Application {
 	var elapsed_seconds:Float = 0;
 	var game:Game;
 
-	var implementation_graphics:Graphics;
+	// var implementation_graphics:Graphics;
 	var implementation_input:Input;
 
 	override function onWindowCreate() {
@@ -45,72 +44,88 @@ class Main extends Application {
 		}
 	}
 
+	var init_layer:GraphicsConstructor;
+
 	public function init(window:Window) {
 		var viewport_window:RectangleGeometry = {
 			y: 0,
 			x: 0,
-			width: window.width,
-			height: window.height
+			width: 800,
+			height: 640
 		}
 
 		peoteview = new PeoteView(window);
-		display_main = new Display(0, 0, 800, 640);
-		peoteview.addDisplay(display_main);
-
-		display_hud = new Display(0, 0, window.width, window.height);
-		peoteview.addDisplay(display_hud);
-
-		implementation_graphics = new Graphics(display_main, viewport_window);
 		implementation_input = new Input(window);
-		implementation_graphics.set_color(Theme.bg_scene);
-		
-		var init_scene:Game->Scene;
+
+		init_layer = (width:Int, height:Int) -> {
+			var bounds:RectangleGeometry = {
+				x: 0,
+				y: 0,
+				width: width,
+				height: height
+			}
+			var display = new Display(0, 0, width, height);
+			peoteview.addDisplay(display);
+			return new Graphics(display, bounds, init_layer);
+		}
 
 		var storage = new Storage(window);
 		var file_list = storage.file_paths();
-		
-		if(file_list.length <= 0){
+
+		if (file_list.length <= 0) {
 			var file_name = '${Date.now().to_time_stamp()}.json';
-			
+
 			storage.file_save({
 				name: file_name,
 				content: Serialize.to_string({
 					models: []
 				})
 			});
-			
+
 			file_list = storage.file_paths();
-		}
-		else{
+		} else {
 			trace(file_list[0]);
 		}
 
-		if(file_list.length > 0){
+		var start:SceneStart = DESIGN;
+
+		#if testoverview
+		start = OVERVIEW;
+		#end
+
+		#if testui
+		start = TESTUI;
+		#end
+
+		#if teststorage
+		start = STORAGE;
+		#end
+
+		if (file_list.length > 0) {
 			var index_end_of_list = file_list.length - 1;
 			var file_name = file_list[index_end_of_list];
 			var file_latest = storage.file_load(file_name);
-			trace(file_latest.content);
+			// trace(file_latest.content);
 			var has_valid_file = file_latest != null && file_latest.content.length > 0;
-			if(has_valid_file){
+			if (has_valid_file) {
 				var file = Deserialize.parse_file_contents(file_latest.content);
-				var hud_graphics = new Graphics(display_hud, viewport_window);
-				init_scene = game -> new DesignerScene(hud_graphics, game, viewport_window, Theme.bg_scene, file, file_name);
+
+				var init_scene:Game->Scene = switch start {
+					case DESIGN: game -> new DesignerScene(game, viewport_window, Theme.bg_scene, file, file_name);
+					case STORAGE: game -> new FileStorageScene(game, viewport_window, Theme.bg_scene);
+					case OVERVIEW: game -> new OverviewScene(game, viewport_window, Theme.bg_scene, file, file_name);
+					case TESTUI: game -> new TestTray(game, viewport_window, 0x332036FF);
+				};
+
+				var init_scene_loader:Game->Scene = game -> new LoadingScene(preloader, init_scene, game, viewport_window, Theme.bg_scene);
+
+				game = new Game(init_scene_loader, init_layer, implementation_input, storage);
+				isReady = true;
+			}
+			else{
+				trace('no valid file to load ');
 			}
 		}
-		
-		#if testui
-		init_scene = game -> new TestUi(game, viewport_window, Theme.bg_scene);
-		#end
-
-		#if testfiles
-		init_scene = game -> new FileStorageScene(game, viewport_window, Theme.bg_scene);
-		#end
-
-		var init_scene_loader:Game->Scene = game -> new LoadingScene(preloader, init_scene, game, viewport_window, Theme.bg_scene);
-
-		game = new Game(init_scene_loader, implementation_graphics, implementation_input, storage);
-
-		isReady = true;
 	}
 
 	override function update(deltaTime:Int):Void {
@@ -136,5 +151,9 @@ class Main extends Application {
 	}
 }
 
-
-
+enum SceneStart {
+	DESIGN;
+	STORAGE;
+	OVERVIEW;
+	TESTUI;
+}
