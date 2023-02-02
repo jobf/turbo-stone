@@ -94,6 +94,8 @@ class Ui{
 		}
 
 		for (interactive in labels) {
+			@:privateAccess
+			trace('hide label ${interactive.label.text}');
 			interactive.hide();
 		}
 	}

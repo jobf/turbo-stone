@@ -288,8 +288,8 @@ class Interactive {
 	}
 
 	public function change_text(next_text:String){
-		// trace('change');
-		text.change(label, next_text, Std.int(background.x), Std.int(background.y), Std.int(background.width), color_fg);
+		label.erase();
+		label = text.word_make(Std.int(background.x), Std.int(background.y), next_text, Std.int(background.width), color_fg);
 	}
 
 	public function overlaps_background(x_mouse:Int, y_mouse:Int):Bool {

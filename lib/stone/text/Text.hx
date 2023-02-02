@@ -59,7 +59,7 @@ class Text {
 	}
 
 	// todo - make x_center_of_container actually x_left_of_container?
-	public function word_make(x_center_of_container:Int, y:Int, text:String, color:RGBA, width_container:Int, drawings_:Null<Array<Drawing>> = null, align:Align=CENTER):Word {
+	public function word_make(x_center_of_container:Int, y:Int, text:String, color:RGBA, width_container:Int, align:Align=CENTER):Word {
 		// trace('word: $text x: $x_center_of_container , y: $y width: $width_container ');
 
 		var width_label = text.length * font.width_character;
@@ -75,23 +75,22 @@ class Text {
 		}
 
 		var x_word = Std.int(x_center_of_container + x_word_offset);
-		var drawings:Array<Drawing> = drawings_ == null ? [] : drawings_;
+
+		var drawings:Array<Drawing> = [];
 		for (i in 0...text.length) {
 			var text_upper = text.toUpperCase();
 			var char_code = text_upper.charCodeAt(i);
 			var x_drawing = x_word + (font.width_character * i);
 			drawings.push( drawing_create(font.models[char_code], x_drawing, y, color));
 		}
-
-		if(drawings_ == null){
-			words.push({
-				text: text,
-				drawings: drawings,
-				on_erase: word -> words.remove(word),
-				width: width_label,
-				height: font.height_model
-			});
-		}
+		
+		words.push({
+			text: text,
+			drawings: drawings,
+			on_erase: word -> words.remove(word),
+			width: width_label,
+			height: font.height_model
+		});
 
 		return words[words.length - 1];
 	}
@@ -101,22 +100,14 @@ class Text {
 			model_lines: model_Lines
 		}, x, y, graphics.make_line, model_translation, color);
 	}
-
-	public function change(word:Word, next_text:String, x_center_of_container:Int, y:Int, width_container:Int, color:RGBA){
-		for (drawing in word.drawings) {
-			drawing.erase();
-		}
-		word_make(x_center_of_container, y, next_text, color, width_container, word.drawings);
-	}
-
 }
 
 @:structInit
 class Word {
-	public var text(default, null):String;
 	public var on_erase:Word->Void;
-	public var height(default, null):Int;
-	public var width(default, null):Int;
+	public var text:String;
+	public var height:Int;
+	public var width:Int;
 	public var drawings(default, null):Array<Drawing>;
 
 	public function erase() {
@@ -131,6 +122,7 @@ class Word {
 			drawing.draw();
 		}
 	}
+
 	public function hide(){
 		for (drawing in drawings) {
 			for (line in drawing.lines) {
