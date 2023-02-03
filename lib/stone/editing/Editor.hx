@@ -4,8 +4,9 @@ import stone.core.GraphicsAbstract;
 import stone.core.Models;
 import stone.core.Engine;
 import stone.graphics.implementation.Graphics;
-import haxe.ds.ArraySort;
+import stone.graphics.CursorGraphics;
 
+import haxe.ds.ArraySort;
 using stone.editing.Editor.GraphicsExtensions;
 
 class EditorTranslation {
