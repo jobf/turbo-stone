@@ -4,7 +4,7 @@ born from https://github.com/jobf/haxetta-stone
 
 but we only care about peote-stack here 
 
-DEMO HERE >>> http://maitag.de/~half/2023/turbo-stone/alpha/
+DEMO HERE >>> https://unstable.52weeks.in/turbo-stone/alpha/2023-02-03-21-37-51/
 
 ## how to run
 
