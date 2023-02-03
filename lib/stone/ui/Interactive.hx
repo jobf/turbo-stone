@@ -20,16 +20,9 @@ class Label extends Interactive{
 	override function click() {
 	}
 
-	override function hover(is_mouse_over:Bool) {
-	}
-
-	override function highlight(should_highlight:Bool) {
-	}
-
-	override function show() {
-		super.show();
-		super.highlight(true);
-	}
+	// override function show() {
+	// 	super.show();
+	// }
 }
 
 
@@ -39,21 +32,32 @@ class LabelToggle extends Interactive{
 
 	function set_is_toggled(v:Bool):Bool{
 		is_toggled = v;
+		background.color.a = is_toggled ? alpha_highlight : alpha_idle;
 		on_change(is_toggled);
 		return is_toggled;
 	}
 
-	public function new(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text) {
+	public function new(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text, is_toggled:Bool) {
 		super(model, geometry, color_fg, color_bg, graphics, text, LEFT,  0, true);
+		this.is_toggled = is_toggled;
 	}
 
 	override function click() {
+		trace('click ${model.label}');
+		is_toggled = !is_toggled;
+		background.color.a = is_toggled ? alpha_highlight : alpha_idle;
 		super.click();
-		set_is_toggled(!is_toggled);
-		highlight(is_toggled);
+	}
+
+	override function mouse_out() {
+		super.mouse_out();
+		if(is_toggled){
+			background.color.a = alpha_highlight;
+		}
 	}
 
 	override function reset() {
+		super.reset();
 		set_is_toggled(false);
 	}
 }
@@ -72,7 +76,7 @@ class Toggle extends Interactive{
 		return is_toggled;
 	}
 
-	public function new(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text, is_enabled_:Bool) {
+	public function new(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text, is_toggled:Bool) {
 		super(model, geometry, color_fg, color_bg, graphics, text, LEFT);
 		var width_track = text.font.width_character;
 		var y_track = geometry.y + Std.int(geometry.height * 0.5);
@@ -81,48 +85,67 @@ class Toggle extends Interactive{
 
 		this.track = graphics.make_line(x_track, y_track, x_track + width_track, y_track, color_fg);
 		this.handle = graphics.make_fill(x_track, y_track, size_handle, size_handle, color_fg);
+		this.is_toggled = is_toggled;
 	}
 
 	override function click() {
 		super.click();
 		set_is_toggled(!is_toggled);
-		handle_move();
 	}
 
 	function handle_move() {
 		var x_handle = is_toggled ? track.point_to.x : track.point_from.x;
 		handle.x = x_handle;
-		trace('handle_move ${handle.x}');
+		// trace('handle_move $is_toggled ${handle.x}');
 	}
 
 	override function reset() {
 		set_is_toggled(false);
+	}
+
+	override function hide() {
+		super.hide();
+		track.color.a = 0;
+		handle.color.a = 0;
+	}
+
+	override function show() {
+		super.show();
+		track.color.a = 255;
+		handle.color.a = 255;
 	}
 }
 
 class Slider extends Interactive{
 	var track:AbstractLine;
 	var handle:AbstractFillRectangle;
+	var x_track:Int;
+	var width_track:Int;
 	public var on_move:Float->Void = f -> trace('on_move $f');
-
-	public function new(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text) {
+	public var fraction(default, null):Float = 0;
+	public function new(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsAbstract, text:Text, fraction:Float) {
 		var y_label_offset:Int = Std.int(text.font.height_model * 0.5);
 		geometry.height += text.font.height_model;
 		super(model, geometry, color_fg, color_bg, graphics, text, LEFT, -y_label_offset);
-		var width_track = geometry.width - (text.font.width_model);// * 2);
+		width_track = geometry.width - (text.font.width_model);
 		var y_track = geometry.y + Std.int(geometry.height * 0.5) + y_label_offset;
-		var x_track = Std.int(x_background + (geometry.width * 0.5) - (width_track + text.font.width_character));
+		x_track = Std.int(x_background + (geometry.width * 0.5) - (width_track + text.font.width_character));
 		var size_handle = Std.int(text.font.width_character);
-
+		var x_handle = Std.int((width_track * fraction) + x_track) + 1;
 		this.track = graphics.make_line(x_track, y_track, x_track + width_track, y_track, color_fg);
-		this.handle = graphics.make_fill(x_track, y_track, size_handle, size_handle, color_fg);
+		this.handle = graphics.make_fill(x_handle, y_track, size_handle, size_handle, color_fg);
 	}
 
 	public function move(x_mouse:Float){
+		if(!is_clicked){
+			return;
+		}
 		if (x_mouse > x_min && x_mouse < x_max) {
 			handle.x = x_mouse;
 			var x_proportional = handle.x - track.point_from.x;
-			on_move(x_proportional / track.length);
+			fraction = x_proportional / track.length;
+			on_move(fraction);
+			model.interactions.on_change(this);
 		}
 	}
 
@@ -134,6 +157,25 @@ class Slider extends Interactive{
 	public var x_max(get, never):Int;
 	function get_x_max():Int {
 		return Std.int(track.point_from.x + track.length);
+	}
+
+	public function set_detent(fraction:Float) {
+		this.fraction = fraction;
+		// trace('detent fraction $fraction ${model.label}');
+		handle.x = (width_track * fraction) + x_track;
+	}
+
+	override function hide() {
+		super.hide();
+		track.color.a = 0;
+		handle.color.a = 0;
+	}
+
+	override function show() {
+		super.show();
+		is_enabled = true;// todo - should notn need this
+		track.color.a = 255;
+		handle.color.a = 255;
 	}
 }
 
@@ -149,7 +191,7 @@ enum InteractiveRole{
 	LABEL;
 	LABEL_TOGGLE(enabled:Bool);
 	TOGGLE(enabled:Bool);
-	SLIDER;
+	SLIDER(fraction:Float);
 }
 
 
@@ -165,23 +207,26 @@ class InteractiveModel {
 	public var conditions:Null<()->Bool> = null;
 	public var key_code:Null<stone.core.InputAbstract.Button> = null;
 	public var sort_order:Int = 0;
+	public var can_be_disabled:Bool = true;
+	public var sub_contents:Null<Array<InteractiveModel>> = null;
 }
 
 @:structInit
 class DialogModel{
-	public var message:String;
+	public var is_blocking:Bool = true;
+	public var message:String = "";
 	public var confirm:String = "";
 	public var cancel:String = "";
 }
-
 
 @:structInit
 class Interactions{
 	public var on_click:Interactive->Void = (interactive:Interactive)-> return;
 	public var on_release:Interactive->Void = (interactive:Interactive)-> return;
+	public var on_over:Interactive->Void = (interactive:Interactive)-> return;
+	public var on_out:Interactive->Void = (interactive:Interactive)-> return;
+	public var on_change:Interactive->Void = (interactive:Interactive)-> return;
 	public var on_erase:Interactive->Void = (interactive:Interactive)-> return;
-	public var on_hover:Bool->Void = (should_hover:Bool)-> return;
-	public var on_highlight:Bool->Void = (should_highlight:Bool)-> return;
 }
 
 class Interactive {
@@ -192,7 +237,6 @@ class Interactive {
 	var alpha_hover:Int;
 	var alpha_idle:Int ;
 	public var is_clicked(default, null):Bool = false;
-	var is_highlighted:Bool = false;
 	var x_center:Int;
 	var y_center:Int;
 	var x_background:Int;
@@ -200,6 +244,8 @@ class Interactive {
 	var label:Word;
 	var text:Text;
 	var color_fg:RGBA;
+	var is_mouse_over:Bool = false;
+	var is_mouse_out:Bool = true;
 
 	public var is_enabled(default, null):Bool = true;
 	public var height(get,never):Int;
@@ -237,18 +283,20 @@ class Interactive {
 
 	public function reset(){
 		is_clicked = false;
+		background.color.a = alpha_idle;
 	}
 
 	public function click() {
-		if(!is_enabled){
+		if(model.can_be_disabled && !is_enabled){
 			return;
 		}
+		trace('click ${model.label}');
 		is_clicked = true;
 		model.interactions.on_click(this);
 	}
 
 	public function release() {
-		if(!is_enabled){
+		if(model.can_be_disabled && !is_enabled){
 			return;
 		}
 		is_clicked = false;
@@ -267,7 +315,6 @@ class Interactive {
 		label.hide();
 	}
 
-
 	public function show() {
 		is_enabled = true;
 		background.color.a = alpha_idle;
@@ -277,26 +324,43 @@ class Interactive {
 		label.show();
 	}
 
-	public function highlight(should_highlight:Bool) {
+	public function refresh(){
+			if(model.conditions != null){
+				// trace('checking sub menu ${interactive.model.label}');
+				if(model.conditions()){
+					show();
+				}
+				else{
+					hide();
+				}
+			}
+			if(model.label_change != null){
+				change_text(model.label_change());
+			}
+	}
+	
+	public function mouse_over(){
 		if(!is_enabled){
 			return;
 		}
-		is_highlighted = should_highlight;
-		background.color.a = should_highlight ? alpha_highlight : alpha_idle;
-		model.interactions.on_highlight(should_highlight);
+		if(!is_mouse_over){
+			// trace('hover ${model.label}');
+			is_mouse_over = true;
+			model.interactions.on_over(this);
+			background.color.a = alpha_hover;
+		}
 	}
 
-	public function hover(is_mouse_over:Bool) {
+	public function mouse_out(){
 		if(!is_enabled){
 			return;
 		}
-		if(is_highlighted){
-			background.color.a = is_mouse_over ? alpha_hover : alpha_highlight;
+		if(is_mouse_over){
+			is_mouse_over = false;
+			is_clicked = false;
+			model.interactions.on_out(this);
 		}
-		else{
-			background.color.a = is_mouse_over ? alpha_hover : alpha_idle;
-		}
-		model.interactions.on_hover(is_mouse_over);
+		background.color.a = alpha_idle;
 	}
 
 	public function change_text(next_text:String){

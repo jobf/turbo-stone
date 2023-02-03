@@ -73,6 +73,8 @@ class Designer {
 
 	var size_segment:Int;
 	var size_segment_half:Int;
+	var size_snapping: Int;
+	var snapping_mod:Int = 4;
 	var graphics:Graphics;
 	var mouse_pointer_graphics:CursorGraphics;
 	var bounds_grid:RectangleGeometry;
@@ -89,6 +91,7 @@ class Designer {
 		granularity_set(size_segment);
 		this.graphics = cast graphics;
 		this.bounds_grid = bounds_grid;
+		size_snapping = Std.int(bounds_grid.height / 4);
 		mouse_pointer_graphics = new CursorGraphics(this.graphics.display);
 		var mouse_pointer_size = Std.int(size_segment * 0.5);
 		mouse_pointer = mouse_pointer_graphics.make_fill(0, 0, mouse_pointer_size, mouse_pointer_size, Theme.cursor);
@@ -106,10 +109,14 @@ class Designer {
 	}
 
 	public function granularity_set(size_segment:Int) {
-		this.size_segment = Std.int(size_segment * 0.5);
-		this.size_segment_half = -Std.int(size_segment * 0.5);
+		this.size_segment = Std.int((size_segment * 0.5));
+		this.size_segment_half = -Std.int((size_segment * 0.5));
 	}
 	
+	public function granularity_set_modifier(mod:Int){
+		snapping_mod = mod;
+	}
+
 	function line_under_cursor_(position_cursor:Vector):Null<AbstractLine> {
 		for (line in figure.lines) {
 			var overlaps:Bool = position_cursor.line_overlaps_point(line.point_from, line.point_to);
@@ -142,8 +149,8 @@ class Designer {
 			return;
 		}
 
-		mouse_position.x = round_to_nearest(mouse_position.x, size_segment);
-		mouse_position.y = round_to_nearest(mouse_position.y, size_segment);
+		mouse_position.x = round_to_nearest(mouse_position.x, size_snapping / snapping_mod);
+		mouse_position.y = round_to_nearest(mouse_position.y, size_snapping / snapping_mod);
 		mouse_pointer.x = mouse_position.x;
 		mouse_pointer.y = mouse_position.y;
 		if (isDrawingLine) {
@@ -260,13 +267,14 @@ class Designer {
 
 	public function start_drawing_line(point:Vector) {
 		if (isDrawingLine) {
+			trace('already drawing line?');
 			return;
 		}
 
 		isDrawingLine = true;
 
-		var x = round_to_nearest(point.x, size_segment);
-		var y = round_to_nearest(point.y, size_segment);
+		var x = round_to_nearest(point.x, size_snapping / snapping_mod);
+		var y = round_to_nearest(point.y, size_snapping / snapping_mod);
 		var line:AbstractLine = graphics.make_line(x, y, x, y, Theme.drawing_lines);
 		
 		figure.lines.push(line);
@@ -281,8 +289,8 @@ class Designer {
 		isDrawingLine = false;
 
 		var line = figure.line_newest();
-		line.point_to.x = round_to_nearest(point.x, size_segment);
-		line.point_to.y = round_to_nearest(point.y, size_segment);
+		line.point_to.x = round_to_nearest(point.x, size_snapping / snapping_mod);
+		line.point_to.y = round_to_nearest(point.y, size_snapping / snapping_mod);
 
 		figure.model.push(map_line(line.point_from, line.point_to));
 

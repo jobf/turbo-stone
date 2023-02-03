@@ -58,19 +58,32 @@ class Ui{
 
 	public function handle_mouse_moved(x_mouse:Int, y_mouse:Int){
 		for (slider in sliders) {
+			var interactive:Interactive = cast slider;
+
+			var is_mouse_over = slider.overlaps_background(x_mouse, y_mouse);
+
+			if(is_mouse_over){
+				interactive.mouse_over();
+			}
+			else{
+				interactive.mouse_out();
+			}
 
 			if (slider.is_clicked) {
 				slider.move(x_mouse);
 			}
-			else{
-				var is_mouse_over = slider.overlaps_background(x_mouse, y_mouse);
-				slider.hover(is_mouse_over);
-			}
 		}
 
-		for (click in clickers) {
-			var is_mouse_over = click.overlaps_background(x_mouse, y_mouse);
-			click.hover(is_mouse_over);
+		for (interactive in clickers) {
+			var is_mouse_over = interactive.overlaps_background(x_mouse, y_mouse);
+			
+			if(is_mouse_over){
+				interactive.mouse_over();
+			}
+			else{
+				interactive.mouse_out();
+			}
+
 		}
 	}
 
@@ -121,18 +134,24 @@ class Ui{
 		}
 
 		for (interactive in sliders) {
-			if(!interactive.is_enabled){
-				if(interactive.model.conditions != null && interactive.model.conditions()){
+			var is_not_showing = !interactive.is_enabled;
+			if(is_not_showing || force_refresh){
+				if(interactive.model.conditions != null){
+					var condition_is_true = interactive.model.conditions();
+					if(condition_is_true){
+						interactive.show();
+					}
+					else{
+						interactive.hide();
+					}
+				}else{
 					interactive.show();
 				}
-			}
-			else{
-				interactive.show();
 			}
 		}
 	}
 
-	public function make_slider(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA):Slider {
+	public function make_slider(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, fraction:Float):Slider {
 		var on_erase = model.interactions.on_erase;
 		model.interactions.on_erase = (interactive:Interactive) -> {
 			sliders.remove(cast interactive);
@@ -145,7 +164,8 @@ class Ui{
 			color_fg,
 			color_bg,
 			graphics,
-			text
+			text,
+			fraction
 		);
 
 		sliders.push(slider);
@@ -199,7 +219,8 @@ class Ui{
 			// on_erase(interactive);
 		}
 		trace('label toggle ${model.label}');
-		var label_toggle = new LabelToggle(model, geometry, color_fg, color_bg, graphics, text);
+		var is_toggled_ = is_toggled == null ? false : is_toggled;
+		var label_toggle = new LabelToggle(model, geometry, color_fg, color_bg, graphics, text, is_toggled_);
 		clickers.push(label_toggle);
 		return label_toggle;
 	}

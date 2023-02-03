@@ -23,6 +23,7 @@ class HudScene extends Scene {
 	var tray_sections:Array<Section>;
 	var actions:Map<Button, Action>;
 	var graphics_main:Graphics;
+	var tray:Tray;
 
 	public function new(game:Game, bounds_viewport:RectangleGeometry, color:RGBA, sections:Array<Section>){
 		super(game, bounds_viewport, color);
@@ -46,38 +47,10 @@ class HudScene extends Scene {
 			height: bounds.height
 		}
 
-		game.input.on_pressed.add(button -> switch button {
-			case MOUSE_LEFT: {
-				if(game.input.mouse_position.x > bounds_main.x + bounds_main.width){
-					mouse_press_ui();
-				}
-				else{
-					mouse_press_main();
-				}
-			};
-			case _:
-		});
-
-		game.input.on_released.add(button -> {
-			switch button {
-				case MOUSE_LEFT: {
-					if(game.input.mouse_position.x > bounds_main.x + bounds_main.width){
-						mouse_release_ui();
-					}
-					else{
-						mouse_release_main();
-					}
-				}
-				case _:
-		}});
-			
-		game.input.on_mouse_move.add(mouse_position -> {
-			mouse_moved(mouse_position);
-		});
 	}
 
 	public function init() {
-		var font = font_load_embedded(24);
+		var font = font_load_embedded(20);
 		var height_button = Std.int(font.height_model * 1.5);
 		var width_button = bounds.width - bounds.height;
 
@@ -98,7 +71,7 @@ class HudScene extends Scene {
 			color_bg: Theme.bg_ui_interactive
 		}
 
-		var tray = new Tray(
+		tray = new Tray(
 			tray_sections,
 			ui,
 			tray_model
@@ -108,6 +81,7 @@ class HudScene extends Scene {
 			if(interactive.model.key_code != null){
 				actions.set(interactive.model.key_code, {
 					on_pressed: () -> interactive.click(),
+					on_released: () -> interactive.release(),
 					name: interactive.model.label
 				});
 			}
@@ -123,6 +97,35 @@ class HudScene extends Scene {
 			if (actions.exists(button)) {
 				actions[button].on_released();
 			}
+		});
+
+
+		game.input.on_pressed.add(button -> switch button {
+			case MOUSE_LEFT: {
+				if(!tray.is_blocking_main){
+					mouse_press_main();
+				}
+				// todo use rectangle overlap
+				if(game.input.mouse_position.x > bounds_main.x + bounds_main.width){
+				}
+				mouse_press_ui();
+			};
+			case _:
+		});
+
+		game.input.on_released.add(button -> {
+			switch button {
+				case MOUSE_LEFT: {
+					mouse_release_ui();
+					if(game.input.mouse_position.x > bounds_main.x + bounds_main.width){
+					}
+					mouse_release_main();
+				}
+				case _:
+		}});
+			
+		game.input.on_mouse_move.add(mouse_position -> {
+			mouse_moved(mouse_position);
 		});
 	}
 

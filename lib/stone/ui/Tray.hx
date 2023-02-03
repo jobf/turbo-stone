@@ -28,6 +28,7 @@ class Tray {
 	var tray_model:TrayModel;
 	var ui:Ui;
 	public var items(default, null):Array<Interactive>;
+	public var is_blocking_main(default, null):Bool = false;
 
 	public function new(sections:Array<Section>, ui:Ui, tray_model:TrayModel) {
 		this.tray_model = tray_model;
@@ -92,19 +93,21 @@ class Tray {
 					make_label(model, item_geometry, bg_color, enabled);
 				case TOGGLE(enabled):
 					make_toggle(model, item_geometry, bg_color, enabled);
-				case SLIDER:
-					make_slider(model, item_geometry, bg_color);
+				case SLIDER(fraction):
+					make_slider(model, item_geometry, bg_color, fraction);
 			}
 
 			items.push(next_interactive);
 
-			y_item += next_interactive.height + tray_model.item_separation;
+			if(model.show_in_tray){
+				y_item += next_interactive.height + tray_model.item_separation;
+			}
 		}
 
 		return y_item;
 	}
 
-	inline function make_footer(contents:Array<InteractiveModel>, y_tray_bottom:Int):Array<Interactive> {
+	inline function make_footer(contents:Array<InteractiveModel>, y_tray_bottom:Int, footer_items:Array<Interactive>):Array<Interactive> {
 		var y_item:Int = y_tray_bottom;
 		var interactives = [];
 
@@ -114,6 +117,14 @@ class Tray {
 				y: y_item - tray_model.item_geometry.height,
 				width: tray_model.item_geometry.width,
 				height: model.show_in_tray ? tray_model.item_geometry.height : 0
+			}
+
+			var on_click = model.interactions.on_click;
+			model.interactions.on_click = interactive -> {
+				on_click(interactive);
+				for (interactive in footer_items) {
+					interactive.refresh();
+				}
 			}
 
 			var bg_color = Theme.bg_dialog;
@@ -126,8 +137,8 @@ class Tray {
 					make_label(model, item_geometry, bg_color, enabled);
 				case TOGGLE(enabled):
 					make_toggle(model, item_geometry, bg_color, enabled);
-				case SLIDER:
-					make_slider(model, item_geometry, bg_color);
+				case SLIDER(fraction):
+					make_slider(model, item_geometry, bg_color, fraction);
 			}
 
 			interactives.push(next_interactive);
@@ -196,6 +207,7 @@ class Tray {
 
 			var footer_contents:Array<InteractiveModel> = [];
 
+			var has_message = model.confirmation.message.length > 0;
 			var has_confirm = model.confirmation.confirm.length > 0;
 			var has_cancel = model.confirmation.cancel.length > 0;
 			
@@ -228,32 +240,51 @@ class Tray {
 				}
 			}
 
+			// always push cancel button
 			footer_contents.push({
-				sort_order: 1,
+				sort_order: 999,
 				role: BUTTON,
 				label: cancel_label,
 				// key_code: key_code,
 				interactions: {
 					on_click: cancel_button -> {
-						// trace('cancel clicked');
 						dialog_buttons.clear(button -> button.erase());
-						dialog_text.background.erase();
-						for (word in dialog_text.text) {
-							word.erase();
+						if(has_message){
+							dialog_text.background.erase();
+							for (word in dialog_text.text) {
+								word.erase();
+							}
 						}
 						ui.show();
+						is_blocking_main = false;
 					}
 				}
 			});
 
+			if(model.sub_contents != null){
+				for (model in model.sub_contents) {
+					footer_contents.push(model);
+				}
+			}
+
 			model.interactions.on_click = button -> {
 				ui.hide();
 
-				for (item in make_footer(footer_contents, tray_model.tray_geometry.height)) {
+				for (item in make_footer(footer_contents, tray_model.tray_geometry.height, dialog_buttons)) {
 					dialog_buttons.push(item);
 				}
 
-				dialog_text = ui.make_dialog_text(model.confirmation.message, tray_model.dialog_boundary, tray_model.color_fg, Theme.bg_dialog, model.dialog_text_align);
+				for (interactive in dialog_buttons) {
+					interactive.refresh();
+				}
+
+				if(has_message){
+					dialog_text = ui.make_dialog_text(model.confirmation.message, tray_model.dialog_boundary, tray_model.color_fg, Theme.bg_dialog, model.dialog_text_align);
+				}
+
+
+
+				is_blocking_main = model.confirmation.is_blocking;
 			}
 
 		}
@@ -281,12 +312,13 @@ class Tray {
 		);
 	}
 
-	inline function make_slider(model:InteractiveModel, item_geometry:RectangleGeometry, color_bg:RGBA):stone.ui.Interactive.Slider {
+	inline function make_slider(model:InteractiveModel, item_geometry:RectangleGeometry, color_bg:RGBA, fraction:Float):stone.ui.Interactive.Slider {
 		return ui.make_slider(
 			model,
 			item_geometry,
 			tray_model.color_fg,
-			color_bg
+			color_bg,
+			fraction
 		);
 	}
 

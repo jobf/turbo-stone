@@ -2,7 +2,7 @@ package stone;
 
 import haxe.io.Path;
 import stone.file.FileStorage.FileContainer;
-import stone.ui.Interactive.overlaps_rectangle;
+import stone.ui.Interactive;
 import stone.core.GraphicsAbstract.RGBA;
 import stone.core.GraphicsAbstract.AbstractLine;
 import stone.text.Text;
@@ -20,13 +20,15 @@ import stone.graphics.implementation.Graphics;
 
 using stone.util.DateExtensions;
 using stone.editing.Editor.GraphicsExtensions;
+using StringTools;
 
 class DesignerScene extends HudScene {
 	var grid_center_x:Int;
 	var grid_center_y:Int;
 	var mouse_position:Vector;
 	var designer:Designer;
-	var divisions_total:Int = 8;
+	var grid_lines_total:Int = 8;
+	var grid_snapping_modifer:Int = 8;
 	var file:FileModel;
 	var file_list_key:String;
 	var label_model:Word;
@@ -39,17 +41,28 @@ class DesignerScene extends HudScene {
 
 		var tray_sections:Array<Section> = [
 			{
+				sort_order: 100,
 				contents: [
 					// hidden commands
 					{
 						role: BUTTON,
 						label: "DRAG TO DRAW",
 						key_code: MOUSE_LEFT,
+						can_be_disabled: false,
 						interactions: {
 							on_click: interactive -> {
+								if(is_designer_blocked()){
+									return;
+								}
 								if(overlaps_rectangle(bounds_main, game.input.mouse_position)){
 									designer.start_drawing_line(game.input.mouse_position);
 								}
+							},
+							on_release: interactive -> {
+								if(is_designer_blocked()){
+									return;
+								}
+								designer.stop_drawing_line(mouse_position);
 							}
 						},
 						show_in_tray: false,
@@ -58,8 +71,13 @@ class DesignerScene extends HudScene {
 						role: BUTTON,
 						label: "DELETE LINE UNDER CURSOR",
 						key_code: MOUSE_MIDDLE,
+						can_be_disabled: false,
 						interactions: {
+							
 							on_click: interactive -> {
+								if(is_designer_blocked()){
+									return;
+								}
 								delete_line_under_mouse();
 							}
 						},
@@ -71,6 +89,9 @@ class DesignerScene extends HudScene {
 						key_code: KEY_D,
 						interactions: {
 							on_click: interactive -> {
+								if(is_designer_blocked()){
+									return;
+								}
 								delete_line_under_mouse();
 							}
 						},
@@ -142,38 +163,51 @@ class DesignerScene extends HudScene {
 					}
 				]
 			},
+
 			{
+				sort_order: -130,
 				contents: [
 					{
-						role: BUTTON,
-						label: "GRID LESS",
+						role: SLIDER(get_initial_snap_slider_fraction()),
+						label: "GRID SNAP",
 						interactions: {
-							on_click: interactive -> {
-								grid_set_granularity(-1);
+							on_change: interactive -> {
+								var slider:Slider = cast interactive;
+								handle_snap_slider(slider);
 							}
 						}
 					},
 					{
-						role: BUTTON,
-						label: "GRID MORE",
+						role: SLIDER(get_initial_grid_slider_fraction()),
+						label: "GRID LINES",
 						interactions: {
-							on_click: interactive -> {
-								grid_set_granularity(1);
+							on_change: interactive -> {
+								var slider:Slider = cast interactive;
+								handle_grid_slider(slider);
 							}
 						}
 					},
-					// {
-					// 	role: BUTTON,
-					// 	label: "GRID TOGGLE",
-					// 	interactions: {
-					// 		on_click: interactive -> {
-
-					// 		}
-					// 	}
-					// }
+					{
+						role: TOGGLE(true),
+						label: "GRID SHOW",
+						interactions: {
+							on_click: interactive -> {
+								var toggle:Toggle = cast interactive;
+								// note we set the flipped bool because this function will be called before the toggle is flipped
+								grid_set_visibility(!toggle.is_toggled);
+							}
+						}
+					},
 				]
 			},
+
+			// {
+			// 	contents: [
+			// 	]
+			// },
+
 			{
+				sort_order: -80,
 				contents: [
 					{
 						role: BUTTON,
@@ -185,28 +219,31 @@ class DesignerScene extends HudScene {
 							}
 						},
 						confirmation: {
-							message: 'SAVE ALL CHANGES TO $device ?',
+							message: 'SAVE ALL CHANGES TO $device  ?',
 							confirm: "YES",
 							cancel: "NO"
 						}
 					},
+					#if web
 					{
 						role: BUTTON,
-						label: "PNG",
+						label: "DOWNLOAD",
 						interactions: {
 							on_click: interactive -> {
 								export_png();
 							}
 						},
 						confirmation: {
-							message: 'EXPORT PNG TO DISK ?',
+							message: 'DOWNLOAD PNG EXPORT  ?',
 							confirm: "YES",
 							cancel: "NO"
 						}
 					}
+					#end
 				]
 			},
 			{
+				// sort_order: 0,
 				contents: [
 					{
 						role: BUTTON,
@@ -354,18 +391,6 @@ class DesignerScene extends HudScene {
 		return '${designer.model_index}/${file.models.length - 1}';
 	}
 
-	function handle_mouse_press_left() {
-		if(designer.point_is_outside_grid(mouse_position)){
-			return;
-		}
-
-		designer.start_drawing_line(mouse_position);
-	}
-
-	override function mouse_release_main() {
-		designer.stop_drawing_line(mouse_position);
-	}
-
 	override function mouse_moved(mouse_position:Vector) {
 		if(designer.isDrawingLine){
 			if(!overlaps_rectangle(bounds_main, mouse_position)){
@@ -380,22 +405,57 @@ class DesignerScene extends HudScene {
 		designer.line_under_cursor_remove();
 	}
 
-	function divisions_calculate_size_segment() {
-		return Std.int(bounds_main.height / divisions_total);
+	function is_designer_blocked():Bool{
+		return tray.is_blocking_main;
 	}
 
-	function grid_set_granularity(direction:Int) {
-		if (direction > 0) {
-			divisions_total = Std.int(divisions_total * 2);
-		} else {
-			divisions_total = Std.int(divisions_total / 2);
+	function grid_set_visibility(is_visible:Bool){
+		trace('grid_set_visibility $is_visible');
+		var alpha:Int = is_visible ? Theme.grid_lines_alpha : 0x00;
+		for (line in lines_grid) {
+			line.color.a = alpha;
 		}
-		if (divisions_total < 2) {
-			divisions_total = 2;
-		}
+	}
 
+	var grid_slots:Array<Int> = [2, 4, 8, 16, 32, 64, 128];
+	
+	function handle_grid_slider(slider:Slider){
+		var index = Std.int(grid_slots.length * slider.fraction);
+		var divisions = grid_slots.length - 1;
+		var click = 1 / divisions;
+		slider.set_detent(click * index);
+		grid_lines_total = grid_slots[index];
 		var size_segment = divisions_calculate_size_segment();
 		grid_draw(size_segment);
-		designer.granularity_set(size_segment);
+	}
+
+	function divisions_calculate_size_segment() {
+		return Std.int(bounds_main.height / grid_lines_total);
+	}
+	
+	var snap_slots:Array<Int> = [64, 32, 16, 8, 4, 2];
+
+	function handle_snap_slider(slider:Slider){
+		var index = Std.int(snap_slots.length * slider.fraction);
+		var divisions = snap_slots.length - 1;
+		var click = 1 / divisions;
+		slider.set_detent(click * index);
+		designer.granularity_set_modifier(snap_slots[index]);
+	}
+
+	function get_initial_snap_slider_fraction():Float{
+		var index = snap_slots.indexOf(grid_snapping_modifer);
+		var divisions = snap_slots.length - 1;
+		var fraction = index / divisions;
+		// trace('snap fraction $fraction');
+		return fraction;
+	}
+
+
+	function get_initial_grid_slider_fraction():Float{
+		var index = grid_slots.indexOf(grid_lines_total);
+		var divisions = grid_slots.length - 1;
+		var fraction = index / divisions;
+		return fraction;
 	}
 }

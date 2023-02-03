@@ -69,18 +69,12 @@ class FileList{
 				}
 	
 				var model:InteractiveModel = {
-					role: LABEL_TOGGLE(true),
+					role: LABEL_TOGGLE(false),
 					label: label,
 					interactions: {
-						// on_hover: on_hover,
-						on_highlight: should_highlight-> {
-							if(should_highlight){
-								buttons_file_selected(path);
-							}
-							else{
-								buttons_file_selected("");
-							}
-						},
+						on_click: interactive -> {
+							buttons_file_selected(path);
+						}
 					}
 				}
 				var interactive = ui.make_label(model, label_geometry, Theme.drawing_lines, Theme.bg_ui_interactive_label, false);
@@ -109,21 +103,21 @@ class FileList{
 		}
 	}
 
-	
-	public function reset_hover(){
-		for (label in labels) {
-			label.hover(false);
+		function buttons_file_selected(path:String){
+		for(label in labels){
+			trace('reset ${label.model.label}  $path');
+			label.reset();
+			if(label.model.label == path){
+				var toggle:LabelToggle = cast label;
+				toggle.is_toggled = true;
+			}
 		}
-	}
-
-	function buttons_file_selected(path:String){
 		on_file_select(path);
 	}
 
 	public function handle_mouse_click(x_mouse:Int, y_mouse:Int){
+		// trace('file list click');
 		for (label in labels) {
-			label.highlight(false);
-			label.hover(false);
 			label.reset();
 		}
 

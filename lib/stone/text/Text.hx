@@ -134,7 +134,7 @@ class Word {
 	public function show(){
 		for (drawing in drawings) {
 			for (line in drawing.lines) {
-				line.color.a = 255;
+				line.color.a = 0xff;
 			}
 		}
 	}

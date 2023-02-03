@@ -55,7 +55,7 @@ class TestTray extends Scene {
 					},
 					{
 						sort_order: 2,
-						role: LABEL,
+						role: LABEL_TOGGLE(false),
 						label: "SELECTABLE"
 					},
 					{
@@ -75,7 +75,7 @@ class TestTray extends Scene {
 					},
 					{
 						sort_order: 5,
-						role: SLIDER,
+						role: SLIDER(0),
 						label: "DRAG"
 					},
 					{
@@ -131,6 +131,21 @@ class TestTray extends Scene {
 							on_click: interactive -> {
 								_is_info_button_enabled = !_is_info_button_enabled;
 								trace('_is_info_button_enabled $_is_info_button_enabled');
+							}
+						}
+					},
+					{
+						role: SLIDER(1),
+						label: "SLOTS",
+						interactions: {
+							// on_release: on_release,
+							// on_hover: on_hover,
+							// on_highlight: on_highlight,
+							// on_erase: on_erase,
+							// on_click: on_click,
+							on_change: interactive -> {
+								var slider:Slider = cast interactive;
+								handle_slot_slider(slider);
 							}
 						}
 					}
@@ -199,6 +214,16 @@ class TestTray extends Scene {
 		game.input.on_mouse_move.add(mouse_position -> {
 			ui.handle_mouse_moved(Std.int(mouse_position.x), Std.int(mouse_position.y));
 		});
+	}
+
+	var slots:Array<Int> = [1, 2, 4, 8, 16, 32, 64];
+
+	function handle_slot_slider(slider:Slider) {
+		var index = Std.int(slots.length * slider.fraction);
+		var divisions = slots.length - 1;
+		var click = 1 / divisions;
+		slider.set_detent(click * index);
+		trace('slot index $index ${slots[index]}');
 	}
 
 	var _is_info_button_enabled:Bool = false;

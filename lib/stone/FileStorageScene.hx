@@ -23,6 +23,11 @@ class FileStorageScene extends HudScene {
 	var file_list:FileList;
 
 	public function new(game:Game, bounds:RectangleGeometry, color:RGBA, file_name_selected:String){
+		var device = "BROWSER";
+		#if !web
+		device = "DISK";
+		#end
+
 		var tray_sections:Array<Section> = [
 			{
 				contents: [
@@ -44,7 +49,7 @@ class FileStorageScene extends HudScene {
 							}
 						},
 						confirmation: {
-							message: 'CONFIRM DELETE',
+							message: 'DELETE SELECTED FILE\nFROM $device  ?',
 							confirm: 'DELETE',
 						},
 						conditions: () -> return has_file_path_selected()
@@ -52,11 +57,14 @@ class FileStorageScene extends HudScene {
 					#if web
 					{
 						role: BUTTON,
-						label: "EXPORT",
+						label: "DOWNLOAD",
 						interactions: {
 							on_click: interactive -> {
 								file_export();
-							}
+							},
+						},
+						confirmation: {
+							message: 'DOWNLOAD LINE DRAWINGS\nAS JSON'
 						},
 						conditions: () -> has_file_path_selected()
 					}
@@ -81,7 +89,7 @@ class FileStorageScene extends HudScene {
 		
 		super(game, bounds, color, tray_sections);
 
-		trace('file_set_selected(file_name_selected) $file_name_selected');
+		// trace('file_set_selected(file_name_selected) $file_name_selected');
 		file_set_selected(file_name_selected);
 	}
 
@@ -164,14 +172,12 @@ class FileStorageScene extends HudScene {
 	}
 
 	override function mouse_press_main() {
-		// super.mouse_press_main();
 		var x_mouse = Std.int(game.input.mouse_position.x);
 		var y_mouse = Std.int(game.input.mouse_position.y);
 		file_list.handle_mouse_click(x_mouse, y_mouse);
 	}
 
 	override function mouse_release_main() {
-		// super.mouse_release_main();
 		file_list.ui.handle_mouse_release();
 	}
 

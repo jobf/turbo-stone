@@ -37,14 +37,14 @@ class OverviewScene extends HudScene {
 				contents: [
 					{
 						role: BUTTON,
-						label: "PNG",
+						label: "DOWNLOAD",
 						interactions: {
 							on_click: interactive -> {
 								export_png();
 							}
 						},
 						confirmation: {
-							message: "EXPORT PNG?",
+							message: "DOWNLOAD PNG EXPORT  ?",
 							confirm: "YES",
 							cancel: "NO"
 						}
