@@ -203,6 +203,7 @@ class InteractiveModel {
 	public var interactions:Interactions = {};
 	public var confirmation:Null<DialogModel> = null;
 	public var dialog_text_align:Align = CENTER;
+	public var label_text_align_override:Null<Align> = null;
 	public var label_change:Null<Void->String> = null;
 	public var conditions:Null<()->Bool> = null;
 	public var key_code:Null<stone.core.InputAbstract.Button> = null;
@@ -217,6 +218,7 @@ class DialogModel{
 	public var message:String = "";
 	public var confirm:String = "";
 	public var cancel:String = "";
+	public var conditions:Null<()->Bool> = null;
 }
 
 @:structInit
@@ -227,6 +229,7 @@ class Interactions{
 	public var on_out:Interactive->Void = (interactive:Interactive)-> return;
 	public var on_change:Interactive->Void = (interactive:Interactive)-> return;
 	public var on_erase:Interactive->Void = (interactive:Interactive)-> return;
+	public var on_click_closes_menu:Bool = false;
 }
 
 class Interactive {
@@ -274,7 +277,8 @@ class Interactive {
 		var y_label = y_background + y_label_offset;
 		var width_label = (1 + model.label.length) * text.font.width_character;
 		var label_text = model.show_in_tray ? model.label : "";
-		this.label = text.word_make(x_label, y_label, label_text, color_fg, geometry.width, align);
+		var label_text_align = model.label_text_align_override == null ? align : model.label_text_align_override;
+		this.label = text.word_make(x_label, y_label, label_text, color_fg, geometry.width, label_text_align);
 	}
 	
 	public function enable(){
@@ -290,7 +294,7 @@ class Interactive {
 		if(model.can_be_disabled && !is_enabled){
 			return;
 		}
-		trace('click ${model.label}');
+		// trace('click ${model.label}');
 		is_clicked = true;
 		model.interactions.on_click(this);
 	}

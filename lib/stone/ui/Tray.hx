@@ -1,5 +1,6 @@
 package stone.ui;
 
+import stone.text.Text.Align;
 import stone.core.GraphicsAbstract.RGBA;
 import stone.core.Engine.RectangleGeometry;
 import haxe.ds.ArraySort;
@@ -11,6 +12,7 @@ import stone.ui.Interactive;
 class Section {
 	public var sort_order:Int = 0;
 	public var contents:Array<InteractiveModel>;
+	public var title:Null<String> = null;
 }
 
 @:structInit
@@ -44,7 +46,7 @@ class Tray {
 
 		for (i => section in sections) {
 			sort_contents(section.contents);
-			var y_next = make_contents(section.contents, y_section);
+			var y_next = make_contents(section.contents, y_section, section.title);
 			y_section = y_next + tray_model.section_separation;
 		}
 
@@ -72,8 +74,32 @@ class Tray {
 		});
 	}
 
-	inline function make_contents(contents:Array<InteractiveModel>, y_section:Int):Int {
+	inline function make_contents(contents:Array<InteractiveModel>, y_section:Int, title:Null<String>):Int {
 		var y_item:Int = y_section;
+		var has_title = title != null;
+		var bg_color = tray_model.color_bg;
+		
+		if(has_title){
+			var title_label = make_label(
+				{
+					sort_order: -999,
+					role: LABEL,
+					label: title,
+					label_text_align_override: RIGHT
+				},
+				{
+					x: tray_model.tray_geometry.x,
+					y: y_item,
+					width: tray_model.item_geometry.width,
+					height: tray_model.item_geometry.height
+				},
+				bg_color
+			);
+
+			items.push(title_label);
+
+			y_item += title_label.height;
+		}
 
 		for (model in contents) {
 			var item_geometry:RectangleGeometry = {
@@ -83,7 +109,6 @@ class Tray {
 				height: model.show_in_tray ? tray_model.item_geometry.height : 0
 			}
 
-			var bg_color = tray_model.color_bg;
 			var next_interactive = switch model.role {
 				case BUTTON:
 					make_button(model, item_geometry, bg_color);
@@ -100,14 +125,15 @@ class Tray {
 			items.push(next_interactive);
 
 			if(model.show_in_tray){
-				y_item += next_interactive.height + tray_model.item_separation;
+				var item_separation = has_title ? 0 : tray_model.item_separation;
+				y_item += next_interactive.height + item_separation;
 			}
 		}
 
 		return y_item;
 	}
 
-	inline function make_footer(contents:Array<InteractiveModel>, y_tray_bottom:Int, footer_items:Array<Interactive>):Array<Interactive> {
+	inline function make_sub_menu(contents:Array<InteractiveModel>, y_tray_bottom:Int, sub_menu_items:Array<Interactive>, close_sub_menu:Void->Void):Array<Interactive> {
 		var y_item:Int = y_tray_bottom;
 		var interactives = [];
 
@@ -122,8 +148,13 @@ class Tray {
 			var on_click = model.interactions.on_click;
 			model.interactions.on_click = interactive -> {
 				on_click(interactive);
-				for (interactive in footer_items) {
-					interactive.refresh();
+				if(model.interactions.on_click_closes_menu){
+					close_sub_menu();
+				}
+				else{
+					for (interactive in sub_menu_items) {
+						interactive.refresh();
+					}
 				}
 			}
 
@@ -189,44 +220,57 @@ class Tray {
 	}
 
 	inline function make_button(model:InteractiveModel, item_geometry:RectangleGeometry, color_bg:RGBA):stone.ui.Interactive.Button {
-			var action_button = ui.make_button(
+			var button = ui.make_button(
 			model,
 			item_geometry,
 			tray_model.color_fg,
 			color_bg
 		);
 		
-		
 		// if action needs confirmation, set up dialog buttons
 		if (model.confirmation != null) {
-
-			var dialog_buttons:Array<Interactive> = [];
-			var dialog_text:TextArea;
-			
-			var action = model.interactions.on_click;
-
-			var footer_contents:Array<InteractiveModel> = [];
-
 			var has_message = model.confirmation.message.length > 0;
 			var has_confirm = model.confirmation.confirm.length > 0;
 			var has_cancel = model.confirmation.cancel.length > 0;
 			
+			var sub_menu_items:Array<Interactive> = [];
+			var dialog_text:TextArea;
+
+			var close_sub_menu:Void->Void = () ->{
+				// remove interactive items
+				sub_menu_items.clear(button -> button.erase());
+				
+				// remove message
+				if(has_message){
+					dialog_text.background.erase();
+					for (word in dialog_text.text) {
+						word.erase();
+					}
+				}
+				
+				// refresh main interactive items
+				ui.show();
+				
+				// restore blocked state to default
+				is_blocking_main = false;
+			}
+			
+			var sub_menu_models:Array<InteractiveModel> = [];
+			
+			var on_click = model.interactions.on_click;
+
 			if(has_confirm){
-				footer_contents.push({
+				sub_menu_models.push({
 					sort_order: 0,
 					role: BUTTON,
 					label: model.confirmation.confirm,
 					// key_code: key_code,
 					interactions: {
 						on_click: confirm_button -> {
-							// trace('confirm clicked');
-							dialog_buttons.clear(button -> button.erase());
-							dialog_text.background.erase();
-							for (word in dialog_text.text) {
-								word.erase();
-							}
-							action(action_button);
-							ui.show();
+							// handle the click
+							on_click(button);
+
+							close_sub_menu();
 						}
 					}
 				});
@@ -241,55 +285,54 @@ class Tray {
 			}
 
 			// always push cancel button
-			footer_contents.push({
+			sub_menu_models.push({
 				sort_order: 999,
 				role: BUTTON,
 				label: cancel_label,
 				// key_code: key_code,
 				interactions: {
 					on_click: cancel_button -> {
-						dialog_buttons.clear(button -> button.erase());
-						if(has_message){
-							dialog_text.background.erase();
-							for (word in dialog_text.text) {
-								word.erase();
-							}
-						}
-						ui.show();
-						is_blocking_main = false;
+						close_sub_menu();
 					}
 				}
 			});
 
+			// add any further sub menu items
 			if(model.sub_contents != null){
 				for (model in model.sub_contents) {
-					footer_contents.push(model);
+					sub_menu_models.push(model);
 				}
 			}
 
 			model.interactions.on_click = button -> {
-				ui.hide();
+				var should_show_menu = model.confirmation.conditions == null ? true : model.confirmation.conditions();
+				
+				if(should_show_menu){
+					// disable original iteractive items
+					ui.hide();
+								
+					// init the interactive items for the sub menu
+					for (interactive in make_sub_menu(sub_menu_models, tray_model.tray_geometry.height, sub_menu_items, close_sub_menu)) {
+						sub_menu_items.push(interactive);
+						// resfresh to evaluate conditions (e.g. for updating the label/visiblity)
+						interactive.refresh();
+					}
 
-				for (item in make_footer(footer_contents, tray_model.tray_geometry.height, dialog_buttons)) {
-					dialog_buttons.push(item);
+					// show dialog text if appropriate
+					if(has_message){
+						dialog_text = ui.make_dialog_text(model.confirmation.message, tray_model.dialog_boundary, tray_model.color_fg, Theme.bg_dialog, model.dialog_text_align);
+					}
+
+					// block main area from interaction isf required
+					is_blocking_main = model.confirmation.is_blocking;
 				}
-
-				for (interactive in dialog_buttons) {
-					interactive.refresh();
+				else{
+					on_click(button);
 				}
-
-				if(has_message){
-					dialog_text = ui.make_dialog_text(model.confirmation.message, tray_model.dialog_boundary, tray_model.color_fg, Theme.bg_dialog, model.dialog_text_align);
-				}
-
-
-
-				is_blocking_main = model.confirmation.is_blocking;
 			}
-
 		}
 
-		return action_button;
+		return button;
 	}
 
 	inline function make_label(model:InteractiveModel, item_geometry:RectangleGeometry, color_bg:RGBA, is_toggled:Null<Bool> = null):stone.ui.Interactive {

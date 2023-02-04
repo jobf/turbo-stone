@@ -79,6 +79,7 @@ class Designer {
 	var graphics:Graphics;
 	var mouse_pointer_graphics:CursorGraphics;
 	var bounds_grid:RectangleGeometry;
+	public var is_file_modified(default, null):Bool;
 
 	public var file(default, null):FileModel;
 
@@ -89,6 +90,7 @@ class Designer {
 
 	public function new(size_segment:Int, graphics:GraphicsAbstract, bounds_grid:RectangleGeometry, file:FileModel) {
 		this.file = file;
+		is_file_modified = false;
 		granularity_set(size_segment);
 		this.graphics = cast graphics;
 		this.bounds_grid = bounds_grid;
@@ -294,11 +296,16 @@ class Designer {
 		line.point_to.y = round_to_nearest(point.y, size_snapping / snapping_mod);
 
 		figure.model.push(map_line(line.point_from, line.point_to));
+		is_file_modified = true;
 
 		// for (line in figure.lines) {
 		// 	trace('${line.point_from.x},${line.point_from.y} -> ${line.point_to.x},${line.point_to.y}');
 		// }
 		trace('stop_drawing_line ${point.x} ${point.y}');
+	}
+
+	public function reset_file_status() {
+		is_file_modified = false;
 	}
 
 	function round_to_nearest(value:Float, interval:Float):Float {

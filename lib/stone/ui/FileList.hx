@@ -17,7 +17,7 @@ import stone.ui.Tray;
 class FileList{
 	public var ui(default, null):Ui;
 	var on_file_select:String->Void;
-	var labels:Array<Interactive> = [];
+	var labels:Array<LabelToggle> = [];
 	var bounds:RectangleGeometry;
 
 	public function new(graphics_init:GraphicsConstructor, bounds:RectangleGeometry,  on_file_select:String->Void){
@@ -77,7 +77,7 @@ class FileList{
 						}
 					}
 				}
-				var interactive = ui.make_label(model, label_geometry, Theme.drawing_lines, Theme.bg_ui_interactive_label, false);
+				var interactive:LabelToggle =  cast ui.make_label(model, label_geometry, Theme.drawing_lines, Theme.bg_ui_interactive_label, false);
 				@:privateAccess
 				trace('label ${interactive.background.x} ${interactive.background.x} ${interactive.background.width} ${interactive.background.height}');
 				labels.push(interactive);
@@ -90,7 +90,7 @@ class FileList{
 
 
 		if(pre_select_path.length > 0){
-			trace(' pre select $pre_select_path');
+			// trace(' pre select $pre_select_path');
 
 			var is_file_listed = file_names.filter(s -> s == pre_select_path).length > 0;
 			if(is_file_listed){
@@ -103,9 +103,9 @@ class FileList{
 		}
 	}
 
-		function buttons_file_selected(path:String){
+	function buttons_file_selected(path:String){
 		for(label in labels){
-			trace('reset ${label.model.label}  $path');
+			// trace('reset ${label.model.label}  $path');
 			label.reset();
 			if(label.model.label == path){
 				var toggle:LabelToggle = cast label;
@@ -116,11 +116,6 @@ class FileList{
 	}
 
 	public function handle_mouse_click(x_mouse:Int, y_mouse:Int){
-		// trace('file list click');
-		for (label in labels) {
-			label.reset();
-		}
-
 		ui.handle_mouse_click(x_mouse, y_mouse);
 	}
 }

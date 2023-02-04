@@ -54,21 +54,24 @@ class FileStorageScene extends HudScene {
 						},
 						conditions: () -> return has_file_path_selected()
 					},
-					#if web
 					{
 						role: BUTTON,
 						label: "DOWNLOAD",
 						interactions: {
 							on_click: interactive -> {
+								trace('DOWNLOAD');
+								#if web
 								file_export();
+								#end
 							},
 						},
 						confirmation: {
-							message: 'DOWNLOAD LINE DRAWINGS\nAS JSON'
+							message: 'DOWNLOAD ALL\nLINE DRAWINGS\nAS JSON  ?',
+							confirm: 'YES',
+							cancel: 'NO'
 						},
 						conditions: () -> has_file_path_selected()
 					}
-					#end
 				]
 			},
 			{
@@ -106,6 +109,7 @@ class FileStorageScene extends HudScene {
 	}
 
 	function file_export(){
+		// trace('file_export');
 		if (file_key_selected.length > 0) {
 			game.storage.export(file_key_selected);
 		}
@@ -126,6 +130,7 @@ class FileStorageScene extends HudScene {
 	}
 
 	function has_file_path_selected():Bool{
+		// trace('has_file_path_selected ${file_key_selected.length > 0}');
 		return file_key_selected.length > 0;
 	}
 
@@ -152,6 +157,7 @@ class FileStorageScene extends HudScene {
 	}
 
 	function file_set_selected(path_file:String) {
+		// trace('file_set_selected $path_file');
 		file_key_selected = path_file;
 	}
 

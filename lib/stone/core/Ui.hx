@@ -218,7 +218,7 @@ class Ui{
 			clickers.remove(cast interactive);
 			// on_erase(interactive);
 		}
-		trace('label toggle ${model.label}');
+		// trace('label toggle ${model.label}');
 		var is_toggled_ = is_toggled == null ? false : is_toggled;
 		var label_toggle = new LabelToggle(model, geometry, color_fg, color_bg, graphics, text, is_toggled_);
 		clickers.push(label_toggle);

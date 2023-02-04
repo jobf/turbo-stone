@@ -32,9 +32,10 @@ class DesignerScene extends HudScene {
 	var file:FileModel;
 	var file_list_key:String;
 	var label_model:Word;
+	var device:String;
 
 	public function new(game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel, file_list_key:String) {
-		var device = "BROWSER";
+		device = "BROWSER";
 		#if !web
 		device = "DISK";
 		#end
@@ -166,10 +167,12 @@ class DesignerScene extends HudScene {
 
 			{
 				sort_order: -130,
+				title: 'GRID',
 				contents: [
 					{
+						sort_order: -30,
 						role: SLIDER(get_initial_snap_slider_fraction()),
-						label: "GRID SNAP",
+						label: "SNAP",
 						interactions: {
 							on_change: interactive -> {
 								var slider:Slider = cast interactive;
@@ -178,8 +181,9 @@ class DesignerScene extends HudScene {
 						}
 					},
 					{
+						sort_order: -40,
 						role: SLIDER(get_initial_grid_slider_fraction()),
-						label: "GRID LINES",
+						label: "LINES",
 						interactions: {
 							on_change: interactive -> {
 								var slider:Slider = cast interactive;
@@ -188,8 +192,9 @@ class DesignerScene extends HudScene {
 						}
 					},
 					{
+						sort_order: -50,
 						role: TOGGLE(true),
-						label: "GRID SHOW",
+						label: "SHOW",
 						interactions: {
 							on_click: interactive -> {
 								var toggle:Toggle = cast interactive;
@@ -230,14 +235,28 @@ class DesignerScene extends HudScene {
 						label: "DOWNLOAD",
 						interactions: {
 							on_click: interactive -> {
-								export_png();
+								// export_png();
+								game.storage.export(file_list_key);
 							}
 						},
+						sub_contents:[
+								{
+									role:BUTTON,
+									label: "PNG",
+									interactions: {
+										on_click: interactive -> {
+											export_png();
+										},
+										on_click_closes_menu: true,
+									}
+								}
+						],
 						confirmation: {
-							message: 'DOWNLOAD PNG EXPORT  ?',
-							confirm: "YES",
-							cancel: "NO"
-						}
+							message: 'DOWNLOAD\nJSON\nOR\nPNG ?',
+							confirm: "JSON",
+							cancel: "CANCEL",
+							
+						},
 					}
 					#end
 				]
@@ -254,13 +273,14 @@ class DesignerScene extends HudScene {
 							}
 						},
 						confirmation: {
-							message: 'UNSAVED CHANGES\nWILL BE\nLOST',
+							message: 'UNSAVED CHANGES\nWILL BE\nLOST  !',
 							confirm: "CONTINUE",
+							conditions: () ->  return designer.is_file_modified
 						}
 					},
 					{
 						role: BUTTON,
-						label: "OVERVIEW",
+						label: "SPRITESHEET",
 						interactions: {
 							on_click: interactive -> {
 								game.scene_change(game -> new OverviewScene(game, bounds, color, file, file_list_key));
@@ -333,6 +353,7 @@ class DesignerScene extends HudScene {
 		}
 
 		game.storage.file_save(file_container);
+		designer.reset_file_status();
 	}
 
 	function export_png(){
@@ -408,6 +429,12 @@ class DesignerScene extends HudScene {
 	function is_designer_blocked():Bool{
 		return tray.is_blocking_main;
 	}
+
+	// function is_file_changed():Bool{
+	// 	// var is_file_changed = designer != null && designer.is_file_changed();
+	// 	// trace('is file changed? $is_file_changed');
+	// 	return is_file_changed;
+	// }
 
 	function grid_set_visibility(is_visible:Bool){
 		trace('grid_set_visibility $is_visible');
