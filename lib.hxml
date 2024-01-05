@@ -3,6 +3,7 @@
 -cp .submodules/grig.midi
 -cp lib
 
+-lib hxmath
 -lib utest
 -lib json2object
 -lib lime

@@ -1,12 +1,5 @@
 package stone.core;
 
-
-@:structInit
-class Vector {
-	public var x:Float;
-	public var y:Float;
-}
-
 class MotionInteractive {
 	public function new(x:Int, y:Int) {
 		position = {
@@ -43,33 +36,33 @@ class MotionInteractive {
 	/**
 	 * Current x,y position in world space
 	**/
-	public var position:Vector;
+	public var position:Vector2;
 
 	/**
 	 * Previous x,y position in world space
 	**/
-	public var position_previous:Vector;
+	public var position_previous:Vector2;
 
 	/**
 	 * Current x,y velocity
 	**/
-	public var velocity:Vector;
+	public var velocity:Vector2;
 
 	/**
 	 * Maximum x,y velocity permitted
 	**/
-	public var velocity_maximum:Vector;
+	public var velocity_maximum:Vector2;
 
 	/**
 	 * How much velocity will speed up on x,y axes
 	**/
-	public var acceleration:Vector;
+	public var acceleration:Vector2;
 
 	/**
 	 * How much velocity will slow down on x,y axes
 	 * Note: only takes effect when Acceleration is zero
 	**/
-	public var deceleration:Vector;
+	public var deceleration:Vector2;
 }
 
 class MotionInteractiveLogic {
@@ -158,12 +151,12 @@ class MotionInteractiveLogic {
 }
 
 class VectorLogic {
-	public static function point_overlaps_circle(point:Vector, target:Vector, radius:Float){
+	public static function point_overlaps_circle(point:Vector2, target:Vector2, radius:Float){
 		var distance = distance_to(point, target);
 		return distance <= radius;
 	}
 
-	public static function polygon_overlaps_point(polygon_model:Array<Vector>, target:Vector):Bool {
+	public static function polygon_overlaps_point(polygon_model:Array<Vector2>, target:Vector2):Bool {
 		var collision = false;
 		for (a in 0...polygon_model.length) {
 			var point_a = polygon_model[a % polygon_model.length];
@@ -176,7 +169,7 @@ class VectorLogic {
 		return collision;
 	}
 
-	public static function distance_to(point_from:Vector, point_to:Vector):Float
+	public static function distance_to(point_from:Vector2, point_to:Vector2):Float
 	{
 		var a = point_to.x - point_from.x;
 		var b = point_to.y - point_from.y;
@@ -184,7 +177,7 @@ class VectorLogic {
 		return Math.sqrt(a * a + b * b);
 	}
 
-	public static function line_overlaps_point(target:Vector, line_from:Vector, line_to:Vector):Bool {
+	public static function line_overlaps_point(target:Vector2, line_from:Vector2, line_to:Vector2):Bool {
 		var collision = false;
 		// get distance from the point to the two ends of the line
 		var d1 = VectorLogic.distance_to(target, line_from);
@@ -207,7 +200,7 @@ class VectorLogic {
 		return collision;
 	}
 
-	public static function line_overlaps_line(line_from_a:Vector, line_to_a:Vector, line_from_b:Vector, line_to_b:Vector):Bool {
+	public static function line_overlaps_line(line_from_a:Vector2, line_to_a:Vector2, line_from_b:Vector2, line_to_b:Vector2):Bool {
 		var collision = false;
 		  // calculate the distance to intersection point
 		var uA = ((line_to_b.x-line_from_b.x)*(line_from_a.y-line_from_b.y) - (line_to_b.y-line_from_b.y)*(line_from_a.x-line_from_b.x)) / ((line_to_b.y-line_from_b.y)*(line_to_a.x-line_from_a.x) - (line_to_b.x-line_from_b.x)*(line_to_a.y-line_from_a.y));
@@ -236,7 +229,7 @@ class VectorLogic {
 		return collision;
 	}
 
-	public static function vector_transform(vector:Vector, origin:Vector, scale:Float, x:Float, y:Float, ?rotation_sin:Float, ?rotation_cos:Float, ?rotation:Float):Vector {
+	public static function vector_transform(vector:Vector2, origin:Vector2, scale:Float, x:Float, y:Float, ?rotation_sin:Float, ?rotation_cos:Float, ?rotation:Float):Vector2 {
 		// rotate
 		var rotation_sin = rotation_sin == null ? Math.sin(rotation) : rotation_sin;
 		var rotation_cos = rotation_cos == null ? Math.cos(rotation) : rotation_cos;
@@ -244,7 +237,7 @@ class VectorLogic {
 		var x_origin = vector.x;// + origin.x;
 		var y_origin = vector.y;// + origin.y;
 
-		var transformed:Vector = {
+		var transformed:Vector2 = {
 			x: x_origin * rotation_cos - y_origin * rotation_sin,
 			y: x_origin * rotation_sin + y_origin * rotation_cos
 		};

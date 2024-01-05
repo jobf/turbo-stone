@@ -36,13 +36,13 @@ class EditorTranslation {
 		bounds_height_half = bounds_view.height * 0.5;
 	}
 
-	public function view_to_model_point(point_in_view:Vector):Vector {
-		var offset_point:Vector = {
+	public function view_to_model_point(point_in_view:Vector2):Vector2 {
+		var offset_point:Vector2 = {
 			x: point_in_view.x - bounds_width_half,
 			y: point_in_view.y - bounds_height_half
 		}
 
-		var transformed_point:Vector = {
+		var transformed_point:Vector2 = {
 			x: (offset_point.x / bounds_view.width) * points_in_translation_x,
 			y: (offset_point.y / bounds_view.height) * points_in_translation_y,
 		}
@@ -50,13 +50,13 @@ class EditorTranslation {
 		return transformed_point;
 	}
 
-	public function model_to_view_point(point_in_model:Vector):Vector {
-		var transformed_point:Vector = {
+	public function model_to_view_point(point_in_model:Vector2):Vector2 {
+		var transformed_point:Vector2 = {
 			x: (point_in_model.x * bounds_view.width) / points_in_translation_x,
 			y: (point_in_model.y * bounds_view.height) / points_in_translation_y,
 		}
 
-		var offset_point:Vector = {
+		var offset_point:Vector2 = {
 			x: transformed_point.x + bounds_width_half + bounds_view.x,
 			y: transformed_point.y + bounds_height_half  + bounds_view.y
 		}
@@ -120,7 +120,7 @@ class Designer {
 		snapping_mod = mod;
 	}
 
-	function line_under_cursor_(position_cursor:Vector):Null<AbstractLine> {
+	function line_under_cursor_(position_cursor:Vector2):Null<AbstractLine> {
 		for (line in figure.lines) {
 			var overlaps:Bool = position_cursor.line_overlaps_point(line.point_from, line.point_to);
 			if (overlaps) {
@@ -147,7 +147,7 @@ class Designer {
 		}
 	}
 
-	public function update_mouse_pointer(mouse_position:Vector) {
+	public function update_mouse_pointer(mouse_position:Vector2) {
 		if (point_is_outside_grid(mouse_position)) {
 			return;
 		}
@@ -257,18 +257,18 @@ class Designer {
 		return '$model_index : ${file.models[model_index].name}';
 	}
 
-	function map_line(from:Vector, to:Vector):LineModel {
+	function map_line(from:Vector2, to:Vector2):LineModel {
 		return {
 			from: translation.view_to_model_point(from),
 			to: translation.view_to_model_point(to)
 		}
 	}
 
-	public function point_is_outside_grid(point:Vector):Bool{
+	public function point_is_outside_grid(point:Vector2):Bool{
 		return (point.x > bounds_grid.x + bounds_grid.width || point.y > bounds_grid.y + bounds_grid.height);
 	}
 
-	public function start_drawing_line(point:Vector) {
+	public function start_drawing_line(point:Vector2) {
 		if (isDrawingLine) {
 			trace('already drawing line?');
 			return;
@@ -285,7 +285,7 @@ class Designer {
 		trace('start_drawing_line ${x} ${y}');
 	}
 
-	public function stop_drawing_line(point:Vector) {
+	public function stop_drawing_line(point:Vector2) {
 		if (!isDrawingLine) {
 			return;
 		}

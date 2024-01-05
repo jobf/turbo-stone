@@ -121,7 +121,7 @@ class Graphics extends GraphicsAbstract {
 		buffer_lines.update();
 	}
 
-	public function translate_mouse(x:Float, y:Float):Vector {
+	public function translate_mouse(x:Float, y:Float):Vector2 {
 		return {
 			x: display.localX(x),
 			y: display.localY(y)

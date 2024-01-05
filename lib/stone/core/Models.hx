@@ -17,15 +17,15 @@ class FigureModel{
 
 @:structInit
 class LineModel{
-	public var from:Vector;
-	public var to:Vector;
+	public var from:Vector2;
+	public var to:Vector2;
 }
 
 class IsoscelesModel {
-	public var a_point:Vector;
-	public var b_point:Vector;
-	public var c_point:Vector;
-	public var points:Array<Vector>;
+	public var a_point:Vector2;
+	public var b_point:Vector2;
+	public var c_point:Vector2;
+	public var points:Array<Vector2>;
 
 	public function new() {
 		a_point = {x: 0.0, y: -6.0};

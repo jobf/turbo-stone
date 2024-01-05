@@ -16,7 +16,7 @@ class Drawing{
 	var model_translation:EditorTranslation;
 	var prototypeModel:Prototype;
 
-	public var origin:Vector = {
+	public var origin:Vector2 = {
 		x:-0.5,
 		y:-0.5
 	};
@@ -41,11 +41,11 @@ class Drawing{
 		this.model_translation = model_translation;
 		
 		for (line_proto in prototypeModel.model_lines) {
-			var from_:Vector ={
+			var from_:Vector2 ={
 				x: (line_proto.from.x),
 				y: (line_proto.from.y),
 			}
-			var to_:Vector = {
+			var to_:Vector2 = {
 				x: (line_proto.to.x),
 				y: (line_proto.to.y),
 			}
@@ -59,18 +59,18 @@ class Drawing{
 	}
 
 	function translate(line_proto:LineModel, line_drawing:AbstractLine, rotation_sin:Float, rotation_cos:Float){
-		var scale_origin:Vector = {
+		var scale_origin:Vector2 = {
 			y: scale/origin.y,
 			x: scale/origin.x
 		}
 		var model_origin = model_translation.view_to_model_point(scale_origin);
 
-		var from_:Vector ={
+		var from_:Vector2 ={
 			x: (line_proto.from.x + model_origin.x),// * scale,
 			y: (line_proto.from.y + model_origin.y),// * scale
 		}
 
-		var to_:Vector = {
+		var to_:Vector2 = {
 			x: (line_proto.to.x + model_origin.x),// * scale,
 			y: (line_proto.to.y + model_origin.y),// * scale
 		}

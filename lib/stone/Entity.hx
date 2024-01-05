@@ -13,10 +13,10 @@ class Entity {
 
 	var rotation_direction:Int = 0;
 	public var rotation_speed:Float;
-	var model_points:Array<Vector>;
-	var lines_points:Array<Vector>;
+	var model_points:Array<Vector2>;
+	var lines_points:Array<Vector2>;
 
-	public function new(model:Array<Vector>, x:Int, y:Int, rotation_speed:Float, graphics:GraphicsAbstract) {
+	public function new(model:Array<Vector2>, x:Int, y:Int, rotation_speed:Float, graphics:GraphicsAbstract) {
 		// set up motion
 		motion = new MotionInteractive(x, y);
 		this.rotation_speed = rotation_speed;
@@ -46,13 +46,13 @@ class Entity {
 		rotation_direction = direction;
 	}
 
-	public function collision_points():Array<Vector> {
+	public function collision_points():Array<Vector2> {
 		return lines.points();
 	}
 
 	public var offset:Float = 0;
 
-	public function collision_center(translation:EditorTranslation):Vector {
+	public function collision_center(translation:EditorTranslation):Vector2 {
 		// return motion.position.vector_transform(lines.origin, scale, 0, 0, lines.rotation_sin, lines.rotation_cos);
 
 		var rotation_sin = Math.sin(rotation);
@@ -61,7 +61,7 @@ class Entity {
 		var x_origin = motion.position.x + (lines.origin.x);
 		var y_origin = motion.position.y + (lines.origin.y);
 
-		var transformed:Vector = {
+		var transformed:Vector2 = {
 			x: x_origin * rotation_cos - y_origin * rotation_sin,
 			y: x_origin * rotation_sin + y_origin * rotation_cos
 		};
@@ -88,7 +88,7 @@ class Entity {
 		// };
 	}
 
-	public function overlaps_polygon(model:Array<Vector>):Bool {
+	public function overlaps_polygon(model:Array<Vector2>):Bool {
 		for (point in model) {
 			if (lines_points.polygon_overlaps_point(point)) {
 				return true;

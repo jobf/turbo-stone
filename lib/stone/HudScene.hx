@@ -157,7 +157,7 @@ class HudScene extends Scene {
 		// override me
 	}
 
-	function mouse_moved(mouse_position:Vector) {
+	function mouse_moved(mouse_position:Vector2) {
 		var x_mouse:Int = Std.int(game.input.mouse_position.x);
 		var y_mouse:Int = Std.int(game.input.mouse_position.y);
 		ui.handle_mouse_moved(x_mouse, y_mouse);

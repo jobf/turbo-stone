@@ -4,8 +4,8 @@ import stone.core.Models;
 import stone.core.Engine;
 
 abstract class AbstractLine {
-	public var point_from:Vector;
-	public var point_to:Vector;
+	public var point_from:Vector2;
+	public var point_to:Vector2;
 	public var color:RGBA;
 	public var length(get, never):Float;
 
@@ -13,7 +13,7 @@ abstract class AbstractLine {
 		return point_from.distance_to(point_to);
 	}
 
-	public function new(point_from:Vector, point_to:Vector, color:RGBA) {
+	public function new(point_from:Vector2, point_to:Vector2, color:RGBA) {
 		this.point_from = point_from;
 		this.point_to = point_to;
 		this.color = color;
@@ -49,13 +49,13 @@ abstract class AbstractFillRectangle {
 @:structInit
 class Polygon {
 
-	public var origin:Vector = {
+	public var origin:Vector2 = {
 		x: 0,
 		y: 0
 	};
 	public var lines:Array<AbstractLine>;
 
-	public var model(default, null):Array<Vector>;
+	public var model(default, null):Array<Vector2>;
 	public var color:RGBA;
 
 	public var rotation_sin:Float = 0;
@@ -73,7 +73,7 @@ class Polygon {
 		}
 	}
 
-	public function points():Array<Vector> {
+	public function points():Array<Vector2> {
 		return lines.map(line -> line.point_from);
 	}
 
@@ -183,7 +183,7 @@ abstract class GraphicsAbstract {
 	}
 
 
-	public function model_points_to_lines(model:Array<Vector>, color:RGBA):Array<AbstractLine>{
+	public function model_points_to_lines(model:Array<Vector2>, color:RGBA):Array<AbstractLine>{
 		var lines:Array<AbstractLine> = [];
 		for (a in 0...model.length) {
 			var from = model[a % model.length];
@@ -193,7 +193,7 @@ abstract class GraphicsAbstract {
 		return lines;
 	}
 
-	public function make_polygon(model:Array<Vector>, color:RGBA):Polygon {
+	public function make_polygon(model:Array<Vector2>, color:RGBA):Polygon {
 		return {
 			model: model,
 			color: color,

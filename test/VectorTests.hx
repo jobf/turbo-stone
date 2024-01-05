@@ -7,17 +7,17 @@ using stone.core.Vector;
 
 class VectorTests extends Test {
 	function test_transform_position() {
-		var a:Vector = {
+		var a:Vector2 = {
 			x: 1,
 			y: 1
 		}
 
-		var position:Vector = {
+		var position:Vector2 = {
 			x: 10,
 			y: 10
 		}
 
-		var origin:Vector = {
+		var origin:Vector2 = {
 			x: 0,
 			y: 0
 		}

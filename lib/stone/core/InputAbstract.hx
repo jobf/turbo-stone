@@ -58,8 +58,8 @@ abstract class InputAbstract {
 		}
 	}
 
-	public var mouse_position(default, null):Vector;
-	public var mouse_position_previous(default, null):Vector;
+	public var mouse_position(default, null):Vector2;
+	public var mouse_position_previous(default, null):Vector2;
 
 	abstract public function raise_mouse_button_events():Void;
 
@@ -73,5 +73,5 @@ abstract class InputAbstract {
 
 	public var on_pressed:Event<Button> = new Event<Button>();
 	public var on_released:Event<Button> = new Event<Button>();
-	public var on_mouse_move:Event<Vector> = new Event<Vector>();
+	public var on_mouse_move:Event<Vector2> = new Event<Vector2>();
 }

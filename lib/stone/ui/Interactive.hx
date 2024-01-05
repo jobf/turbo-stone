@@ -383,7 +383,7 @@ class Interactive {
 	}
 }
 
-function overlaps_rectangle(geometry:RectangleGeometry, position:Vector):Bool{
+function overlaps_rectangle(geometry:RectangleGeometry, position:Vector2):Bool{
 	return position.x > geometry.x && (geometry.x + geometry.width) > position.x
 	&& position.y > geometry.y && (geometry.y + geometry.height) > position.y;
 }

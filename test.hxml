@@ -1,6 +1,7 @@
 -lib utest
 -lib json2object
 
+-lib hxmath
 -lib lime
 -lib peote-view
 -lib json2object

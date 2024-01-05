@@ -16,7 +16,7 @@ class EditorTests extends Test {
 
 		var editor = new EditorTranslation(viewport);
 
-		var position_mouse:Vector = {
+		var position_mouse:Vector2 = {
 			x: 50,
 			y: 50
 		}
@@ -38,7 +38,7 @@ class EditorTests extends Test {
 		var points_in_editor_y = 2;
 		var editor = new EditorTranslation(viewport, points_in_editor_x, points_in_editor_y);
 
-		var position_mouse:Vector = {
+		var position_mouse:Vector2 = {
 			x: 0,
 			y: 0
 		}
@@ -59,7 +59,7 @@ class EditorTests extends Test {
 		var points_in_editor_y = 2;
 		var editor = new EditorTranslation(viewport, points_in_editor_x, points_in_editor_y);
 
-		var position_mouse:Vector = {
+		var position_mouse:Vector2 = {
 			x: 100,
 			y: 100
 		}
@@ -81,7 +81,7 @@ class EditorTests extends Test {
 		var points_in_editor_y = 2;
 		var editor = new EditorTranslation(viewport, points_in_editor_x, points_in_editor_y);
 
-		var model_point:Vector = {
+		var model_point:Vector2 = {
 			x: -1,
 			y: -1
 		}
@@ -102,7 +102,7 @@ class EditorTests extends Test {
 		var points_in_editor_y = 2;
 		var editor = new EditorTranslation(viewport, points_in_editor_x, points_in_editor_y);
 
-		var model_point:Vector = {
+		var model_point:Vector2 = {
 			x: 1,
 			y: 1
 		}

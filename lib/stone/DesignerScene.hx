@@ -25,7 +25,7 @@ using StringTools;
 class DesignerScene extends HudScene {
 	var grid_center_x:Int;
 	var grid_center_y:Int;
-	var mouse_position:Vector;
+	var mouse_position:Vector2;
 	var designer:Designer;
 	var grid_lines_total:Int = 8;
 	var grid_snapping_modifer:Int = 8;
@@ -412,7 +412,7 @@ class DesignerScene extends HudScene {
 		return '${designer.model_index}/${file.models.length - 1}';
 	}
 
-	override function mouse_moved(mouse_position:Vector) {
+	override function mouse_moved(mouse_position:Vector2) {
 		if(designer.isDrawingLine){
 			if(!overlaps_rectangle(bounds_main, mouse_position)){
 				designer.stop_drawing_line(mouse_position);

@@ -187,7 +187,7 @@ class FileStorageScene extends HudScene {
 		file_list.ui.handle_mouse_release();
 	}
 
-	override function mouse_moved(mouse_position:Vector) {
+	override function mouse_moved(mouse_position:Vector2) {
 		super.mouse_moved(mouse_position);
 		var x_mouse = Std.int(mouse_position.x);
 		var y_mouse = Std.int(mouse_position.y);

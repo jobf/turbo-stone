@@ -20,7 +20,7 @@ class PeoteLine extends AbstractLine {
 	public var element(default, null):LineCPU;
 	public var thick(get, set):Int;
 
-	public function new(point_from:Vector, point_to:Vector, element:LineCPU, remove_from_buffer:PeoteLine->Void, head:Rectangle, end:Rectangle, color:Color) {
+	public function new(point_from:Vector2, point_to:Vector2, element:LineCPU, remove_from_buffer:PeoteLine->Void, head:Rectangle, end:Rectangle, color:Color) {
 		super(point_from, point_to, cast color);
 		this.element = element;
 		this.remove_from_buffer = remove_from_buffer;
