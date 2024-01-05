@@ -18,7 +18,7 @@ class LineCPU implements Element
 	@pivotX @formula("thick * 0.5") var px:Int;
 	@pivotY @formula("thick * 0.5") var py:Int;
 	
-	var OPTIONS = {alpha: true};
+	var OPTIONS = {blend: true};
 
 	@sizeY public var thick:Int = 1;
 	@color public var c:Color;

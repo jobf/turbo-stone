@@ -13,7 +13,7 @@ class Rectangle implements Element {
 	@posX public var x:Float;
 	@posY public var y:Float;
 
-	var OPTIONS = {alpha: true};
+	var OPTIONS = {blend: true};
 
 	public function new(positionX:Float, positionY:Float, width:Float, height:Float, rotation:Float, color:Color = 0x556677ff) {
 		this.x = positionX;
@@ -24,3 +24,4 @@ class Rectangle implements Element {
 		this.rotation = rotation;
 	}
 }
+
