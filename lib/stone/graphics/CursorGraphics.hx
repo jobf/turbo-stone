@@ -3,6 +3,7 @@ package stone.graphics;
 import stone.graphics.Fill;
 import stone.graphics.implementation.PeoteFill;
 import stone.core.GraphicsAbstract;
+import stone.core.Color;
 import stone.core.Vector;
 import peote.view.*;
 

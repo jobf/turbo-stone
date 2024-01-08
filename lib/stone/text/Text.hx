@@ -3,6 +3,7 @@ package stone.text;
 import stone.editing.Editor;
 import stone.core.Models;
 import stone.core.GraphicsAbstract;
+import stone.core.Color;
 import stone.editing.Drawing;
 
 enum Align{

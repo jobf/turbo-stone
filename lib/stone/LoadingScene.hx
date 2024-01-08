@@ -2,6 +2,7 @@ package stone;
 
 import lime.utils.Preloader;
 import stone.core.GraphicsAbstract;
+import stone.core.Color;
 import stone.core.Engine;
 import stone.text.Text;
 

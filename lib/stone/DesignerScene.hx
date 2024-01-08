@@ -3,7 +3,7 @@ package stone;
 import haxe.io.Path;
 import stone.file.FileStorage.FileContainer;
 import stone.ui.Interactive;
-import stone.core.GraphicsAbstract.RGBA;
+import stone.core.Color;
 import stone.core.GraphicsAbstract.AbstractLine;
 import stone.text.Text;
 import stone.core.Engine;

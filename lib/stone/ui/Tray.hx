@@ -1,7 +1,7 @@
 package stone.ui;
 
 import stone.text.Text.Align;
-import stone.core.GraphicsAbstract.RGBA;
+import stone.core.Color;
 import stone.core.Engine.RectangleGeometry;
 import haxe.ds.ArraySort;
 import stone.core.Ui;

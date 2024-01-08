@@ -3,7 +3,7 @@ import stone.core.Vector;
 import stone.core.Event;
 import stone.core.InputAbstract;
 import stone.ui.Interactive;
-import stone.core.GraphicsAbstract.RGBA;
+import stone.core.Color;
 import stone.text.Text;
 import stone.core.Engine;
 import stone.core.Ui;

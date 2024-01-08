@@ -2,8 +2,7 @@ package stone.graphics.implementation;
 
 import stone.graphics.Fill;
 import stone.core.GraphicsAbstract;
-
-
+import stone.core.Color;
 
 
 class Particle extends AbstractParticle {

@@ -5,6 +5,7 @@ import stone.Theme;
 import stone.DesignerScene;
 import stone.core.Engine;
 import stone.core.GraphicsAbstract;
+import stone.core.Color;
 import stone.core.Models;
 import stone.editing.Grid;
 import stone.editing.Overview;

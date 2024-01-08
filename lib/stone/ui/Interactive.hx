@@ -3,6 +3,7 @@ package stone.ui;
 import stone.core.Engine;
 import stone.text.Text;
 import stone.core.GraphicsAbstract;
+import stone.core.Color;
 
 
 class Button extends Interactive{

@@ -4,6 +4,7 @@ import stone.graphics.Fill;
 import stone.graphics.LineCPU;
 import stone.core.Engine;
 import stone.core.GraphicsAbstract;
+import stone.core.Color;
 import stone.core.Vector;
 import peote.view.*;
 

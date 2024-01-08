@@ -2,6 +2,7 @@ package stone.core;
 
 import stone.text.Text;
 import stone.core.GraphicsAbstract;
+import stone.core.Color;
 import stone.core.Engine;
 import stone.ui.Interactive;
 import stone.graphics.implementation.Graphics;

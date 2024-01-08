@@ -3,6 +3,7 @@ package stone.core;
 import stone.core.Storage;
 import stone.core.InputAbstract;
 import stone.core.GraphicsAbstract;
+import stone.core.Color;
 
 typedef GraphicsConstructor = (width:Int, height:Int) -> GraphicsAbstract
 
