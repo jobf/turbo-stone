@@ -1,7 +1,7 @@
 package stone.core;
 
 import stone.core.Storage;
-import stone.core.InputAbstract;
+import stone.abstractions.Input;
 import stone.abstractions.Graphic;
 import stone.core.Color;
 

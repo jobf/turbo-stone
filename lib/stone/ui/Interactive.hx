@@ -208,7 +208,7 @@ class InteractiveModel {
 	public var label_text_align_override:Null<Align> = null;
 	public var label_change:Null<Void->String> = null;
 	public var conditions:Null<()->Bool> = null;
-	public var key_code:Null<stone.core.InputAbstract.Button> = null;
+	public var key_code:Null<stone.abstractions.Input.Button> = null;
 	public var sort_order:Int = 0;
 	public var can_be_disabled:Bool = true;
 	public var sub_contents:Null<Array<InteractiveModel>> = null;

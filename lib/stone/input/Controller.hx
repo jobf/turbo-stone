@@ -1,6 +1,6 @@
 package stone.input;
 
-import stone.core.InputAbstract;
+import stone.abstractions.Input;
 
 @:structInit
 class Action {

@@ -10,7 +10,7 @@ import stone.input.Controller;
 import stone.core.Ui;
 import stone.core.Engine.Scene;
 import stone.text.Text;
-import stone.core.InputAbstract;
+import stone.abstractions.Input;
 import stone.ui.Tray;
 
 using StringTools;

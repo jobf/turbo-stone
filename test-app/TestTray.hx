@@ -1,14 +1,14 @@
 import stone.input.Controller;
 import stone.core.Vector;
 import stone.core.Event;
-import stone.core.InputAbstract;
+import stone.abstractions.Input;
 import stone.ui.Interactive;
 import stone.core.Color;
 import stone.text.Text;
 import stone.core.Engine;
 import stone.core.Ui;
 import stone.ui.Tray;
-import stone.core.InputAbstract.Button as Control;
+import stone.abstractions.Input.Button as Control;
 
 class TestTray extends Scene {
 	var font:Font;

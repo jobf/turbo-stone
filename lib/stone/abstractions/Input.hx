@@ -1,6 +1,6 @@
-package stone.core;
+package stone.abstractions;
 
-import stone.core.Vector;
+import stone.core.Event;
 
 enum Button {
 	NONE;
