@@ -1,6 +1,6 @@
 package stone.ui;
 
-import stone.core.GraphicsAbstract;
+import stone.abstractions.Graphic;
 import stone.core.Models.Deserialize;
 import stone.core.Engine;
 import stone.DesignerScene;
@@ -40,7 +40,7 @@ class FileList{
 			var length_labels = labels.length;
 			while (length_labels-- > 0) {
 				var label = labels.pop();
-				label.erase();
+				label.erase_graphic();
 			}
 		}
 

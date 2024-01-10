@@ -2,7 +2,7 @@ package stone.graphics;
 
 import stone.graphics.Fill;
 import stone.graphics.implementation.PeoteFill;
-import stone.core.GraphicsAbstract;
+import stone.abstractions.Graphic;
 import stone.core.Color;
 import stone.core.Vector;
 import peote.view.*;
@@ -55,7 +55,7 @@ class CursorGraphics {
 		buffer.update();
 	}
 
-	public function erase(){
+	public function erase_graphic(){
 		buffer.clear(true, true);
 
 		if(display.hasProgram(program)){
@@ -63,7 +63,7 @@ class CursorGraphics {
 		}
 	}
 
-	public function make_fill(x:Int, y:Int, width:Int, height:Int, color:RGBA):AbstractFillRectangle {
+	public function make_fill(x:Int, y:Int, width:Int, height:Int, color:RGBA):Fill {
 		var element = make_rectangle(x, y, width, height, color);
 		
 		var fill_clean_up:PeoteFill -> Void = fill -> {

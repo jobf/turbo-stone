@@ -1,7 +1,7 @@
 package stone.core;
 
 import stone.text.Text;
-import stone.core.GraphicsAbstract;
+import stone.abstractions.Graphic;
 import stone.core.Color;
 import stone.core.Engine;
 import stone.ui.Interactive;
@@ -12,7 +12,7 @@ class Ui{
 	var clickers(default, null):Array<Interactive>;
 	var labels(default, null):Array<Interactive>;
 	
-	var graphics:GraphicsAbstract;
+	var graphics:GraphicsProvider;
 	var text:Text;
 
 	public var y_start_offset:Int = 0;
@@ -89,9 +89,9 @@ class Ui{
 	}
 
 	public function clear() {
-		sliders.clear(slider -> slider.erase());
-		clickers.clear(clicker -> clicker.erase());
-		labels.clear(interactive -> interactive.erase());
+		sliders.clear(slider -> slider.erase_graphic());
+		clickers.clear(clicker -> clicker.erase_graphic());
+		labels.clear(interactive -> interactive.erase_graphic());
 	}
 
 
@@ -240,12 +240,12 @@ class Ui{
 	}
 
 	function erase(interactives:Array<Interactive>){
-		interactives.clear(interactive -> interactive.erase);
+		interactives.clear(interactive -> interactive.erase_graphic);
 	}
 }
 
 @:structInit
 class TextArea{
 	public var text:Array<Word>;
-	public var background:AbstractFillRectangle;
+	public var background:Fill;
 }

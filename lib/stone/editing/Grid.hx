@@ -1,15 +1,15 @@
 package stone.editing;
 
-import stone.core.GraphicsAbstract;
+import stone.abstractions.Graphic;
 import stone.Theme;
 
 class Grid {
-	public static function grid_draw(make_line:MakeLine, size_segment:Int, x_center:Int, y_center:Int, width:Int, height:Int, draw_central_lines:Bool = true):Array<AbstractLine> {
-		var lines_grid:Array<AbstractLine> = [];
+	public static function grid_draw(make_line:MakeLine, size_segment:Int, x_center:Int, y_center:Int, width:Int, height:Int, draw_central_lines:Bool = true):Array<Line> {
+		var lines_grid:Array<Line> = [];
 		if (lines_grid.length > 0) {
 			var delete_index = lines_grid.length;
 			while (delete_index-- > 0) {
-				lines_grid[delete_index].erase();
+				lines_grid[delete_index].erase_graphic();
 				lines_grid.remove(lines_grid[delete_index]);
 			}
 		}

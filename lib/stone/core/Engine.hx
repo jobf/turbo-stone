@@ -2,15 +2,15 @@ package stone.core;
 
 import stone.core.Storage;
 import stone.core.InputAbstract;
-import stone.core.GraphicsAbstract;
+import stone.abstractions.Graphic;
 import stone.core.Color;
 
-typedef GraphicsConstructor = (width:Int, height:Int) -> GraphicsAbstract
+typedef GraphicsConstructor = (width:Int, height:Int) -> GraphicsProvider
 
 class Game {
 	var current_scene:Scene;
 
-	var graphics_layers : Array<GraphicsAbstract>;
+	var graphics_layers : Array<GraphicsProvider>;
 	var graphics_constructor(default, null):GraphicsConstructor;
 	public var input(default, null):InputAbstract;
 	public var storage(default, null):Storage;
@@ -53,7 +53,7 @@ class Game {
 		}
 	}
 
-	public function graphics_layer_init(width:Int, height:Int):GraphicsAbstract{
+	public function graphics_layer_init(width:Int, height:Int):GraphicsProvider{
 		var layer = graphics_constructor(width, height);
 		graphics_layers.push(layer);
 		return layer;

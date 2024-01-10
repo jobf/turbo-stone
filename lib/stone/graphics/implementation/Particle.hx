@@ -1,11 +1,10 @@
 package stone.graphics.implementation;
 
 import stone.graphics.Fill;
-import stone.core.GraphicsAbstract;
+import stone.abstractions.Graphic;
 import stone.core.Color;
 
-
-class Particle extends AbstractParticle {
+class ParticlePeote extends Particle {
 	var element:Rectangle;
 
 	public function new(x:Int, y:Int, size:Int, color:RGBA, lifetime_seconds:Float, element:Rectangle) {

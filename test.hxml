@@ -18,3 +18,5 @@
 
 -main test.RunTests
 --interp
+
+-D no-deprecation-warnings

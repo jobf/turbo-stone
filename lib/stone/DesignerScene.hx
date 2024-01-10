@@ -4,7 +4,7 @@ import haxe.io.Path;
 import stone.file.FileStorage.FileContainer;
 import stone.ui.Interactive;
 import stone.core.Color;
-import stone.core.GraphicsAbstract.AbstractLine;
+
 import stone.text.Text;
 import stone.core.Engine;
 import stone.file.FileStorage.FileJSON;
@@ -15,6 +15,7 @@ import stone.util.EnumMacros;
 import stone.text.CodePage;
 import stone.ui.Tray;
 import stone.file.PNG;
+import stone.abstractions.Graphic;
 import stone.graphics.implementation.Graphics;
 
 
@@ -338,7 +339,7 @@ class DesignerScene extends HudScene {
 
 	override function close() {
 		super.close();
-		designer.erase();
+		designer.erase_graphic();
 	}
 
 	function save_file(){
@@ -375,13 +376,13 @@ class DesignerScene extends HudScene {
 		graphics.display.peoteView.removeDisplay(graphics.display);
 	}
 
-	var lines_grid:Array<AbstractLine> = [];
+	var lines_grid:Array<Line> = [];
 
 	function grid_draw(size_segment:Int) {
 		if (lines_grid.length > 0) {
 			var delete_index = lines_grid.length;
 			while (delete_index-- > 0) {
-				lines_grid[delete_index].erase();
+				lines_grid[delete_index].erase_graphic();
 				lines_grid.remove(lines_grid[delete_index]);
 			}
 		}

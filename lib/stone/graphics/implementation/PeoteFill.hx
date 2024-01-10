@@ -1,9 +1,9 @@
 package stone.graphics.implementation;
 
 import stone.graphics.Fill;
-import stone.core.GraphicsAbstract;
+import stone.abstractions.Graphic;
 
-class PeoteFill extends AbstractFillRectangle {
+class PeoteFill extends Fill {
 	public var element(default, null):Rectangle;
 	public var is_erased(default, null):Bool = false;
 	var remove_from_buffer:PeoteFill->Void;
@@ -22,7 +22,7 @@ class PeoteFill extends AbstractFillRectangle {
 		element.color = cast color;
 	}
 
-	public function erase(){
+	public function erase_graphic(){
 		if(!is_erased){
 			is_erased = true;
 			remove_from_buffer(this);

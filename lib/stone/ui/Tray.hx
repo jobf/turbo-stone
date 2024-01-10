@@ -238,13 +238,13 @@ class Tray {
 
 			var close_sub_menu:Void->Void = () ->{
 				// remove interactive items
-				sub_menu_items.clear(button -> button.erase());
+				sub_menu_items.clear(button -> button.erase_graphic());
 				
 				// remove message
 				if(has_message){
-					dialog_text.background.erase();
+					dialog_text.background.erase_graphic();
 					for (word in dialog_text.text) {
-						word.erase();
+						word.erase_graphic();
 					}
 				}
 				

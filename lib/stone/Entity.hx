@@ -1,4 +1,4 @@
-import stone.core.GraphicsAbstract;
+import stone.abstractions.Graphic;
 import stone.editing.Editor;
 
 class Entity {
@@ -16,7 +16,7 @@ class Entity {
 	var model_points:Array<Vector2>;
 	var lines_points:Array<Vector2>;
 
-	public function new(model:Array<Vector2>, x:Int, y:Int, rotation_speed:Float, graphics:GraphicsAbstract) {
+	public function new(model:Array<Vector2>, x:Int, y:Int, rotation_speed:Float, graphics:GraphicsProvider) {
 		// set up motion
 		motion = new MotionInteractive(x, y);
 		this.rotation_speed = rotation_speed;

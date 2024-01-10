@@ -1,6 +1,6 @@
 package stone.core;
 
-import stone.core.GraphicsAbstract;
+import stone.abstractions.Graphic;
 
 class Emitter {
 	/** starting x position of particles **/
@@ -10,7 +10,7 @@ class Emitter {
 	var y:Int;
 
 	/** pool of particles for recycling **/
-	var particles:Array<AbstractParticle>;
+	var particles:Array<Particle>;
 
 	/** size of particle pool **/
 	var maximum_particles:Int = 30;
@@ -43,9 +43,9 @@ class Emitter {
 
 	public var rotation:Float = 0;
 
-	var graphics:GraphicsAbstract;
+	var graphics:GraphicsProvider;
 
-	public function new(x:Int, y:Int, graphics:GraphicsAbstract) {
+	public function new(x:Int, y:Int, graphics:GraphicsProvider) {
 		particles = [];
 		this.x = x;
 		this.y = y;
@@ -101,7 +101,7 @@ class Emitter {
 		return color;
 	}
 
-	function set_trajectory(particle:AbstractParticle) {
+	function set_trajectory(particle:Particle) {
 		// some variation for x and y
 		var x_speed = (x_speed_maximum * Math.random()) + x_speed_minimum;
 		var y_speed = (y_speed_maximum * Math.random()) + y_speed_minimum;

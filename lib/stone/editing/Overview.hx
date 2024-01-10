@@ -1,6 +1,6 @@
 package stone.editing;
 
-import stone.core.GraphicsAbstract;
+import stone.abstractions.Graphic;
 import stone.core.Models;
 import stone.editing.Editor;
 import stone.core.Engine;
@@ -8,7 +8,7 @@ import stone.core.Engine;
 using stone.editing.Editor.GraphicsExtensions;
 
 class Overview{
-	public static function render_models(models:Array<FigureModel>, size_model:Int, graphics:GraphicsAbstract){
+	public static function render_models(models:Array<FigureModel>, size_model:Int, graphics:GraphicsProvider){
 		var total_rows = Std.int(256 / 16);
 		var total_columns = total_rows;
 

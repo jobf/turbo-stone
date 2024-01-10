@@ -1,6 +1,7 @@
 package stone.editing;
 
-import stone.core.GraphicsAbstract;
+
+import stone.abstractions.Graphic;
 import stone.core.Models;
 import stone.core.Engine;
 import stone.graphics.implementation.Graphics;
@@ -68,9 +69,9 @@ class EditorTranslation {
 class Designer {
 	public var model_index(default, null):Int = 0;
 
-	var mouse_pointer:AbstractFillRectangle;
+	var mouse_pointer:Fill;
 
-	public var line_under_cursor:AbstractLine;
+	public var line_under_cursor:Line;
 
 	var size_segment:Int;
 	var size_segment_half:Int;
@@ -88,7 +89,7 @@ class Designer {
 	public var isDrawingLine(default, null):Bool = false;
 	public var figure(default, null):Figure;
 
-	public function new(size_segment:Int, graphics:GraphicsAbstract, bounds_grid:RectangleGeometry, file:FileModel) {
+	public function new(size_segment:Int, graphics:GraphicsProvider, bounds_grid:RectangleGeometry, file:FileModel) {
 		this.file = file;
 		is_file_modified = false;
 		granularity_set(size_segment);
@@ -103,8 +104,8 @@ class Designer {
 		figure_init();
 	}
 
-	public function erase(){
-		mouse_pointer_graphics.erase();
+	public function erase_graphic(){
+		mouse_pointer_graphics.erase_graphic();
 	}
 
 	public function draw() {
@@ -120,7 +121,7 @@ class Designer {
 		snapping_mod = mod;
 	}
 
-	function line_under_cursor_(position_cursor:Vector2):Null<AbstractLine> {
+	function line_under_cursor_(position_cursor:Vector2):Null<Line> {
 		for (line in figure.lines) {
 			var overlaps:Bool = position_cursor.line_overlaps_point(line.point_from, line.point_to);
 			if (overlaps) {
@@ -143,7 +144,7 @@ class Designer {
 		if (models_under_cursor.length > 0) {
 			figure.model.remove(models_under_cursor[0]);
 			figure.lines.remove(line_under_cursor);
-			line_under_cursor.erase();
+			line_under_cursor.erase_graphic();
 		}
 	}
 
@@ -248,9 +249,9 @@ class Designer {
 		figure = graphics.map_figure(file.models[model_index], translation);
 	}
 
-	public function line_erase(line:AbstractLine) {
+	public function line_erase(line:Line) {
 		// trace('designer clean line $line');
-		line.erase();
+		line.erase_graphic();
 	}
 
 	public function model_name():String {
@@ -278,7 +279,7 @@ class Designer {
 
 		var x = round_to_nearest(point.x, size_snapping / snapping_mod);
 		var y = round_to_nearest(point.y, size_snapping / snapping_mod);
-		var line:AbstractLine = graphics.make_line(x, y, x, y, Theme.drawing_lines);
+		var line:Line = graphics.make_line(x, y, x, y, Theme.drawing_lines);
 		
 		figure.lines.push(line);
 		
@@ -316,15 +317,15 @@ class Designer {
 @:structInit
 class Figure {
 	public var model:Array<LineModel>;
-	public var lines:Array<AbstractLine>;
+	public var lines:Array<Line>;
 
-	public function line_newest():AbstractLine {
+	public function line_newest():Line {
 		return lines[lines.length - 1];
 	}
 }
 
 class GraphicsExtensions{
-	public static function map_figure(graphics:GraphicsAbstract, model:FigureModel, translation:EditorTranslation):Figure {
+	public static function map_figure(graphics:GraphicsProvider, model:FigureModel, translation:EditorTranslation):Figure {
 		var convert_line:LineModel->LineModel = line -> {
 			from: translation.model_to_view_point(line.from),
 			to: translation.model_to_view_point(line.to)

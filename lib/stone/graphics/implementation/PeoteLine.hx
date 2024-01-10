@@ -3,11 +3,11 @@ package stone.graphics.implementation;
 import stone.graphics.Fill;
 import stone.graphics.LineCPU;
 
-import stone.core.GraphicsAbstract;
+import stone.abstractions.Graphic;
 
 import peote.view.Color;
 
-class PeoteLine extends AbstractLine {
+class PeoteLine extends Line {
 	var a:Float = 0;
 	var b:Float = 0;
 
@@ -46,7 +46,7 @@ class PeoteLine extends AbstractLine {
 		end.rotation = -45;
 	}
 
-	public function erase():Void {
+	public function erase_graphic():Void {
 		if(!is_erased){
 			is_erased = true;
 			remove_from_buffer(this);

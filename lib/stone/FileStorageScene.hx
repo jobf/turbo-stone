@@ -1,6 +1,6 @@
 package stone;
 
-import stone.core.GraphicsAbstract;
+import stone.abstractions.Graphic;
 import stone.core.Color;
 import stone.core.Models.Deserialize;
 import stone.core.Engine;

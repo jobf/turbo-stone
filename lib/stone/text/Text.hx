@@ -2,7 +2,7 @@ package stone.text;
 
 import stone.editing.Editor;
 import stone.core.Models;
-import stone.core.GraphicsAbstract;
+import stone.abstractions.Graphic;
 import stone.core.Color;
 import stone.editing.Drawing;
 
@@ -34,12 +34,12 @@ function font_load_embedded(size_model:Int=64):Font {
 
 class Text {
 	public var font(default, null):Font;
-	var graphics:GraphicsAbstract;
+	var graphics:GraphicsProvider;
 	var model_translation:EditorTranslation;
 
 	var words:Array<Word> = [];
 
-	public function new(font:Font, graphics:GraphicsAbstract) {
+	public function new(font:Font, graphics:GraphicsProvider) {
 		if (font.models.length != 256) {
 			throw "character set requires 256 models for code page 437";
 		}
@@ -111,9 +111,9 @@ class Word {
 	public var width:Int;
 	public var drawings(default, null):Array<Drawing>;
 
-	public function erase() {
+	public function erase_graphic() {
 		for (drawing in drawings) {
-			drawing.erase();
+			drawing.erase_graphic();
 		}
 		on_erase(this);
 	}

@@ -1,7 +1,8 @@
 package stone.editing;
 
 import stone.editing.Editor;
-import stone.core.GraphicsAbstract;
+import stone.abstractions.Graphic;
+
 import stone.core.Models;
 
 
@@ -28,7 +29,7 @@ class Drawing{
 	public var rotation_direction:Int = 0;
 
 
-	public var lines:Array<AbstractLine> = [];
+	public var lines:Array<Line> = [];
 	public function new(prototypeModel:Prototype, x:Float, y:Float, make_line:MakeLine, model_translation:EditorTranslation, color:Int = 0x2C8D49ff) {
 		if(prototypeModel == null || prototypeModel.model_lines == null)
 		{
@@ -58,7 +59,7 @@ class Drawing{
 		draw();
 	}
 
-	function translate(line_proto:LineModel, line_drawing:AbstractLine, rotation_sin:Float, rotation_cos:Float){
+	function translate(line_proto:LineModel, line_drawing:Line, rotation_sin:Float, rotation_cos:Float){
 		var scale_origin:Vector2 = {
 			y: scale/origin.y,
 			x: scale/origin.x
@@ -97,11 +98,11 @@ class Drawing{
 		}
 	}
 
-	public function erase(){
+	public function erase_graphic(){
 		var index_line = lines.length;
 		while(index_line-- > 0){
 			var line = lines.pop();
-			line.erase();
+			line.erase_graphic();
 		}
 	}
 }
