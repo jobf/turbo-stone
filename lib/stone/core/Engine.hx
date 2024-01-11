@@ -1,9 +1,9 @@
 package stone.core;
 
-import stone.core.Storage;
-import stone.abstractions.Input;
 import stone.abstractions.Graphic;
+import stone.abstractions.Input;
 import stone.core.Color;
+import stone.core.Storage;
 
 typedef GraphicsConstructor = (width:Int, height:Int) -> GraphicsBase
 

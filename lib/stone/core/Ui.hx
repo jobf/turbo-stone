@@ -1,11 +1,11 @@
 package stone.core;
 
-import stone.text.Text;
+import Graphics;
 import stone.abstractions.Graphic;
 import stone.core.Color;
 import stone.core.Engine;
+import stone.text.Text;
 import stone.ui.Interactive;
-import Graphics;
 
 class Ui{
 	var sliders(default, null):Array<Slider>;

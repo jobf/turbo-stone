@@ -1,8 +1,8 @@
 package stone.file;
 
 import haxe.io.Path;
-import sys.io.File;
 import sys.FileSystem;
+import sys.io.File;
 
 class StorageSys {
 	static var home = Sys.environment()['HOME'];

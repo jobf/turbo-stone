@@ -1,9 +1,9 @@
 package stone.util;
 
+import haxe.io.Bytes;
 import haxe.io.UInt8Array;
 import js.lib.ArrayBufferView;
 import js.lib.Uint8Array;
-import haxe.io.Bytes;
 
 function release_blob_string(blob_string:String, file_name:String){
 	var blob = new js.html.Blob([blob_string]);

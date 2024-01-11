@@ -1,12 +1,11 @@
 package stone.core;
 
 import haxe.io.Bytes;
-import stone.file.FileStorage;
-import lime.ui.Window;
 import haxe.io.Path;
+import lime.ui.Window;
 import stone.core.Event;
 import stone.core.Models;
-
+import stone.file.FileStorage;
 
 
 class Storage {

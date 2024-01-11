@@ -1,26 +1,23 @@
 package stone;
 
-import haxe.io.Path;
-import stone.file.FileStorage.FileContainer;
-import stone.ui.Interactive;
-import stone.core.Color;
-
-import stone.text.Text;
-import stone.core.Engine;
-import stone.file.FileStorage.FileJSON;
-import stone.editing.Editor;
-import stone.FileStorageScene;
-import stone.core.Models;
-import stone.util.EnumMacros;
-import stone.text.CodePage;
-import stone.ui.Tray;
-import stone.file.PNG;
-import stone.abstractions.Graphic;
 import Graphics;
+import haxe.io.Path;
+import stone.abstractions.Graphic;
+import stone.core.Color;
+import stone.core.Engine;
+import stone.core.Models;
+import stone.editing.Editor;
+import stone.file.FileStorage;
+import stone.file.PNG;
+import stone.FileStorageScene;
+import stone.text.CodePage;
+import stone.text.Text;
+import stone.ui.Interactive;
+import stone.ui.Tray;
+import stone.util.EnumMacros;
 
-
-using stone.util.DateExtensions;
 using stone.editing.Editor.GraphicsExtensions;
+using stone.util.DateExtensions;
 using StringTools;
 
 class DesignerScene extends HudScene {

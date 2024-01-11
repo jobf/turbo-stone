@@ -1,10 +1,10 @@
 package stone.text;
 
-import stone.editing.Editor;
-import stone.core.Models;
 import stone.abstractions.Graphic;
 import stone.core.Color;
+import stone.core.Models;
 import stone.editing.Drawing;
+import stone.editing.Editor;
 
 enum Align{
 	CENTER;

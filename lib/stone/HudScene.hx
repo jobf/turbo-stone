@@ -1,16 +1,16 @@
 package stone;
 
+import Graphics;
 import stone.abstractions.Graphic;
+import stone.abstractions.Input;
 import stone.core.Color;
 import stone.core.Engine;
-import Graphics;
-import stone.core.Vector;
 import stone.core.Engine.Rectangle;
-import stone.input.Controller;
-import stone.core.Ui;
 import stone.core.Engine.Scene;
+import stone.core.Ui;
+import stone.core.Vector;
+import stone.input.Controller;
 import stone.text.Text;
-import stone.abstractions.Input;
 import stone.ui.Tray;
 
 using StringTools;

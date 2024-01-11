@@ -1,6 +1,6 @@
 package stone.core;
-import json2object.*;
 
+import json2object.*;
 import stone.core.Vector;
 
 @:structInit

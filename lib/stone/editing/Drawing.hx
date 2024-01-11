@@ -1,10 +1,8 @@
 package stone.editing;
 
-import stone.editing.Editor;
 import stone.abstractions.Graphic;
-
 import stone.core.Models;
-
+import stone.editing.Editor;
 
 using stone.editing.Editor.GraphicsExtensions;
 

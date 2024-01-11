@@ -1,15 +1,15 @@
-import stone.HudScene;
-import stone.ui.Tray;
 import Graphics;
-import stone.Theme;
-import stone.DesignerScene;
-import stone.core.Engine;
 import stone.abstractions.Graphic;
 import stone.core.Color;
+import stone.core.Engine;
 import stone.core.Models;
+import stone.DesignerScene;
 import stone.editing.Grid;
 import stone.editing.Overview;
 import stone.file.PNG;
+import stone.HudScene;
+import stone.Theme;
+import stone.ui.Tray;
 
 using stone.util.DateExtensions;
 

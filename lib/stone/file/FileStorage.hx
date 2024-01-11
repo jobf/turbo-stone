@@ -1,8 +1,8 @@
 package stone.file;
 
-import json2object.JsonWriter;
 import json2object.Error;
 import json2object.JsonParser;
+import json2object.JsonWriter;
 #if js
 import stone.file.StorageWeb as Store;
 #else

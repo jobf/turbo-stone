@@ -1,10 +1,9 @@
 package stone.ui;
 
-import stone.core.Engine;
-import stone.text.Text;
-
 import stone.abstractions.Graphic;
 import stone.core.Color;
+import stone.core.Engine;
+import stone.text.Text;
 
 
 class Button extends Interactive{

@@ -1,18 +1,15 @@
 package stone.ui;
 
 import stone.abstractions.Graphic;
-import stone.core.Models.Deserialize;
 import stone.core.Engine;
-import stone.DesignerScene;
-import stone.core.Vector;
-import stone.core.Engine.Rectangle;
+import stone.core.Models;
 import stone.core.Ui;
-import stone.ui.Interactive;
+import stone.core.Vector;
+import stone.DesignerScene;
 import stone.file.FileStorage;
-import stone.core.Engine.Scene;
 import stone.text.Text;
+import stone.ui.Interactive;
 import stone.ui.Tray;
-
 
 class FileList{
 	public var ui(default, null):Ui;

@@ -1,12 +1,11 @@
 package stone.ui;
 
-import stone.text.Text.Align;
+import haxe.ds.ArraySort;
 import stone.core.Color;
 import stone.core.Engine.Rectangle;
-import haxe.ds.ArraySort;
 import stone.core.Ui;
+import stone.text.Text.Align;
 import stone.ui.Interactive;
-
 
 @:structInit
 class Section {

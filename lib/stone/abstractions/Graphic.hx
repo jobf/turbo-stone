@@ -1,10 +1,9 @@
 package stone.abstractions;
 
-
-import stone.core.Models;
-import stone.core.Engine;
-import stone.core.Color;
 import haxe.io.UInt8Array;
+import stone.core.Color;
+import stone.core.Engine;
+import stone.core.Models;
 import stone.editing.Editor;
 
 typedef MakeLine = (from_x:Float, from_y:Float, to_x:Float, to_y:Float, color:RGBA) -> LineBase;

@@ -1,14 +1,14 @@
 package stone.editing;
 
 
-import stone.abstractions.Graphic;
-import stone.core.Models;
-import stone.core.Engine;
-import Graphics;
 import Cursor;
+import Graphics;
 import haxe.ds.ArraySort;
 import haxe.io.Bytes;
 import haxe.io.UInt8Array;
+import stone.abstractions.Graphic;
+import stone.core.Engine;
+import stone.core.Models;
 
 using stone.editing.Editor.GraphicsExtensions;
 
