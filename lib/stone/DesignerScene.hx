@@ -361,10 +361,7 @@ class DesignerScene extends HudScene {
 		var width_png:Int = bounds_main.height;
 		var height_png:Int = bounds_main.height;
 
-		var graphics:Graphics = cast graphics_main.graphics_new_layer(width_png, height_png);
-		var figure = graphics.map_figure(file.models[designer.model_index], designer.translation);
-		
-		var data_pixels = readPixels(graphics.display);
+		var data_pixels = designer.png_data_from_figure(file.models[designer.model_index], designer.translation, width_png, height_png);
 
 		if(data_pixels != null){
 			var time_stamp = Date.now().to_time_stamp();
@@ -372,8 +369,6 @@ class DesignerScene extends HudScene {
 			var png_bytes = PNG.lime_bytes(data_pixels, width_png, height_png, file_name);
 			game.storage.export_bytes(png_bytes, file_name);
 		}
-
-		graphics.display.peoteView.removeDisplay(graphics.display);
 	}
 
 	var lines_grid:Array<LineBase> = [];

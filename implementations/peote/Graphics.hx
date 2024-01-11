@@ -1,11 +1,15 @@
 import stone.core.Engine;
+import stone.editing.Editor;
 import stone.abstractions.Graphic;
+import stone.core.Models;
 import Particle;
 import Elements;
 import stone.core.Color;
 import stone.core.Vector;
 import peote.view.*;
+import haxe.io.UInt8Array;
 
+using stone.editing.Editor.GraphicsExtensions;
 using hxmath.math.Vector2;
 
 class Graphics extends GraphicsBase {
@@ -140,6 +144,15 @@ class Graphics extends GraphicsBase {
 	public function scroll_y(amount:Int) {
 		display.yOffset += amount;
 	}
+
+	public function png_data_from_figure(model:FigureModel, translation:EditorTranslation, width:Int, height:Int):UInt8Array{
+		var temp:Graphics = cast graphics_new_layer(width, height);
+		temp.map_figure(model, translation);
+		var data = readPixels(temp.display);
+		display.peoteView.removeDisplay(temp.display);
+		return data;
+	}
+
 }
 
 function readPixels(display:Display):Null<haxe.io.UInt8Array> {

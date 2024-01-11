@@ -4,6 +4,8 @@ package stone.abstractions;
 import stone.core.Models;
 import stone.core.Engine;
 import stone.core.Color;
+import haxe.io.UInt8Array;
+import stone.editing.Editor;
 
 typedef MakeLine = (from_x:Float, from_y:Float, to_x:Float, to_y:Float, color:RGBA) -> LineBase;
 typedef MakeFill = (x:Int, y:Int, width:Int, height:Int, color:RGBA) -> FillBase;
@@ -183,6 +185,8 @@ abstract class GraphicsBase {
 	abstract public function make_fill(x:Int, y:Int, width:Int, height:Int, color:RGBA):FillBase;
 
 	abstract public function make_particle(x:Float, y:Float, size:Int, color:RGBA, lifetime_seconds:Float):ParticleBase;
+
+	abstract public function png_data_from_figure(figure:FigureModel, translation:EditorTranslation, width:Int, height:Int):UInt8Array;
 
 	public function model_to_lines(model:Array<LineBaseModel>, color:RGBA):Array<LineBase>{
 		var lines:Array<LineBase> = [];

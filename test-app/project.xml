@@ -11,11 +11,13 @@
 	<app main="Main" path="dist" file="Main" />
 	<!-- <define name="stats" if="html5" /> -->
 
+	<haxelib name="peote-view" />
 	<haxelib name="stone" path="../lib" />
-	<haxelib name="stone.peote" path="../implementations/peote" />
 	<source path="../implementations/peote" />
 
 	<assets path="assets/models" rename="models" include="*.json" />
+
+	<haxedef name="no_deprecation_warnings" />
 
 
 	<!-- force compiling for a special opengl-es version (only set one of them) -->

@@ -6,8 +6,10 @@ import stone.core.Models;
 import stone.core.Engine;
 import Graphics;
 import Cursor;
-
 import haxe.ds.ArraySort;
+import haxe.io.Bytes;
+import haxe.io.UInt8Array;
+
 using stone.editing.Editor.GraphicsExtensions;
 
 class EditorTranslation {
@@ -303,6 +305,10 @@ class Designer {
 		// 	trace('${line.point_from.x},${line.point_from.y} -> ${line.point_to.x},${line.point_to.y}');
 		// }
 		trace('stop_drawing_line ${point.x} ${point.y}');
+	}
+
+	public function png_data_from_figure(figure:FigureModel, translation:EditorTranslation, width:Int, height:Int):UInt8Array{
+		return graphics.png_data_from_figure(figure, translation, width, height);
 	}
 
 	public function reset_file_status() {

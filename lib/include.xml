@@ -2,7 +2,6 @@
 <project>
 
 	<haxelib name="lime" />
-	<haxelib name="peote-view" />
 	<haxelib name="format" />
 	<haxelib name="json2object" />
 	<haxelib name="compiletime" />
