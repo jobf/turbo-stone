@@ -5,7 +5,7 @@ import stone.core.Models.Deserialize;
 import stone.core.Engine;
 import stone.DesignerScene;
 import stone.core.Vector;
-import stone.core.Engine.RectangleGeometry;
+import stone.core.Engine.Rectangle;
 import stone.core.Ui;
 import stone.ui.Interactive;
 import stone.file.FileStorage;
@@ -18,9 +18,9 @@ class FileList{
 	public var ui(default, null):Ui;
 	var on_file_select:String->Void;
 	var labels:Array<LabelToggle> = [];
-	var bounds:RectangleGeometry;
+	var bounds:Rectangle;
 
-	public function new(graphics_init:GraphicsConstructor, bounds:RectangleGeometry,  on_file_select:String->Void){
+	public function new(graphics_init:GraphicsConstructor, bounds:Rectangle,  on_file_select:String->Void){
 		// file list only has interactives listed in the main area, so bounds_interactive is actually bounds_main
 		this.bounds = bounds;
 		ui = new Ui(graphics_init);
@@ -40,7 +40,7 @@ class FileList{
 			var length_labels = labels.length;
 			while (length_labels-- > 0) {
 				var label = labels.pop();
-				label.erase_graphic();
+				label.erase();
 			}
 		}
 
@@ -48,7 +48,7 @@ class FileList{
 		var height_button = Std.int(font.height_model * 1.5);
 		var width_button = bounds.width;
 
-		var bounds_interactive:RectangleGeometry = {
+		var bounds_interactive:Rectangle = {
 			y: 0,
 			x: 0,
 			width: width_button,
@@ -61,7 +61,7 @@ class FileList{
 				// trace(path);
 				var label = path;
 	
-				var label_geometry:RectangleGeometry = {
+				var label_geometry:Rectangle = {
 					y: bounds.y + (n * height_button),
 					x: bounds.x,
 					width: bounds_interactive.width,

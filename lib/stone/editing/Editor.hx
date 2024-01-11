@@ -4,14 +4,14 @@ package stone.editing;
 import stone.abstractions.Graphic;
 import stone.core.Models;
 import stone.core.Engine;
-import stone.graphics.implementation.Graphics;
-import stone.graphics.CursorGraphics;
+import Graphics;
+import Cursor;
 
 import haxe.ds.ArraySort;
 using stone.editing.Editor.GraphicsExtensions;
 
 class EditorTranslation {
-	public var bounds_view:RectangleGeometry;
+	public var bounds_view:Rectangle;
 
 	var x_center:Int;
 	var y_center:Int;
@@ -21,7 +21,7 @@ class EditorTranslation {
 	public var bounds_width_half:Float;
 	public var bounds_height_half:Float;
 
-	public function new(bounds_view:RectangleGeometry, points_in_translation_x:Int = 1, points_in_translation_y:Int = 1) {
+	public function new(bounds_view:Rectangle, points_in_translation_x:Int = 1, points_in_translation_y:Int = 1) {
 		this.bounds_view = bounds_view;
 		this.points_in_translation_x = points_in_translation_x;
 		this.points_in_translation_y = points_in_translation_y;
@@ -69,34 +69,34 @@ class EditorTranslation {
 class Designer {
 	public var model_index(default, null):Int = 0;
 
-	var mouse_pointer:Fill;
+	var mouse_pointer:FillBase;
 
-	public var line_under_cursor:Line;
+	public var line_under_cursor:LineBase;
 
 	var size_segment:Int;
 	var size_segment_half:Int;
 	var size_snapping: Int;
 	var snapping_mod:Int = 4;
 	var graphics:Graphics;
-	var mouse_pointer_graphics:CursorGraphics;
-	var bounds_grid:RectangleGeometry;
+	var mouse_pointer_graphics:Cursor;
+	var bounds_grid:Rectangle;
 	public var is_file_modified(default, null):Bool;
 
 	public var file(default, null):FileModel;
 
 	public var translation(default, null):EditorTranslation;
 
-	public var isDrawingLine(default, null):Bool = false;
+	public var isDrawingLineBase(default, null):Bool = false;
 	public var figure(default, null):Figure;
 
-	public function new(size_segment:Int, graphics:GraphicsProvider, bounds_grid:RectangleGeometry, file:FileModel) {
+	public function new(size_segment:Int, graphics:GraphicsBase, bounds_grid:Rectangle, file:FileModel) {
 		this.file = file;
 		is_file_modified = false;
 		granularity_set(size_segment);
 		this.graphics = cast graphics;
 		this.bounds_grid = bounds_grid;
 		size_snapping = Std.int(bounds_grid.height / 4);
-		mouse_pointer_graphics = new CursorGraphics(this.graphics.display);
+		mouse_pointer_graphics = new Cursor(this.graphics.display);
 		var mouse_pointer_size = Std.int(size_segment * 0.5);
 		mouse_pointer = mouse_pointer_graphics.make_fill(0, 0, mouse_pointer_size, mouse_pointer_size, Theme.cursor);
 		mouse_pointer.rotation = 45;
@@ -104,8 +104,8 @@ class Designer {
 		figure_init();
 	}
 
-	public function erase_graphic(){
-		mouse_pointer_graphics.erase_graphic();
+	public function erase(){
+		mouse_pointer_graphics.erase();
 	}
 
 	public function draw() {
@@ -121,7 +121,7 @@ class Designer {
 		snapping_mod = mod;
 	}
 
-	function line_under_cursor_(position_cursor:Vector2):Null<Line> {
+	function line_under_cursor_(position_cursor:Vector2):Null<LineBase> {
 		for (line in figure.lines) {
 			var overlaps:Bool = position_cursor.line_overlaps_point(line.point_from, line.point_to);
 			if (overlaps) {
@@ -144,7 +144,7 @@ class Designer {
 		if (models_under_cursor.length > 0) {
 			figure.model.remove(models_under_cursor[0]);
 			figure.lines.remove(line_under_cursor);
-			line_under_cursor.erase_graphic();
+			line_under_cursor.erase();
 		}
 	}
 
@@ -157,7 +157,7 @@ class Designer {
 		mouse_position.y = round_to_nearest(mouse_position.y, size_snapping / snapping_mod);
 		mouse_pointer.x = mouse_position.x;
 		mouse_pointer.y = mouse_position.y;
-		if (isDrawingLine) {
+		if (isDrawingLineBase) {
 			var line = figure.line_newest();
 			line.point_to.x = mouse_position.x;
 			line.point_to.y = mouse_position.y;
@@ -226,7 +226,7 @@ class Designer {
 		figure = graphics.map_figure(file.models[model_index], translation);
 	}
 
-	var line_buffer:Array<LineModel>;
+	var line_buffer:Array<LineBaseModel>;
 
 	public function buffer_copy() {
 		line_buffer = figure.model;
@@ -249,16 +249,16 @@ class Designer {
 		figure = graphics.map_figure(file.models[model_index], translation);
 	}
 
-	public function line_erase(line:Line) {
+	public function line_erase(line:LineBase) {
 		// trace('designer clean line $line');
-		line.erase_graphic();
+		line.erase();
 	}
 
 	public function model_name():String {
 		return '$model_index : ${file.models[model_index].name}';
 	}
 
-	function map_line(from:Vector2, to:Vector2):LineModel {
+	function map_line(from:Vector2, to:Vector2):LineBaseModel {
 		return {
 			from: translation.view_to_model_point(from),
 			to: translation.view_to_model_point(to)
@@ -270,16 +270,16 @@ class Designer {
 	}
 
 	public function start_drawing_line(point:Vector2) {
-		if (isDrawingLine) {
+		if (isDrawingLineBase) {
 			trace('already drawing line?');
 			return;
 		}
 
-		isDrawingLine = true;
+		isDrawingLineBase = true;
 
 		var x = round_to_nearest(point.x, size_snapping / snapping_mod);
 		var y = round_to_nearest(point.y, size_snapping / snapping_mod);
-		var line:Line = graphics.make_line(x, y, x, y, Theme.drawing_lines);
+		var line:LineBase = graphics.make_line(x, y, x, y, Theme.drawing_lines);
 		
 		figure.lines.push(line);
 		
@@ -287,10 +287,10 @@ class Designer {
 	}
 
 	public function stop_drawing_line(point:Vector2) {
-		if (!isDrawingLine) {
+		if (!isDrawingLineBase) {
 			return;
 		}
-		isDrawingLine = false;
+		isDrawingLineBase = false;
 
 		var line = figure.line_newest();
 		line.point_to.x = round_to_nearest(point.x, size_snapping / snapping_mod);
@@ -316,17 +316,17 @@ class Designer {
 
 @:structInit
 class Figure {
-	public var model:Array<LineModel>;
-	public var lines:Array<Line>;
+	public var model:Array<LineBaseModel>;
+	public var lines:Array<LineBase>;
 
-	public function line_newest():Line {
+	public function line_newest():LineBase {
 		return lines[lines.length - 1];
 	}
 }
 
 class GraphicsExtensions{
-	public static function map_figure(graphics:GraphicsProvider, model:FigureModel, translation:EditorTranslation):Figure {
-		var convert_line:LineModel->LineModel = line -> {
+	public static function map_figure(graphics:GraphicsBase, model:FigureModel, translation:EditorTranslation):Figure {
+		var convert_line:LineBaseModel->LineBaseModel = line -> {
 			from: translation.model_to_view_point(line.from),
 			to: translation.model_to_view_point(line.to)
 		}

@@ -12,11 +12,11 @@ class FileModel {
 class FigureModel{
 	public var index:Int;
 	public var name:String = "";
-	public var lines:Array<LineModel>;
+	public var lines:Array<LineBaseModel>;
 }
 
 @:structInit
-class LineModel{
+class LineBaseModel{
 	public var from:Vector2;
 	public var to:Vector2;
 }

@@ -10,7 +10,7 @@ import peote.view.PeoteView;
 import stone.core.Engine;
 import stone.input.Input;
 import stone.LoadingScene;
-import stone.graphics.implementation.Graphics;
+import Graphics;
 import lime.graphics.RenderContext;
 import haxe.CallStack;
 import lime.app.Application;
@@ -48,7 +48,7 @@ class Main extends Application {
 	var init_layer:GraphicsConstructor;
 
 	public function init(window:Window) {
-		var viewport_window:RectangleGeometry = {
+		var viewport_window:Rectangle = {
 			y: 0,
 			x: 0,
 			width: 800,
@@ -59,7 +59,7 @@ class Main extends Application {
 		implementation_input = new Input(window);
 
 		init_layer = (width:Int, height:Int) -> {
-			var bounds:RectangleGeometry = {
+			var bounds:Rectangle = {
 				x: 0,
 				y: 0,
 				width: width,

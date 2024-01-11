@@ -12,6 +12,8 @@
 	<!-- <define name="stats" if="html5" /> -->
 
 	<haxelib name="stone" path="../lib" />
+	<haxelib name="stone.peote" path="../implementations/peote" />
+	<source path="../implementations/peote" />
 
 	<assets path="assets/models" rename="models" include="*.json" />
 

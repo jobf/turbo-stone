@@ -2,7 +2,7 @@ package stone.ui;
 
 import stone.text.Text.Align;
 import stone.core.Color;
-import stone.core.Engine.RectangleGeometry;
+import stone.core.Engine.Rectangle;
 import haxe.ds.ArraySort;
 import stone.core.Ui;
 import stone.ui.Interactive;
@@ -19,9 +19,9 @@ class Section {
 class TrayModel {
 	public var color_fg:RGBA;
 	public var color_bg:RGBA;
-	public var tray_geometry:RectangleGeometry;
-	public var item_geometry:RectangleGeometry;
-	public var dialog_boundary:RectangleGeometry;
+	public var tray_geometry:Rectangle;
+	public var item_geometry:Rectangle;
+	public var dialog_boundary:Rectangle;
 	public var section_separation:Int = 10;
 	public var item_separation:Int = 2;
 }
@@ -102,7 +102,7 @@ class Tray {
 		}
 
 		for (model in contents) {
-			var item_geometry:RectangleGeometry = {
+			var item_geometry:Rectangle = {
 				x: tray_model.tray_geometry.x,
 				y: y_item,
 				width: tray_model.item_geometry.width,
@@ -138,7 +138,7 @@ class Tray {
 		var interactives = [];
 
 		for (model in contents) {
-			var item_geometry:RectangleGeometry = {
+			var item_geometry:Rectangle = {
 				x: tray_model.tray_geometry.x,
 				y: y_item - tray_model.item_geometry.height,
 				width: tray_model.item_geometry.width,
@@ -182,7 +182,7 @@ class Tray {
 
 	inline function make_help_dialog(sections:Array<Section>){
 
-		var help_button_geometry:RectangleGeometry ={
+		var help_button_geometry:Rectangle ={
 			y: tray_model.tray_geometry.height - tray_model.item_geometry.height,
 			x: tray_model.tray_geometry.x,
 			width: tray_model.item_geometry.width,
@@ -219,7 +219,7 @@ class Tray {
 		}
 	}
 
-	inline function make_button(model:InteractiveModel, item_geometry:RectangleGeometry, color_bg:RGBA):stone.ui.Interactive.Button {
+	inline function make_button(model:InteractiveModel, item_geometry:Rectangle, color_bg:RGBA):stone.ui.Interactive.Button {
 			var button = ui.make_button(
 			model,
 			item_geometry,
@@ -238,13 +238,13 @@ class Tray {
 
 			var close_sub_menu:Void->Void = () ->{
 				// remove interactive items
-				sub_menu_items.clear(button -> button.erase_graphic());
+				sub_menu_items.clear(button -> button.erase());
 				
 				// remove message
 				if(has_message){
-					dialog_text.background.erase_graphic();
+					dialog_text.background.erase();
 					for (word in dialog_text.text) {
-						word.erase_graphic();
+						word.erase();
 					}
 				}
 				
@@ -335,7 +335,7 @@ class Tray {
 		return button;
 	}
 
-	inline function make_label(model:InteractiveModel, item_geometry:RectangleGeometry, color_bg:RGBA, is_toggled:Null<Bool> = null):stone.ui.Interactive {
+	inline function make_label(model:InteractiveModel, item_geometry:Rectangle, color_bg:RGBA, is_toggled:Null<Bool> = null):stone.ui.Interactive {
 		return ui.make_label(
 			model,
 			item_geometry,
@@ -345,7 +345,7 @@ class Tray {
 		);
 	}
 
-	inline function make_toggle(model:InteractiveModel, item_geometry:RectangleGeometry, color_bg:RGBA, is_enabled:Bool):stone.ui.Interactive.Toggle {
+	inline function make_toggle(model:InteractiveModel, item_geometry:Rectangle, color_bg:RGBA, is_enabled:Bool):stone.ui.Interactive.Toggle {
 		return ui.make_toggle(
 			model,
 			item_geometry,
@@ -355,7 +355,7 @@ class Tray {
 		);
 	}
 
-	inline function make_slider(model:InteractiveModel, item_geometry:RectangleGeometry, color_bg:RGBA, fraction:Float):stone.ui.Interactive.Slider {
+	inline function make_slider(model:InteractiveModel, item_geometry:Rectangle, color_bg:RGBA, fraction:Float):stone.ui.Interactive.Slider {
 		return ui.make_slider(
 			model,
 			item_geometry,

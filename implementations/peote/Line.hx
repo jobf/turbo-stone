@@ -1,26 +1,24 @@
-package stone.graphics.implementation;
-
-import stone.graphics.Fill;
-import stone.graphics.LineCPU;
-
 import stone.abstractions.Graphic;
-
 import peote.view.Color;
+import Elements;
 
-class PeoteLine extends Line {
+using hxmath.math.Vector2;
+
+
+class Line extends LineBase {
 	var a:Float = 0;
 	var b:Float = 0;
 
-	public var head:Rectangle;
-	public var end:Rectangle;
+	public var head:FillElement;
+	public var end:FillElement;
 
-	var remove_from_buffer:PeoteLine->Void;
+	var remove_from_buffer:Line->Void;
 	var is_erased:Bool = false;
 
-	public var element(default, null):LineCPU;
+	public var element(default, null):LineElement;
 	public var thick(get, set):Int;
 
-	public function new(point_from:Vector2, point_to:Vector2, element:LineCPU, remove_from_buffer:PeoteLine->Void, head:Rectangle, end:Rectangle, color:Color) {
+	public function new(point_from:Vector2, point_to:Vector2, element:LineElement, remove_from_buffer:Line->Void, head:FillElement, end:FillElement, color:Color) {
 		super(point_from, point_to, cast color);
 		this.element = element;
 		this.remove_from_buffer = remove_from_buffer;
@@ -46,7 +44,7 @@ class PeoteLine extends Line {
 		end.rotation = -45;
 	}
 
-	public function erase_graphic():Void {
+	public function erase():Void {
 		if(!is_erased){
 			is_erased = true;
 			remove_from_buffer(this);

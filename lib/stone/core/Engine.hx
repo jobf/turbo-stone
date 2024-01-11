@@ -5,12 +5,12 @@ import stone.abstractions.Input;
 import stone.abstractions.Graphic;
 import stone.core.Color;
 
-typedef GraphicsConstructor = (width:Int, height:Int) -> GraphicsProvider
+typedef GraphicsConstructor = (width:Int, height:Int) -> GraphicsBase
 
 class Game {
 	var current_scene:Scene;
 
-	var graphics_layers : Array<GraphicsProvider>;
+	var graphics_layers : Array<GraphicsBase>;
 	var graphics_constructor(default, null):GraphicsConstructor;
 	public var input(default, null):InputAbstract;
 	public var storage(default, null):Storage;
@@ -53,7 +53,7 @@ class Game {
 		}
 	}
 
-	public function graphics_layer_init(width:Int, height:Int):GraphicsProvider{
+	public function graphics_layer_init(width:Int, height:Int):GraphicsBase{
 		var layer = graphics_constructor(width, height);
 		graphics_layers.push(layer);
 		return layer;
@@ -62,11 +62,11 @@ class Game {
 
 abstract class Scene {
 	var game:Game;
-	var bounds:RectangleGeometry;
+	var bounds:Rectangle;
 
 	public var color(default, null):RGBA;
 
-	public function new(game:Game, bounds:RectangleGeometry, color:RGBA) {
+	public function new(game:Game, bounds:Rectangle, color:RGBA) {
 		this.game = game;
 		this.bounds = bounds;
 		this.color = color;
@@ -95,7 +95,7 @@ abstract class Scene {
 }
 
 @:structInit
-class RectangleGeometry {
+class Rectangle {
 	public var x:Int = 0;
 	public var y:Int = 0;
 	public var width:Int;

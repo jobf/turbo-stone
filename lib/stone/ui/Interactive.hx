@@ -8,14 +8,14 @@ import stone.core.Color;
 
 
 class Button extends Interactive{
-	public function new(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsProvider, text:Text) {
+	public function new(model:InteractiveModel, geometry:Rectangle, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsBase, text:Text) {
 		super(model, geometry, color_fg, color_bg, graphics, text);
 	}
 }
 
 
 class Label extends Interactive{
-	public function new(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsProvider, text:Text) {
+	public function new(model:InteractiveModel, geometry:Rectangle, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsBase, text:Text) {
 		super(model, geometry, color_fg, color_bg, graphics, text, LEFT,  0, false);
 	}
 
@@ -39,7 +39,7 @@ class LabelToggle extends Interactive{
 		return is_toggled;
 	}
 
-	public function new(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsProvider, text:Text, is_toggled:Bool) {
+	public function new(model:InteractiveModel, geometry:Rectangle, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsBase, text:Text, is_toggled:Bool) {
 		super(model, geometry, color_fg, color_bg, graphics, text, LEFT,  0, true);
 		this.is_toggled = is_toggled;
 	}
@@ -66,8 +66,8 @@ class LabelToggle extends Interactive{
 
 
 class Toggle extends Interactive{
-	var track:Line;
-	var handle:Fill;
+	var track:LineBase;
+	var handle:FillBase;
 	public var on_change:Bool->Void = b -> trace('on_change $b');
 	public var is_toggled(default, set):Bool;
 
@@ -78,7 +78,7 @@ class Toggle extends Interactive{
 		return is_toggled;
 	}
 
-	public function new(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsProvider, text:Text, is_toggled:Bool) {
+	public function new(model:InteractiveModel, geometry:Rectangle, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsBase, text:Text, is_toggled:Bool) {
 		super(model, geometry, color_fg, color_bg, graphics, text, LEFT);
 		var width_track = text.font.width_character;
 		var y_track = geometry.y + Std.int(geometry.height * 0.5);
@@ -119,13 +119,13 @@ class Toggle extends Interactive{
 }
 
 class Slider extends Interactive{
-	var track:Line;
-	var handle:Fill;
+	var track:LineBase;
+	var handle:FillBase;
 	var x_track:Int;
 	var width_track:Int;
 	public var on_move:Float->Void = f -> trace('on_move $f');
 	public var fraction(default, null):Float = 0;
-	public function new(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsProvider, text:Text, fraction:Float) {
+	public function new(model:InteractiveModel, geometry:Rectangle, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsBase, text:Text, fraction:Float) {
 		var y_label_offset:Int = Std.int(text.font.height_model * 0.5);
 		geometry.height += text.font.height_model;
 		super(model, geometry, color_fg, color_bg, graphics, text, LEFT, -y_label_offset);
@@ -236,7 +236,7 @@ class Interactions{
 
 class Interactive {
 	public var model:InteractiveModel;
-	var background:Fill;
+	var background:FillBase;
 	var alpha_bg:Int ;
 	var alpha_highlight:Int;
 	var alpha_hover:Int;
@@ -257,7 +257,7 @@ class Interactive {
 	function get_height():Int{
 		return Std.int(background.height);
 	}
-	public function new(model:InteractiveModel, geometry:RectangleGeometry, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsProvider, text:Text, align:Align=CENTER, y_label_offset:Int=0, alpha_idle_is_transparent:Bool=false) {
+	public function new(model:InteractiveModel, geometry:Rectangle, color_fg:RGBA, color_bg:RGBA, graphics:GraphicsBase, text:Text, align:Align=CENTER, y_label_offset:Int=0, alpha_idle_is_transparent:Bool=false) {
 		this.model = model;
 		this.text = text;
 		this.color_fg = color_fg;
@@ -309,9 +309,9 @@ class Interactive {
 		model.interactions.on_release(this);
 	}
 
-	public function erase_graphic() {
-		background.erase_graphic();
-		label.erase_graphic();
+	public function erase() {
+		background.erase();
+		label.erase();
 		model.interactions.on_erase(this);
 	}
 
@@ -370,7 +370,7 @@ class Interactive {
 	}
 
 	public function change_text(next_text:String){
-		label.erase_graphic();
+		label.erase();
 		label = text.word_make(Std.int(background.x), Std.int(background.y), next_text, Std.int(background.width), color_fg);
 	}
 
@@ -385,7 +385,7 @@ class Interactive {
 	}
 }
 
-function overlaps_rectangle(geometry:RectangleGeometry, position:Vector2):Bool{
+function overlaps_rectangle(geometry:Rectangle, position:Vector2):Bool{
 	return position.x > geometry.x && (geometry.x + geometry.width) > position.x
 	&& position.y > geometry.y && (geometry.y + geometry.height) > position.y;
 }

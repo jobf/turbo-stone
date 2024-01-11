@@ -1,22 +1,22 @@
-package stone.graphics;
-
-import stone.graphics.Fill;
-import stone.graphics.implementation.PeoteFill;
 import stone.abstractions.Graphic;
 import stone.core.Color;
 import stone.core.Vector;
-import peote.view.*;
+import peote.view.Buffer;
+import peote.view.Program;
+import peote.view.Display;
+import Elements;
 
-class CursorGraphics {
+
+class Cursor {
 	
 	var display:Display;
 	var program:Program;
-	var buffer:Buffer<Rectangle>;
-	var fills:Array<PeoteFill> = [];
+	var buffer:Buffer<FillElement>;
+	var fills:Array<Fill> = [];
 
 	public function new(display:Display){
 		this.display = display;
-		buffer = new Buffer<Rectangle>(1);
+		buffer = new Buffer<FillElement>(1);
 		program = new Program(buffer);
 		program.injectIntoFragmentShader(
 			"
@@ -55,7 +55,7 @@ class CursorGraphics {
 		buffer.update();
 	}
 
-	public function erase_graphic(){
+	public function erase(){
 		buffer.clear(true, true);
 
 		if(display.hasProgram(program)){
@@ -63,22 +63,16 @@ class CursorGraphics {
 		}
 	}
 
-	public function make_fill(x:Int, y:Int, width:Int, height:Int, color:RGBA):Fill {
-		var element = make_rectangle(x, y, width, height, color);
+	public function make_fill(x:Int, y:Int, width:Int, height:Int, color:RGBA):FillBase {
+		var element = new FillElement(x, y, width, height, 0, cast color);
+		buffer.addElement(element);
 		
-		var fill_clean_up:PeoteFill -> Void = fill -> {
+		var fill_clean_up:Fill -> Void = fill -> {
 			buffer.removeElement(fill.element);
 		}
 		
-		fills.push(new PeoteFill(element, fill_clean_up));
+		fills.push(new Fill(element, fill_clean_up));
 
 		return fills[fills.length -1];
-	}
-
-	function make_rectangle(x:Float, y:Float, width:Float, height:Float, color:RGBA):Rectangle {
-		final rotation = 0;
-		var element = new Rectangle(x, y, width, height, rotation, cast color);
-		buffer.addElement(element);
-		return element;
 	}
 }

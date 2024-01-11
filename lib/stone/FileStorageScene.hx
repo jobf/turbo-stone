@@ -6,7 +6,7 @@ import stone.core.Models.Deserialize;
 import stone.core.Engine;
 import stone.DesignerScene;
 import stone.core.Vector;
-import stone.core.Engine.RectangleGeometry;
+import stone.core.Engine.Rectangle;
 import stone.core.Ui;
 import stone.ui.Interactive;
 import stone.file.FileStorage;
@@ -23,7 +23,7 @@ class FileStorageScene extends HudScene {
 	var file_key_selected:String = "";
 	var file_list:FileList;
 
-	public function new(game:Game, bounds:RectangleGeometry, color:RGBA, file_name_selected:String){
+	public function new(game:Game, bounds:Rectangle, color:RGBA, file_name_selected:String){
 		var device = "BROWSER";
 		#if !web
 		device = "DISK";

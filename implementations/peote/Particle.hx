@@ -1,13 +1,11 @@
-package stone.graphics.implementation;
-
-import stone.graphics.Fill;
 import stone.abstractions.Graphic;
 import stone.core.Color;
+import Elements;
 
-class ParticlePeote extends Particle {
-	var element:Rectangle;
+class Particle extends ParticleBase {
+	var element:FillElement;
 
-	public function new(x:Int, y:Int, size:Int, color:RGBA, lifetime_seconds:Float, element:Rectangle) {
+	public function new(x:Int, y:Int, size:Int, color:RGBA, lifetime_seconds:Float, element:FillElement) {
 		super(x, y, size, color, lifetime_seconds);
 		this.element = element;
 	}

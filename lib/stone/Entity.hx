@@ -16,7 +16,7 @@ class Entity {
 	var model_points:Array<Vector2>;
 	var lines_points:Array<Vector2>;
 
-	public function new(model:Array<Vector2>, x:Int, y:Int, rotation_speed:Float, graphics:GraphicsProvider) {
+	public function new(model:Array<Vector2>, x:Int, y:Int, rotation_speed:Float, graphics:GraphicsBase) {
 		// set up motion
 		motion = new MotionInteractive(x, y);
 		this.rotation_speed = rotation_speed;

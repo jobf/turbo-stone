@@ -9,7 +9,7 @@ using stone.core.Vector;
 class EditorTests extends Test {
 
 	function test_viewport_to_editor_point_center() {
-		var viewport:RectangleGeometry = {
+		var viewport:Rectangle = {
 			width: 100,
 			height: 100
 		};
@@ -29,7 +29,7 @@ class EditorTests extends Test {
 
 
 	function test_viewport_to_editor_point_min() {
-		var viewport:RectangleGeometry = {
+		var viewport:Rectangle = {
 			width: 100,
 			height: 100
 		};
@@ -50,7 +50,7 @@ class EditorTests extends Test {
 	}
 
 	function test_viewport_to_editor_point_max() {
-		var viewport:RectangleGeometry = {
+		var viewport:Rectangle = {
 			width: 100,
 			height: 100
 		};
@@ -72,7 +72,7 @@ class EditorTests extends Test {
 
 
 	function test_model_to_viewport_point_min() {
-		var viewport:RectangleGeometry = {
+		var viewport:Rectangle = {
 			width: 100,
 			height: 100
 		};
@@ -93,7 +93,7 @@ class EditorTests extends Test {
 	}
 
 	function test_model_to_viewport_point_max() {
-		var viewport:RectangleGeometry = {
+		var viewport:Rectangle = {
 			width: 100,
 			height: 100
 		};

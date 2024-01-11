@@ -11,7 +11,7 @@ class LoadingScene extends Scene {
 	var test:Word;
 	var preloader:Preloader;
 
-	public function new(preloader:Preloader, scene_constructor:Game->Scene, game:Game, bounds:RectangleGeometry, color:RGBA) {
+	public function new(preloader:Preloader, scene_constructor:Game->Scene, game:Game, bounds:Rectangle, color:RGBA) {
 		super(game, bounds, color);
 		this.preloader = preloader;
 		preloader.onProgress.add((loaded, total) -> trace('loaded $loaded, total $total'));
@@ -30,6 +30,6 @@ class LoadingScene extends Scene {
 	}
 
 	public function close() {
-		// test.erase_graphic();
+		// test.erase();
 	}
 }

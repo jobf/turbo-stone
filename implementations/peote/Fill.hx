@@ -1,13 +1,11 @@
-package stone.graphics.implementation;
-
-import stone.graphics.Fill;
 import stone.abstractions.Graphic;
+import Elements;
 
-class PeoteFill extends Fill {
-	public var element(default, null):Rectangle;
+class Fill extends FillBase {
+	public var element(default, null):FillElement;
 	public var is_erased(default, null):Bool = false;
-	var remove_from_buffer:PeoteFill->Void;
-	public function new(element:Rectangle, remove_from_buffer:PeoteFill->Void) {
+	var remove_from_buffer:Fill->Void;
+	public function new(element:FillElement, remove_from_buffer:Fill->Void) {
 		super(element.x, element.y, element.w, element.h, element.rotation, cast element.color);
 		this.element = element;
 		this.remove_from_buffer = remove_from_buffer;
@@ -22,7 +20,7 @@ class PeoteFill extends Fill {
 		element.color = cast color;
 	}
 
-	public function erase_graphic(){
+	public function erase(){
 		if(!is_erased){
 			is_erased = true;
 			remove_from_buffer(this);

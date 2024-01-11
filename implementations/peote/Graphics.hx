@@ -1,17 +1,16 @@
-package stone.graphics.implementation;
-
-import stone.graphics.Fill;
-import stone.graphics.LineCPU;
 import stone.core.Engine;
 import stone.abstractions.Graphic;
-import stone.graphics.implementation.Particle;
+import Particle;
+import Elements;
 import stone.core.Color;
 import stone.core.Vector;
 import peote.view.*;
 
-class Graphics extends GraphicsProvider {
-	var lines:Array<PeoteLine> = [];
-	var fills:Array<PeoteFill> = [];
+using hxmath.math.Vector2;
+
+class Graphics extends GraphicsBase {
+	var lines:Array<Line> = [];
+	var fills:Array<Fill> = [];
 	var size_cap:Int = 1;
 	var angle_cap:Int = -45;
 
@@ -19,28 +18,28 @@ class Graphics extends GraphicsProvider {
 
 	var graphics_layer_init:GraphicsConstructor;
 
-	public var buffer_lines(default, null):Buffer<LineCPU>;
+	public var buffer_lines(default, null):Buffer<LineElement>;
 
-	var buffer_fills:Buffer<Rectangle>;
+	var buffer_fills:Buffer<FillElement>;
 
-	public function new(display:Display, viewport_bounds:RectangleGeometry, graphics_layer_init:GraphicsConstructor) {
+	public function new(display:Display, viewport_bounds:Rectangle, graphics_layer_init:GraphicsConstructor) {
 		super(viewport_bounds);
 		this.display = display;
 		this.graphics_layer_init = graphics_layer_init;
 
-		buffer_fills = new Buffer<Rectangle>(4096, 1024, true);
+		buffer_fills = new Buffer<FillElement>(4096, 1024, true);
 		var rectangleProgram = new Program(buffer_fills);
 		display.addProgram(rectangleProgram);
 		display.addProgram(rectangleProgram);
 
-		buffer_lines = new Buffer<LineCPU>(4096, 1024, true);
+		buffer_lines = new Buffer<LineElement>(4096, 1024, true);
 		var lineProgram = new Program(buffer_lines);
 		display.addProgram(lineProgram);
 	}
 
-	public function make_line(from_x:Float, from_y:Float, to_x:Float, to_y:Float, color:RGBA):Line {
+	public function make_line(from_x:Float, from_y:Float, to_x:Float, to_y:Float, color:RGBA):LineBase {
 		var thick:Int = 2;
-		var element_line = new LineCPU(Std.int(from_x), Std.int(from_y), Std.int(to_x), Std.int(to_y), thick, cast color);
+		var element_line = new LineElement(Std.int(from_x), Std.int(from_y), Std.int(to_x), Std.int(to_y), thick, cast color);
 
 		buffer_lines.addElement(element_line);
 
@@ -48,12 +47,12 @@ class Graphics extends GraphicsProvider {
 		var element_line_head = make_rectangle(Std.int(from_x), Std.int(from_y), size_cap, size_cap, color_cap);
 		var element_line_tail = make_rectangle(Std.int(from_x), Std.int(from_y), size_cap, size_cap, color_cap);
 
-		var line_clean_up:PeoteLine->Void = line -> {
+		var line_clean_up:Line->Void = line -> {
 			buffer_lines.removeElement(line.element);
 			lines.remove(line);
 		}
 
-		lines.push(new PeoteLine({
+		lines.push(new Line({
 			x: from_x,
 			y: from_y
 		}, {
@@ -65,32 +64,32 @@ class Graphics extends GraphicsProvider {
 		return lines[lines.length - 1];
 	}
 
-	public function make_fill(x:Int, y:Int, width:Int, height:Int, color:RGBA):Fill {
+	public function make_fill(x:Int, y:Int, width:Int, height:Int, color:RGBA):FillBase {
 		var element = make_rectangle(x, y, width, height, color);
 
-		var fill_clean_up:PeoteFill->Void = fill -> {
+		var fill_clean_up:Fill->Void = fill -> {
 			buffer_fills.removeElement(fill.element);
 			fills.remove(fill);
 		}
 
-		fills.push(new PeoteFill(element, fill_clean_up));
+		fills.push(new Fill(element, fill_clean_up));
 
 		return fills[fills.length - 1];
 	}
 
-	function make_rectangle(x:Float, y:Float, width:Float, height:Float, color:RGBA):Rectangle {
+	inline function make_rectangle(x:Float, y:Float, width:Float, height:Float, color:RGBA):FillElement {
 		final rotation = 0;
-		var element = new Rectangle(x, y, width, height, rotation, cast color);
+		var element = new FillElement(x, y, width, height, rotation, cast color);
 		buffer_fills.addElement(element);
 		return element;
 	}
 
-	public function make_particle(x:Float, y:Float, size:Int, color:RGBA, lifetime_seconds:Float):Particle {
+	public function make_particle(x:Float, y:Float, size:Int, color:RGBA, lifetime_seconds:Float):ParticleBase {
 		var element = make_rectangle(x, y, size, size, cast color);
-		return new ParticlePeote(Std.int(x), Std.int(y), size, cast color, lifetime_seconds, element);
+		return new Particle(Std.int(x), Std.int(y), size, cast color, lifetime_seconds, element);
 	}
 
-	function line_erase(line:PeoteLine) {
+	function line_erase(line:Line) {
 		buffer_fills.removeElement(line.head);
 		buffer_fills.removeElement(line.end);
 		buffer_lines.removeElement(line.element);
@@ -122,15 +121,15 @@ class Graphics extends GraphicsProvider {
 	public function close() {
 		buffer_fills.clear(true, true);
 		buffer_lines.clear(true, true);
-		// fills.clear(fill -> fill.erase_graphic());
-		// lines.clear(line -> line.erase_graphic());
+		// fills.clear(fill -> fill.erase());
+		// lines.clear(line -> line.erase());
 	}
 
 	public function display_add(display_additional:Display) {
 		display.peoteView.addDisplay(display_additional);
 	}
 
-	public function graphics_new_layer(width:Int, height:Int):GraphicsProvider {
+	public function graphics_new_layer(width:Int, height:Int):GraphicsBase {
 		return graphics_layer_init(width, height);
 	}
 

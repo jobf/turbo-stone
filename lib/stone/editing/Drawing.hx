@@ -10,7 +10,7 @@ using stone.editing.Editor.GraphicsExtensions;
 
 @:structInit
 class Prototype{
-	public var model_lines:Array<LineModel>;
+	public var model_lines:Array<LineBaseModel>;
 }
 
 class Drawing{
@@ -29,7 +29,7 @@ class Drawing{
 	public var rotation_direction:Int = 0;
 
 
-	public var lines:Array<Line> = [];
+	public var lines:Array<LineBase> = [];
 	public function new(prototypeModel:Prototype, x:Float, y:Float, make_line:MakeLine, model_translation:EditorTranslation, color:Int = 0x2C8D49ff) {
 		if(prototypeModel == null || prototypeModel.model_lines == null)
 		{
@@ -59,7 +59,7 @@ class Drawing{
 		draw();
 	}
 
-	function translate(line_proto:LineModel, line_drawing:Line, rotation_sin:Float, rotation_cos:Float){
+	function translate(line_proto:LineBaseModel, line_drawing:LineBase, rotation_sin:Float, rotation_cos:Float){
 		var scale_origin:Vector2 = {
 			y: scale/origin.y,
 			x: scale/origin.x
@@ -98,11 +98,11 @@ class Drawing{
 		}
 	}
 
-	public function erase_graphic(){
+	public function erase(){
 		var index_line = lines.length;
 		while(index_line-- > 0){
 			var line = lines.pop();
-			line.erase_graphic();
+			line.erase();
 		}
 	}
 }

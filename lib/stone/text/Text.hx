@@ -14,7 +14,7 @@ enum Align{
 
 @:structInit
 class Font {
-	public var models:Array<Array<LineModel>>;
+	public var models:Array<Array<LineBaseModel>>;
 	public var width_model:Int;
 	public var height_model:Int;
 	public var width_character:Int = 0;
@@ -34,12 +34,12 @@ function font_load_embedded(size_model:Int=64):Font {
 
 class Text {
 	public var font(default, null):Font;
-	var graphics:GraphicsProvider;
+	var graphics:GraphicsBase;
 	var model_translation:EditorTranslation;
 
 	var words:Array<Word> = [];
 
-	public function new(font:Font, graphics:GraphicsProvider) {
+	public function new(font:Font, graphics:GraphicsBase) {
 		if (font.models.length != 256) {
 			throw "character set requires 256 models for code page 437";
 		}
@@ -96,9 +96,9 @@ class Text {
 		return words[words.length - 1];
 	}
 
-	function drawing_create(model_Lines:Array<LineModel>, x:Float, y:Float, color:RGBA):Drawing {
+	function drawing_create(model_LineBases:Array<LineBaseModel>, x:Float, y:Float, color:RGBA):Drawing {
 		return new Drawing({
-			model_lines: model_Lines
+			model_lines: model_LineBases
 		}, x, y, graphics.make_line, model_translation, color);
 	}
 }
@@ -111,9 +111,9 @@ class Word {
 	public var width:Int;
 	public var drawings(default, null):Array<Drawing>;
 
-	public function erase_graphic() {
+	public function erase() {
 		for (drawing in drawings) {
-			drawing.erase_graphic();
+			drawing.erase();
 		}
 		on_erase(this);
 	}

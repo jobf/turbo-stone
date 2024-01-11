@@ -5,10 +5,10 @@ import stone.core.Models;
 import stone.core.Engine;
 import stone.core.Color;
 
-typedef MakeLine = (from_x:Float, from_y:Float, to_x:Float, to_y:Float, color:RGBA) -> Line;
-typedef MakeFillRectangle = (x:Int, y:Int, width:Int, height:Int, color:RGBA) -> Fill;
+typedef MakeLine = (from_x:Float, from_y:Float, to_x:Float, to_y:Float, color:RGBA) -> LineBase;
+typedef MakeFill = (x:Int, y:Int, width:Int, height:Int, color:RGBA) -> FillBase;
 
-abstract class Line {
+abstract class LineBase {
 	public var point_from:Vector2;
 	public var point_to:Vector2;
 	public var color:RGBA;
@@ -28,10 +28,10 @@ abstract class Line {
 	abstract public function draw():Void;
 
 	/** provides an implementation to delete the graphic **/
-	abstract public function erase_graphic():Void;
+	abstract public function erase():Void;
 }
 
-abstract class Fill {
+abstract class FillBase {
 	public var x:Float;
 	public var y:Float;
 	public var width:Float;
@@ -53,7 +53,7 @@ abstract class Fill {
 
 
 	/** provides an implementation to delete the graphic **/
-	abstract public function erase_graphic():Void;
+	abstract public function erase():Void;
 }
 
 @:structInit
@@ -63,7 +63,7 @@ class Polygon {
 		x: 0,
 		y: 0
 	};
-	public var lines:Array<Line>;
+	public var lines:Array<LineBase>;
 
 	public var model(default, null):Array<Vector2>;
 	public var color:RGBA;
@@ -87,14 +87,14 @@ class Polygon {
 		return lines.map(line -> line.point_from);
 	}
 
-	public function erase_graphic(){
+	public function erase(){
 		for (line in lines) {
-			line.erase_graphic();
+			line.erase();
 		}
 	}
 }
 
-abstract class Particle {
+abstract class ParticleBase {
 	var size:Int;
 	var color:RGBA;
 	var motion:MotionInteractive;
@@ -167,10 +167,10 @@ abstract class Particle {
 	}
 }
 
-abstract class GraphicsProvider {
-	public var viewport_bounds:RectangleGeometry;
+abstract class GraphicsBase {
+	public var viewport_bounds:Rectangle;
 
-	public function new(viewport_bounds:RectangleGeometry) {
+	public function new(viewport_bounds:Rectangle) {
 		this.viewport_bounds = viewport_bounds;
 	}
 
@@ -178,14 +178,14 @@ abstract class GraphicsProvider {
 
 	abstract public function close():Void;
 
-	abstract public function make_line(from_x:Float, from_y:Float, to_x:Float, to_y:Float, color:RGBA):Line;
+	abstract public function make_line(from_x:Float, from_y:Float, to_x:Float, to_y:Float, color:RGBA):LineBase;
 
-	abstract public function make_fill(x:Int, y:Int, width:Int, height:Int, color:RGBA):Fill;
+	abstract public function make_fill(x:Int, y:Int, width:Int, height:Int, color:RGBA):FillBase;
 
-	abstract public function make_particle(x:Float, y:Float, size:Int, color:RGBA, lifetime_seconds:Float):Particle;
+	abstract public function make_particle(x:Float, y:Float, size:Int, color:RGBA, lifetime_seconds:Float):ParticleBase;
 
-	public function model_to_lines(model:Array<LineModel>, color:RGBA):Array<Line>{
-		var lines:Array<Line> = [];
+	public function model_to_lines(model:Array<LineBaseModel>, color:RGBA):Array<LineBase>{
+		var lines:Array<LineBase> = [];
 		for (line in model) {
 			lines.push(make_line(line.from.x, line.from.y, line.to.x, line.to.y, color));
 		}
@@ -193,8 +193,8 @@ abstract class GraphicsProvider {
 	}
 
 
-	public function model_points_to_lines(model:Array<Vector2>, color:RGBA):Array<Line>{
-		var lines:Array<Line> = [];
+	public function model_points_to_lines(model:Array<Vector2>, color:RGBA):Array<LineBase>{
+		var lines:Array<LineBase> = [];
 		for (a in 0...model.length) {
 			var from = model[a % model.length];
 			var to = model[(a + 1) % model.length];
@@ -214,3 +214,8 @@ abstract class GraphicsProvider {
 
 
 
+
+abstract class CursorBase {
+	abstract public function draw():Void;
+	abstract public function erase():Void;
+}

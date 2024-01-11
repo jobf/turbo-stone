@@ -8,11 +8,11 @@ import stone.core.Engine;
 using stone.editing.Editor.GraphicsExtensions;
 
 class Overview{
-	public static function render_models(models:Array<FigureModel>, size_model:Int, graphics:GraphicsProvider){
+	public static function render_models(models:Array<FigureModel>, size_model:Int, graphics:GraphicsBase){
 		var total_rows = Std.int(256 / 16);
 		var total_columns = total_rows;
 
-		var geometry:RectangleGeometry = {
+		var geometry:Rectangle = {
 			x: 0,
 			y: 0,
 			width: size_model,

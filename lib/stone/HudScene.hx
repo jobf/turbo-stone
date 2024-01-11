@@ -3,9 +3,9 @@ package stone;
 import stone.abstractions.Graphic;
 import stone.core.Color;
 import stone.core.Engine;
-import stone.graphics.implementation.Graphics;
+import Graphics;
 import stone.core.Vector;
-import stone.core.Engine.RectangleGeometry;
+import stone.core.Engine.Rectangle;
 import stone.input.Controller;
 import stone.core.Ui;
 import stone.core.Engine.Scene;
@@ -19,14 +19,14 @@ using StringTools;
 class HudScene extends Scene {
 	var ui:Ui;
 	var text:Text;
-	var bounds_main:RectangleGeometry;
-	var bounds_tray:RectangleGeometry;
+	var bounds_main:Rectangle;
+	var bounds_tray:Rectangle;
 	var tray_sections:Array<Section>;
 	var actions:Map<Button, Action>;
 	var graphics_main:Graphics;
 	var tray:Tray;
 
-	public function new(game:Game, bounds_viewport:RectangleGeometry, color:RGBA, sections:Array<Section>){
+	public function new(game:Game, bounds_viewport:Rectangle, color:RGBA, sections:Array<Section>){
 		super(game, bounds_viewport, color);
 		graphics_main = cast game.graphics_layer_init(bounds.width, bounds.height);
 
@@ -55,7 +55,7 @@ class HudScene extends Scene {
 		var height_button = Std.int(font.height_model * 1.5);
 		var width_button = bounds.width - bounds.height;
 
-		var bounds_interactive:RectangleGeometry = {
+		var bounds_interactive:Rectangle = {
 			y: 0,
 			x: 0,
 			width: width_button,

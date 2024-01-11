@@ -21,21 +21,21 @@ class TestTray extends Scene {
 		var width_button = Std.int(font.width_model * 9);
 		var height_button = Std.int(font.height_model * 1.5);
 
-		var bounds_tray:RectangleGeometry = {
+		var bounds_tray:Rectangle = {
 			y: 0,
 			x: 0,
 			width: width_button,
 			height: bounds.height
 		}
 
-		var bounds_interactive:RectangleGeometry = {
+		var bounds_interactive:Rectangle = {
 			y: 0,
 			x: 0,
 			width: width_button,
 			height: height_button
 		}
 
-		var bounds_dialog:RectangleGeometry = {
+		var bounds_dialog:Rectangle = {
 			y: 0,
 			x: width_button,
 			width: bounds.height,

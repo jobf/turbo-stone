@@ -1,6 +1,6 @@
 import stone.HudScene;
 import stone.ui.Tray;
-import stone.graphics.implementation.Graphics;
+import Graphics;
 import stone.Theme;
 import stone.DesignerScene;
 import stone.core.Engine;
@@ -17,7 +17,7 @@ class OverviewScene extends HudScene {
 	var file:FileModel;
 	var file_list_key:String;
 
-	public function new(game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel, file_list_key:String) {
+	public function new(game:Game, bounds:Rectangle, color:RGBA, file:FileModel, file_list_key:String) {
 		var tray_sections:Array<Section> = [
 			{
 				contents: [

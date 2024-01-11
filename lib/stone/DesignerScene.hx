@@ -16,7 +16,7 @@ import stone.text.CodePage;
 import stone.ui.Tray;
 import stone.file.PNG;
 import stone.abstractions.Graphic;
-import stone.graphics.implementation.Graphics;
+import Graphics;
 
 
 using stone.util.DateExtensions;
@@ -35,7 +35,7 @@ class DesignerScene extends HudScene {
 	var label_model:Word;
 	var device:String;
 
-	public function new(game:Game, bounds:RectangleGeometry, color:RGBA, file:FileModel, file_list_key:String) {
+	public function new(game:Game, bounds:Rectangle, color:RGBA, file:FileModel, file_list_key:String) {
 		device = "BROWSER";
 		#if !web
 		device = "DISK";
@@ -339,7 +339,7 @@ class DesignerScene extends HudScene {
 
 	override function close() {
 		super.close();
-		designer.erase_graphic();
+		designer.erase();
 	}
 
 	function save_file(){
@@ -376,13 +376,13 @@ class DesignerScene extends HudScene {
 		graphics.display.peoteView.removeDisplay(graphics.display);
 	}
 
-	var lines_grid:Array<Line> = [];
+	var lines_grid:Array<LineBase> = [];
 
 	function grid_draw(size_segment:Int) {
 		if (lines_grid.length > 0) {
 			var delete_index = lines_grid.length;
 			while (delete_index-- > 0) {
-				lines_grid[delete_index].erase_graphic();
+				lines_grid[delete_index].erase();
 				lines_grid.remove(lines_grid[delete_index]);
 			}
 		}
@@ -414,7 +414,7 @@ class DesignerScene extends HudScene {
 	}
 
 	override function mouse_moved(mouse_position:Vector2) {
-		if(designer.isDrawingLine){
+		if(designer.isDrawingLineBase){
 			if(!overlaps_rectangle(bounds_main, mouse_position)){
 				designer.stop_drawing_line(mouse_position);
 			}
