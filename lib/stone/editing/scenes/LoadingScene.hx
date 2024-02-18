@@ -1,4 +1,4 @@
-package stone;
+package stone.editing.scenes;
 
 import lime.utils.Preloader;
 import stone.abstractions.Graphic;

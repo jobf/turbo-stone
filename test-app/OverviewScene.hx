@@ -3,12 +3,12 @@ import stone.abstractions.Graphic;
 import stone.core.Color;
 import stone.core.Engine;
 import stone.core.Models;
-import stone.DesignerScene;
 import stone.editing.Grid;
 import stone.editing.Overview;
+import stone.editing.scenes.DesignerScene;
+import stone.editing.scenes.HudScene;
+import stone.editing.Theme;
 import stone.file.PNG;
-import stone.HudScene;
-import stone.Theme;
 import stone.ui.Tray;
 
 using stone.util.DateExtensions;
@@ -78,7 +78,7 @@ class OverviewScene extends HudScene {
 		Overview.render_models(file.models, model_size, graphics_main);
 	}
 
-	function export_png(){
+	function export_png() {
 		var size_tile = 128;
 		var size_texture = size_tile * 16;
 
@@ -88,7 +88,7 @@ class OverviewScene extends HudScene {
 
 		var data_pixels = readPixels(graphics.display);
 
-		if(data_pixels != null){
+		if (data_pixels != null) {
 			var time_stamp = Date.now().to_time_stamp();
 			var file_name = '$time_stamp.png';
 			var png_bytes = PNG.lime_bytes(data_pixels, size_texture, size_texture, file_name);

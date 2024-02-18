@@ -1,4 +1,4 @@
-package stone;
+package stone.editing.scenes;
 
 import Graphics;
 import stone.abstractions.Graphic;

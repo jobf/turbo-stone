@@ -8,11 +8,11 @@ import peote.view.PeoteView;
 import stone.core.Engine;
 import stone.core.Models;
 import stone.core.Storage;
-import stone.DesignerScene;
-import stone.FileStorageScene;
+import stone.editing.scenes.DesignerScene;
+import stone.editing.scenes.FileStorageScene;
+import stone.editing.scenes.LoadingScene;
+import stone.editing.Theme;
 import stone.input.Input;
-import stone.LoadingScene;
-import stone.Theme;
 
 using stone.util.DateExtensions;
 
@@ -75,13 +75,12 @@ class Main extends Application {
 			var file_empty = storage.file_new();
 			storage.file_save(file_empty);
 			file_list = storage.file_paths();
-		}
-		else{
+		} else {
 			var index_end_of_list = file_list.length - 1;
 			var file_name = file_list[index_end_of_list];
 			var file_latest = storage.file_load(file_name);
 			var has_valid_file = file_latest != null && file_latest.json.content.length > 0;
-			if(!has_valid_file){
+			if (!has_valid_file) {
 				// make sure to save new file if we needed to make one
 				var file_empty = storage.file_new();
 				storage.file_save(file_empty);
@@ -120,8 +119,7 @@ class Main extends Application {
 
 			game = new Game(init_scene_loader, init_layer, implementation_input, storage);
 			isReady = true;
-		}
-		else{
+		} else {
 			trace('something went very wrong * sad face *');
 		}
 	}

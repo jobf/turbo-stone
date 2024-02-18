@@ -1,4 +1,4 @@
-package stone;
+package stone.editing;
 
 @:publicFields
 class Theme {

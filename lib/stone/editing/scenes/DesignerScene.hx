@@ -1,4 +1,4 @@
-package stone;
+package stone.editing.scenes;
 
 import Graphics;
 import haxe.io.Path;
@@ -7,9 +7,9 @@ import stone.core.Color;
 import stone.core.Engine;
 import stone.core.Models;
 import stone.editing.Editor;
+import stone.editing.scenes.FileStorageScene;
 import stone.file.FileStorage;
 import stone.file.PNG;
-import stone.FileStorageScene;
 import stone.text.CodePage;
 import stone.text.Text;
 import stone.ui.Interactive;

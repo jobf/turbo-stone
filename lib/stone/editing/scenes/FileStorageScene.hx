@@ -1,14 +1,12 @@
-package stone;
+package stone.editing.scenes;
 
 import stone.abstractions.Graphic;
 import stone.core.Color;
 import stone.core.Engine;
-import stone.core.Engine.Rectangle;
-import stone.core.Engine.Scene;
-import stone.core.Models.Deserialize;
+import stone.core.Models;
 import stone.core.Ui;
 import stone.core.Vector;
-import stone.DesignerScene;
+import stone.editing.scenes.DesignerScene;
 import stone.file.FileStorage;
 import stone.text.Text;
 import stone.ui.FileList;
@@ -23,7 +21,7 @@ class FileStorageScene extends HudScene {
 	var file_key_selected:String = "";
 	var file_list:FileList;
 
-	public function new(game:Game, bounds:Rectangle, color:RGBA, file_name_selected:String){
+	public function new(game:Game, bounds:Rectangle, color:RGBA, file_name_selected:String) {
 		var device = "BROWSER";
 		#if !web
 		device = "DISK";
@@ -90,37 +88,37 @@ class FileStorageScene extends HudScene {
 				]
 			}
 		];
-		
+
 		super(game, bounds, color, tray_sections);
 
 		// trace('file_set_selected(file_name_selected) $file_name_selected');
 		file_set_selected(file_name_selected);
 	}
 
-	function file_new(){
+	function file_new() {
 		var file_container = game.storage.file_new();
 		game.storage.file_save(file_container);
 		list_files(file_container.key);
 	}
 
-	function file_delete(){
+	function file_delete() {
 		game.storage.file_delete(file_key_selected);
 		file_key_selected = "";
 		list_files(file_key_selected);
 	}
 
-	function file_export(){
+	function file_export() {
 		// trace('file_export');
 		if (file_key_selected.length > 0) {
 			game.storage.export(file_key_selected);
 		}
 	}
 
-	function file_edit(){
+	function file_edit() {
 		if (file_key_selected.length > 0) {
 			var file = game.storage.file_load(file_key_selected);
 			var models = Deserialize.parse_file_contents(file.json.content);
-			if(models == null){
+			if (models == null) {
 				models = {
 					models: []
 				}
@@ -130,7 +128,7 @@ class FileStorageScene extends HudScene {
 		}
 	}
 
-	function has_file_path_selected():Bool{
+	function has_file_path_selected():Bool {
 		// trace('has_file_path_selected ${file_key_selected.length > 0}');
 		return file_key_selected.length > 0;
 	}
@@ -143,15 +141,11 @@ class FileStorageScene extends HudScene {
 
 		file_key_selected = "";
 
-		file_list = new FileList(
-			game.graphics_layer_init,
-			bounds_main,
-			file_name -> {
-				file_set_selected(file_name);
-				ui.show(true);
-			}
-		);
-	
+		file_list = new FileList(game.graphics_layer_init, bounds_main, file_name -> {
+			file_set_selected(file_name);
+			ui.show(true);
+		});
+
 		super.init();
 
 		list_files(file_key_selected);

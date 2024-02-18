@@ -1,7 +1,7 @@
 package stone.editing;
 
 import stone.abstractions.Graphic;
-import stone.Theme;
+import stone.editing.Theme;
 
 @:publicFields
 class Grid {

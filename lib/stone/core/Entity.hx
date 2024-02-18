@@ -1,3 +1,5 @@
+package stone.core;
+
 import stone.abstractions.Graphic;
 import stone.editing.Editor;
 
