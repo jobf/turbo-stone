@@ -7,15 +7,15 @@ import stone.core.Storage;
 
 typedef GraphicsConstructor = (width:Int, height:Int) -> GraphicsBase
 
+@:publicFields
 class Game {
-	var current_scene:Scene;
+	private var current_scene:Scene;
+	private var graphics_layers:Array<GraphicsBase>;
+	private var graphics_constructor(default, null):GraphicsConstructor;
+	var input(default, null):InputAbstract;
+	var storage(default, null):Storage;
 
-	var graphics_layers : Array<GraphicsBase>;
-	var graphics_constructor(default, null):GraphicsConstructor;
-	public var input(default, null):InputAbstract;
-	public var storage(default, null):Storage;
-
-	public function new(scene_constructor:Game->Scene, graphics_constructor:GraphicsConstructor, input:InputAbstract, storage:Storage) {
+	function new(scene_constructor:Game->Scene, graphics_constructor:GraphicsConstructor, input:InputAbstract, storage:Storage) {
 		this.input = input;
 		this.storage = storage;
 		graphics_layers = [];
@@ -23,19 +23,19 @@ class Game {
 		scene_init(scene_constructor);
 	}
 
-	public function update(elapsed_seconds:Float) {
+	function update(elapsed_seconds:Float) {
 		input.update_mouse_position();
 		input.raise_mouse_button_events();
 		input.raise_keyboard_button_events();
 		current_scene.update(elapsed_seconds);
 	}
 
-	function scene_init(scene_constructor:Game->Scene) {
+	private function scene_init(scene_constructor:Game->Scene) {
 		current_scene = scene_constructor(this);
 		current_scene.init();
 	}
 
-	public function scene_change(scene_constructor:Game->Scene) {
+	function scene_change(scene_constructor:Game->Scene) {
 		if (current_scene != null) {
 			graphics_layers.clear(layer -> layer.close());
 			current_scene.close();
@@ -46,27 +46,28 @@ class Game {
 		}
 	}
 
-	public function draw() {
+	function draw() {
 		current_scene.draw();
 		for (layer in graphics_layers) {
 			layer.draw();
 		}
 	}
 
-	public function graphics_layer_init(width:Int, height:Int):GraphicsBase{
+	function graphics_layer_init(width:Int, height:Int):GraphicsBase {
 		var layer = graphics_constructor(width, height);
 		graphics_layers.push(layer);
 		return layer;
 	}
 }
 
+@:publicFields
 abstract class Scene {
-	var game:Game;
-	var bounds:Rectangle;
+	private var game:Game;
+	private var bounds:Rectangle;
 
-	public var color(default, null):RGBA;
+	var color(default, null):RGBA;
 
-	public function new(game:Game, bounds:Rectangle, color:RGBA) {
+	function new(game:Game, bounds:Rectangle, color:RGBA) {
 		this.game = game;
 		this.bounds = bounds;
 		this.color = color;
@@ -75,30 +76,30 @@ abstract class Scene {
 	/**
 		Handle scene initiliasation here, e.g. set up level, player, etc.
 	**/
-	abstract public function init():Void;
+	abstract function init():Void;
 
 	/**
 		Handle game logic here, e,g, calculating movement for player, change object states, etc.
 		@param elapsed_seconds is the amount of seconds that have passed since the last frame
 	**/
-	abstract public function update(elapsed_seconds:Float):Void;
+	abstract function update(elapsed_seconds:Float):Void;
 
 	/**
 		Make draw calls here
 	**/
-	abstract public function draw():Void;
+	abstract function draw():Void;
 
 	/**
 		Clean up the scene here, e.g. remove graphics buffers
 	**/
-	abstract public function close():Void;
+	abstract function close():Void;
 }
 
+@:publicFields
 @:structInit
 class Rectangle {
-	public var x:Int = 0;
-	public var y:Int = 0;
-	public var width:Int;
-	public var height:Int;
+	var x:Int = 0;
+	var y:Int = 0;
+	var width:Int;
+	var height:Int;
 }
-

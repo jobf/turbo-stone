@@ -3,8 +3,9 @@ package stone.input;
 import stone.abstractions.Input;
 import lime.ui.*;
 
+@:publicFields
 class Input extends InputAbstract {
-	public function new(window:Window) {
+	function new(window:Window) {
 		this.window = window;
 		window.onKeyDown.add((code, modifier) -> keyboard_down.push(to_keyboard_button(code)));
 
@@ -22,7 +23,7 @@ class Input extends InputAbstract {
 		super();
 	}
 
-	public function raise_mouse_button_events() {
+	function raise_mouse_button_events() {
 		for (button in mouse_down) {
 			on_pressed.dispatch(button);
 		}
@@ -34,7 +35,7 @@ class Input extends InputAbstract {
 		mouse_up = [];
 	}
 
-	public function raise_keyboard_button_events() {
+	function raise_keyboard_button_events() {
 		for (button in keyboard_down) {
 			on_pressed.dispatch(button);
 		}
@@ -46,7 +47,7 @@ class Input extends InputAbstract {
 		keyboard_up = [];
 	}
 
-	public function update_mouse_position() {
+	function update_mouse_position() {
 		mouse_position_previous.x = mouse_position.x;
 		mouse_position_previous.y = mouse_position.y;
 		
@@ -64,21 +65,21 @@ class Input extends InputAbstract {
 
 
 
-	var keyboard_down:Array<Button> = [];
-	var keyboard_up:Array<Button> = [];
+	private var keyboard_down:Array<Button> = [];
+	private var keyboard_up:Array<Button> = [];
 
-	var mouse_x:Float;
-	var mouse_y:Float;
-	var mouse_down:Array<Button> = [];
-	var mouse_up:Array<Button> = [];
+	private var mouse_x:Float;
+	private var mouse_y:Float;
+	private var mouse_down:Array<Button> = [];
+	private var mouse_up:Array<Button> = [];
 
-	var window:Window;
+	private var window:Window;
 
-	public function mouse_cursor_hide() {
+	function mouse_cursor_hide() {
 		window.cursor = null;
 	}
 
-	public function mouse_cursor_show() {
+	function mouse_cursor_show() {
 		window.cursor = ARROW;
 	}
 }

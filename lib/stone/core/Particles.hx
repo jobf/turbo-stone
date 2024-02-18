@@ -2,50 +2,51 @@ package stone.core;
 
 import stone.abstractions.Graphic;
 
+@:publicFields
 class Emitter {
 	/** starting x position of particles **/
-	var x:Int;
+	private var x:Int;
 
 	/** starting y position of particles **/
-	var y:Int;
+	private var y:Int;
 
 	/** pool of particles for recycling **/
-	var particles:Array<ParticleBase>;
+	private var particles:Array<ParticleBase>;
 
 	/** size of particle pool **/
-	var maximum_particles:Int = 30;
+	private var maximum_particles:Int = 30;
 
 	/** amount of time between particle emissions emissi on **/
-	public var seconds_between_particles:Float = 0.097;
+	var seconds_between_particles:Float = 0.097;
 
 	var seconds_until_next_particle:Float = 0;
 
 	/** lowest x speed used when determining random x acceleration **/
-	public var x_speed_minimum:Float = 20;
+	var x_speed_minimum:Float = 20;
 
 	/** highest x speed used when determining random y acceleration **/
-	public var x_speed_maximum:Float = 30;
+	var x_speed_maximum:Float = 30;
 
 	/** lowest y speed used when determining random y acceleration **/
-	public var y_speed_minimum:Float = 20;
+	var y_speed_minimum:Float = 20;
 
 	/** highest y speed used when determining random y acceleration **/
-	public var y_speed_maximum:Float = 30;
+	var y_speed_maximum:Float = 30;
 
 	/** width and height of particles **/
-	public var particle_size:Float;
+	var particle_size:Float;
 
 	/** how many seconds the particle will be active before it can be recycled **/
-	public var particle_life_seconds:Float = 0.495;
+	var particle_life_seconds:Float = 0.495;
 
 	/** if the emitter should emit particles or not **/
-	public var is_emitting:Bool = false;
+	var is_emitting:Bool = false;
 
-	public var rotation:Float = 0;
+	var rotation:Float = 0;
 
-	var graphics:GraphicsBase;
+	private var graphics:GraphicsBase;
 
-	public function new(x:Int, y:Int, graphics:GraphicsBase) {
+	function new(x:Int, y:Int, graphics:GraphicsBase) {
 		particles = [];
 		this.x = x;
 		this.y = y;
@@ -53,7 +54,7 @@ class Emitter {
 		this.graphics = graphics;
 	}
 
-	public function update(elapsed_seconds:Float) {
+	function update(elapsed_seconds:Float) {
 		for (p in particles) {
 			p.update(elapsed_seconds);
 		}
@@ -113,12 +114,12 @@ class Emitter {
 		particle.set_trajectory(x_acceleration, y_acceleration);
 	}
 
-	public function set_position(x:Int, y:Int) {
+	function set_position(x:Int, y:Int) {
 		this.x = x;
 		this.y = y;
 	}
 
-	public function draw() {
+	function draw() {
 		for (particle in particles) {
 			if(particle.is_expired){
 				particle.set_color(0x00000000);

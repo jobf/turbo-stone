@@ -2,31 +2,34 @@ package stone.input;
 
 import stone.abstractions.Input;
 
+@:publicFields
 @:structInit
 class Action {
-	public var on_pressed:Void->Void = () -> return;
-	public var on_released:Void->Void = () -> return;
-	public var name:String = "";
+	var on_pressed:Void->Void = () -> return;
+	var on_released:Void->Void = () -> return;
+	var name:String = "";
 }
 
+@:publicFields
 @:structInit
 class ControllerActions {
-	public var left:Action = {};
-	public var right:Action = {};
-	public var up:Action = {};
-	public var down:Action = {};
+	var left:Action = {};
+	var right:Action = {};
+	var up:Action = {};
+	var down:Action = {};
 }
 
+@:publicFields
 class Controller {
-	var actions:Map<Button, Action>;
-	var input:InputAbstract;
+	private var actions:Map<Button, Action>;
+	private var input:InputAbstract;
 
-	public function new(actions:Map<Button, Action>, input:InputAbstract) {
+	function new(actions:Map<Button, Action>, input:InputAbstract) {
 		this.actions = actions;
 		this.input = input;
 	}
 
-	public function handle_button(state:ButtonState, button:Button) {
+	function handle_button(state:ButtonState, button:Button) {
 		switch state {
 			case PRESSED:
 				{

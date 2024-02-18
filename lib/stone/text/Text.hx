@@ -12,12 +12,13 @@ enum Align{
 	RIGHT;
 }
 
+@:publicFields
 @:structInit
 class Font {
-	public var models:Array<Array<LineBaseModel>>;
-	public var width_model:Int;
-	public var height_model:Int;
-	public var width_character:Int = 0;
+	var models:Array<Array<LineBaseModel>>;
+	var width_model:Int;
+	var height_model:Int;
+	var width_character:Int = 0;
 }
 
 function font_load_embedded(size_model:Int=64):Font {
@@ -32,14 +33,15 @@ function font_load_embedded(size_model:Int=64):Font {
 	}
 }
 
+@:publicFields
 class Text {
-	public var font(default, null):Font;
-	var graphics:GraphicsBase;
-	var model_translation:EditorTranslation;
+	var font(default, null):Font;
+	private var graphics:GraphicsBase;
+	private var model_translation:EditorTranslation;
 
-	var words:Array<Word> = [];
+	private var words:Array<Word> = [];
 
-	public function new(font:Font, graphics:GraphicsBase) {
+	function new(font:Font, graphics:GraphicsBase) {
 		if (font.models.length != 256) {
 			throw "character set requires 256 models for code page 437";
 		}
@@ -53,14 +55,14 @@ class Text {
 		});
 	}
 
-	public function draw() {
+	function draw() {
 		for (word in words) {
 			word.draw();
 		}
 	}
 
 	// todo - make x_center_of_container actually x_left_of_container?
-	public function word_make(x_center_of_container:Int, y:Int, text:String, color:RGBA, width_container:Int, align:Align=CENTER):Word {
+	function word_make(x_center_of_container:Int, y:Int, text:String, color:RGBA, width_container:Int, align:Align=CENTER):Word {
 		// trace('word: $text x: $x_center_of_container , y: $y width: $width_container ');
 
 		var width_label = text.length * font.width_character;
@@ -103,28 +105,29 @@ class Text {
 	}
 }
 
+@:publicFields
 @:structInit
 class Word {
-	public var on_erase:Word->Void;
-	public var text:String;
-	public var height:Int;
-	public var width:Int;
-	public var drawings(default, null):Array<Drawing>;
+	var on_erase:Word->Void;
+	var text:String;
+	var height:Int;
+	var width:Int;
+	var drawings(default, null):Array<Drawing>;
 
-	public function erase() {
+	function erase() {
 		for (drawing in drawings) {
 			drawing.erase();
 		}
 		on_erase(this);
 	}
 
-	public function draw() {
+	function draw() {
 		for (drawing in drawings) {
 			drawing.draw();
 		}
 	}
 
-	public function hide(){
+	function hide(){
 		for (drawing in drawings) {
 			for (line in drawing.lines) {
 				line.color.a = 0;
@@ -132,7 +135,7 @@ class Word {
 		}
 	}
 
-	public function show(){
+	function show(){
 		for (drawing in drawings) {
 			for (line in drawing.lines) {
 				line.color.a = 0xff;

@@ -1,24 +1,25 @@
 package stone.core;
 
+@:publicFields
 class Event<T> {
-	public var listeners:Array<T->Void>;
+	var listeners:Array<T->Void>;
 
-	public function new() {
+	function new() {
 		listeners = [];
 	}
 
-	public function add(listener:T->Void):Void {
+	function add(listener:T->Void):Void {
 		listeners.push(listener);
 	}
 
-	public function dispatch(event:T):Void {
+	function dispatch(event:T):Void {
 		// trace('dispatch $event to ${listeners.length} listeners');
 		for (listener in listeners) {
 			listener(event);
 		}
 	}
 
-	public function remove(listener:T->Void):Void {
+	function remove(listener:T->Void):Void {
 		var i = listeners.length;
 
 		while (--i >= 0) {
@@ -28,7 +29,7 @@ class Event<T> {
 		}
 	}
 
-	public function removeAll():Void {
+	function removeAll():Void {
 		var len = listeners.length;
 
 		listeners.splice(0, len);

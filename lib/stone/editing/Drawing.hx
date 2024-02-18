@@ -4,7 +4,8 @@ import stone.abstractions.Graphic;
 import stone.core.Models;
 import stone.editing.Editor;
 
-using stone.editing.Editor.GraphicsExtensions;
+using stone.editing.Editor;
+using stone.core.Vector;
 
 @:structInit
 class Prototype{

@@ -7,8 +7,9 @@ import stone.editing.Editor;
 
 using stone.editing.Editor.GraphicsExtensions;
 
+@:publicFields
 class Overview{
-	public static function render_models(models:Array<FigureModel>, size_model:Int, graphics:GraphicsBase){
+	static function render_models(models:Array<FigureModel>, size_model:Int, graphics:GraphicsBase){
 		var total_rows = Std.int(256 / 16);
 		var total_columns = total_rows;
 

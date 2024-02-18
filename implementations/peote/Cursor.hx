@@ -6,7 +6,7 @@ import peote.view.Program;
 import peote.view.Display;
 import Elements;
 
-
+@:publicFields
 class Cursor {
 	
 	var display:Display;
@@ -14,7 +14,7 @@ class Cursor {
 	var buffer:Buffer<FillElement>;
 	var fills:Array<Fill> = [];
 
-	public function new(display:Display){
+	function new(display:Display){
 		this.display = display;
 		buffer = new Buffer<FillElement>(1);
 		program = new Program(buffer);
@@ -48,14 +48,14 @@ class Cursor {
 		display.addProgram(program);
 	}
 
-	public function draw() {
+	function draw() {
 		for (fill in fills) {
 			fill.draw();
 		}
 		buffer.update();
 	}
 
-	public function erase(){
+	function erase(){
 		buffer.clear(true, true);
 
 		if(display.hasProgram(program)){
@@ -63,7 +63,7 @@ class Cursor {
 		}
 	}
 
-	public function make_fill(x:Int, y:Int, width:Int, height:Int, color:RGBA):FillBase {
+	function make_fill(x:Int, y:Int, width:Int, height:Int, color:RGBA):FillBase {
 		var element = new FillElement(x, y, width, height, 0, cast color);
 		buffer.addElement(element);
 		

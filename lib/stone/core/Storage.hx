@@ -8,10 +8,11 @@ import stone.core.Models;
 import stone.file.FileStorage;
 
 
+@:publicFields
 class Storage {
-	var storage:FileStorage;
+	private var storage:FileStorage;
 
-	public function new(window:Window) {
+	function new(window:Window) {
 		on_drop_file = new Event();
 		storage = new FileStorage();
 
@@ -26,16 +27,16 @@ class Storage {
 		#end
 	}
 
-	public var on_drop_file:Event<FileContainer>;
+	var on_drop_file:Event<FileContainer>;
 
-	public function file_paths():Array<String> {
+	function file_paths():Array<String> {
 		var file_path_list = storage.file_paths();
 		var valid_file_paths = file_path_list.filter(s -> s.length > 0 && !StringTools.endsWith(s.toLowerCase(), '.json'));
 		// todo - this shouldn't be needed, e.g. do not let invalid file paths enter the file ?
 		return valid_file_paths;
 	}
 
-	public function file_drop_sys(path_disk) {
+	function file_drop_sys(path_disk) {
 		#if !js
 		var content = sys.io.File.getContent(path_disk);
 
@@ -57,7 +58,7 @@ class Storage {
 
 	}
 
-	public function file_drop_web(file_list:String) {
+	function file_drop_web(file_list:String) {
 		#if js
 		if (file_list.length > 0) {
 			var list:js.html.FileList = cast file_list;
@@ -84,11 +85,11 @@ class Storage {
 		#end
 	}
 
-	public function file_save(file_container:FileContainer){
+	function file_save(file_container:FileContainer){
 		storage.file_save(file_container);
 	}
 
-	public function export_bytes(bytes_image:Bytes, file_name:String) {
+	function export_bytes(bytes_image:Bytes, file_name:String) {
 		#if web
 		stone.util.Browser.release_blob_bytes(bytes_image, file_name);
 		#else
@@ -98,7 +99,7 @@ class Storage {
 		#end
 	}
 
-	public function file_new():FileContainer {
+	function file_new():FileContainer {
 		var time_stamp = Date.now().to_time_stamp();
 		return {
 			key: time_stamp,
@@ -109,18 +110,18 @@ class Storage {
 		}
 	}
 
-	public function file_delete(path_file:String) {
+	function file_delete(path_file:String) {
 		storage.file_delete(path_file);
 	}
 
-	public function export(file_container_key) {
+	function export(file_container_key) {
 		#if web
 		var fileJSON = storage.file_load(file_container_key);
 		stone.util.Browser.release_blob_string(fileJSON.content, fileJSON.file_path);
 		#end
 	}
 
-	public function file_load(file_container_key:String): FileContainer {
+	function file_load(file_container_key:String): FileContainer {
 		var item = storage.file_load(file_container_key);
 		if(item == null){
 			// todo : init new, store and return
@@ -131,7 +132,7 @@ class Storage {
 		}
 	}
 
-	function init_empty_file():FileModel {
+	private function init_empty_file():FileModel {
 		return {
 			models: [for(i in 0...256) {
 				name: "",

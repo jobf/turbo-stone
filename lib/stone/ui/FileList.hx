@@ -11,27 +11,28 @@ import stone.text.Text;
 import stone.ui.Interactive;
 import stone.ui.Tray;
 
+@:publicFields
 class FileList{
-	public var ui(default, null):Ui;
-	var on_file_select:String->Void;
-	var labels:Array<LabelToggle> = [];
-	var bounds:Rectangle;
+	var ui(default, null):Ui;
+	private var on_file_select:String->Void;
+	private var labels:Array<LabelToggle> = [];
+	private var bounds:Rectangle;
 
-	public function new(graphics_init:GraphicsConstructor, bounds:Rectangle,  on_file_select:String->Void){
+	function new(graphics_init:GraphicsConstructor, bounds:Rectangle,  on_file_select:String->Void){
 		// file list only has interactives listed in the main area, so bounds_interactive is actually bounds_main
 		this.bounds = bounds;
 		ui = new Ui(graphics_init);
 		this.on_file_select = on_file_select;
 	}
 
-	public function draw(){
+	function draw(){
 	}
 
-	public function close(){
+	function close(){
 		ui.clear();
 	}
 
-	public function list_files(file_names:Array<String>, pre_select_path:String="") {
+	function list_files(file_names:Array<String>, pre_select_path:String="") {
 		// first clear any existing labels
 		if(labels.length > 0){
 			var length_labels = labels.length;
@@ -100,7 +101,7 @@ class FileList{
 		}
 	}
 
-	function buttons_file_selected(path:String){
+	private function buttons_file_selected(path:String){
 		for(label in labels){
 			// trace('reset ${label.model.label}  $path');
 			label.reset();
@@ -112,7 +113,7 @@ class FileList{
 		on_file_select(path);
 	}
 
-	public function handle_mouse_click(x_mouse:Int, y_mouse:Int){
+	function handle_mouse_click(x_mouse:Int, y_mouse:Int){
 		ui.handle_mouse_click(x_mouse, y_mouse);
 	}
 }

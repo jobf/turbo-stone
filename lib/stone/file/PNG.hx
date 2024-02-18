@@ -1,5 +1,6 @@
 package stone.file;
 
+@:publicFields
 class PNG{
 	public static function format_write(texture_data:lime.utils.UInt8Array, width:Int, height:Int, path:String):Void{
 		#if !web

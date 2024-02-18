@@ -3,31 +3,35 @@ package stone.core;
 import json2object.*;
 import stone.core.Vector;
 
+@:publicFields
 @:structInit
 class FileModel {
-	public var models:Array<FigureModel>;
+	var models:Array<FigureModel>;
 }
 
+@:publicFields
 @:structInit
 class FigureModel{
-	public var index:Int;
-	public var name:String = "";
-	public var lines:Array<LineBaseModel>;
+	var index:Int;
+	var name:String = "";
+	var lines:Array<LineBaseModel>;
 }
 
+@:publicFields
 @:structInit
 class LineBaseModel{
-	public var from:Vector2;
-	public var to:Vector2;
+	var from:Vector2;
+	var to:Vector2;
 }
 
+@:publicFields
 class IsoscelesModel {
-	public var a_point:Vector2;
-	public var b_point:Vector2;
-	public var c_point:Vector2;
-	public var points:Array<Vector2>;
+	var a_point:Vector2;
+	var b_point:Vector2;
+	var c_point:Vector2;
+	var points:Array<Vector2>;
 
-	public function new() {
+	function new() {
 		a_point = {x: 0.0, y: -6.0};
 		b_point = {x: -3.0, y: 3.0};
 		c_point = {x: 3.0, y: 3.0};
@@ -36,8 +40,9 @@ class IsoscelesModel {
 }
 
 
+@:publicFields
 class Deserialize {
-	public static function parse_file_contents(json:String):Null<FileModel> {
+	static function parse_file_contents(json:String):Null<FileModel> {
 		var errors = new Array<Error>();
 		var data = new JsonParser<FileModel>(errors).fromJson(json, 'json-errors');
 
@@ -55,8 +60,9 @@ class Deserialize {
 }
 
 
+@:publicFields
 class Serialize {
-	public static function to_string(model:FileModel) {
+	static function to_string(model:FileModel) {
 		var writer = new JsonWriter<FileModel>();
 		var json:String = writer.write(model);
 		return json;

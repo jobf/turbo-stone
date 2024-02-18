@@ -18,15 +18,15 @@ class Graphics extends GraphicsBase {
 	var size_cap:Int = 1;
 	var angle_cap:Int = -45;
 
-	public var display(default, null):Display;
+	var display(default, null):Display;
 
 	var graphics_layer_init:GraphicsConstructor;
 
-	public var buffer_lines(default, null):Buffer<LineElement>;
+	var buffer_lines(default, null):Buffer<LineElement>;
 
 	var buffer_fills:Buffer<FillElement>;
 
-	public function new(display:Display, viewport_bounds:Rectangle, graphics_layer_init:GraphicsConstructor) {
+	function new(display:Display, viewport_bounds:Rectangle, graphics_layer_init:GraphicsConstructor) {
 		super(viewport_bounds);
 		this.display = display;
 		this.graphics_layer_init = graphics_layer_init;
@@ -41,7 +41,7 @@ class Graphics extends GraphicsBase {
 		display.addProgram(lineProgram);
 	}
 
-	public function make_line(from_x:Float, from_y:Float, to_x:Float, to_y:Float, color:RGBA):LineBase {
+	function make_line(from_x:Float, from_y:Float, to_x:Float, to_y:Float, color:RGBA):LineBase {
 		var thick:Int = 2;
 		var element_line = new LineElement(Std.int(from_x), Std.int(from_y), Std.int(to_x), Std.int(to_y), thick, cast color);
 
@@ -68,7 +68,7 @@ class Graphics extends GraphicsBase {
 		return lines[lines.length - 1];
 	}
 
-	public function make_fill(x:Int, y:Int, width:Int, height:Int, color:RGBA):FillBase {
+	function make_fill(x:Int, y:Int, width:Int, height:Int, color:RGBA):FillBase {
 		var element = make_rectangle(x, y, width, height, color);
 
 		var fill_clean_up:Fill->Void = fill -> {
@@ -88,7 +88,7 @@ class Graphics extends GraphicsBase {
 		return element;
 	}
 
-	public function make_particle(x:Float, y:Float, size:Int, color:RGBA, lifetime_seconds:Float):ParticleBase {
+	function make_particle(x:Float, y:Float, size:Int, color:RGBA, lifetime_seconds:Float):ParticleBase {
 		var element = make_rectangle(x, y, size, size, cast color);
 		return new Particle(Std.int(x), Std.int(y), size, cast color, lifetime_seconds, element);
 	}
@@ -100,7 +100,7 @@ class Graphics extends GraphicsBase {
 		lines.remove(line);
 	}
 
-	public function draw() {
+	function draw() {
 		for (line in lines) {
 			line.draw();
 		}
@@ -111,41 +111,41 @@ class Graphics extends GraphicsBase {
 		buffer_lines.update();
 	}
 
-	public function translate_mouse(x:Float, y:Float):Vector2 {
+	function translate_mouse(x:Float, y:Float):Vector2 {
 		return {
 			x: display.localX(x),
 			y: display.localY(y)
 		}
 	}
 
-	public function set_color(color:RGBA) {
+	function set_color(color:RGBA) {
 		display.color = cast color;
 	}
 
-	public function close() {
+	function close() {
 		buffer_fills.clear(true, true);
 		buffer_lines.clear(true, true);
 		// fills.clear(fill -> fill.erase());
 		// lines.clear(line -> line.erase());
 	}
 
-	public function display_add(display_additional:Display) {
+	function display_add(display_additional:Display) {
 		display.peoteView.addDisplay(display_additional);
 	}
 
-	public function graphics_new_layer(width:Int, height:Int):GraphicsBase {
+	function graphics_new_layer(width:Int, height:Int):GraphicsBase {
 		return graphics_layer_init(width, height);
 	}
 
-	public function scroll_x(amount:Int) {
+	function scroll_x(amount:Int) {
 		display.xOffset += amount;
 	}
 
-	public function scroll_y(amount:Int) {
+	function scroll_y(amount:Int) {
 		display.yOffset += amount;
 	}
 
-	public function png_data_from_figure(model:FigureModel, translation:EditorTranslation, width:Int, height:Int):UInt8Array{
+	function png_data_from_figure(model:FigureModel, translation:EditorTranslation, width:Int, height:Int):UInt8Array{
 		var temp:Graphics = cast graphics_new_layer(width, height);
 		temp.map_figure(model, translation);
 		var data = readPixels(temp.display);

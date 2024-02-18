@@ -3,8 +3,9 @@ package stone.editing;
 import stone.abstractions.Graphic;
 import stone.Theme;
 
+@:publicFields
 class Grid {
-	public static function grid_draw(make_line:MakeLine, size_segment:Int, x_center:Int, y_center:Int, width:Int, height:Int, draw_central_lines:Bool = true):Array<LineBase> {
+	static function grid_draw(make_line:MakeLine, size_segment:Int, x_center:Int, y_center:Int, width:Int, height:Int, draw_central_lines:Bool = true):Array<LineBase> {
 		var lines_grid:Array<LineBase> = [];
 		if (lines_grid.length > 0) {
 			var delete_index = lines_grid.length;

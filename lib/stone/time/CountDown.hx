@@ -1,22 +1,23 @@
 package stone.time;
 
+@:publicFields
 class CountDown {
-	public var duration:Float;
-	public var countDown:Float;
-	var onComplete:() -> Void;
-	var restartWhenComplete:Bool;
-	var isReady:Bool = true;
-	public var enabled:Bool = true;
+	var duration:Float;
+	var countDown:Float;
+	var enabled:Bool = true;
+	private var onComplete:() -> Void;
+	private var restartWhenComplete:Bool;
+	private var isReady:Bool = true;
 
 
-	public function new(durationSeconds:Float, onComplete:Void->Void, restartWhenComplete:Bool = false) {
+	function new(durationSeconds:Float, onComplete:Void->Void, restartWhenComplete:Bool = false) {
 		this.duration = durationSeconds;
 		this.onComplete = onComplete;
 		this.restartWhenComplete = restartWhenComplete;
 		this.countDown = durationSeconds;
 	}
 
-	public function update(elapsedSeconds:Float) {
+	function update(elapsedSeconds:Float) {
 		if(!enabled){
 			return;
 		}
@@ -30,7 +31,7 @@ class CountDown {
 		}
 	}
 
-	public inline function reset(nextDurationSeconds:Float=0) {
+	inline function reset(nextDurationSeconds:Float=0) {
 		if(nextDurationSeconds > 0){
 			duration = nextDurationSeconds;
 		}
@@ -38,7 +39,7 @@ class CountDown {
 		isReady = true;
 	}
 
-	public function stop() {
+	function stop() {
 		// countDown = 0;
 		isReady = false;
 	}

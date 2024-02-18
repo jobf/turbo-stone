@@ -1,7 +1,8 @@
 package stone.core;
 
+@:publicFields
 class MotionInteractive {
-	public function new(x:Int, y:Int) {
+	function new(x:Int, y:Int) {
 		position = {
 			x: x,
 			y: y
@@ -36,35 +37,36 @@ class MotionInteractive {
 	/**
 	 * Current x,y position in world space
 	**/
-	public var position:Vector2;
+	var position:Vector2;
 
 	/**
 	 * Previous x,y position in world space
 	**/
-	public var position_previous:Vector2;
+	var position_previous:Vector2;
 
 	/**
 	 * Current x,y velocity
 	**/
-	public var velocity:Vector2;
+	var velocity:Vector2;
 
 	/**
 	 * Maximum x,y velocity permitted
 	**/
-	public var velocity_maximum:Vector2;
+	var velocity_maximum:Vector2;
 
 	/**
 	 * How much velocity will speed up on x,y axes
 	**/
-	public var acceleration:Vector2;
+	var acceleration:Vector2;
 
 	/**
 	 * How much velocity will slow down on x,y axes
 	 * Note: only takes effect when Acceleration is zero
 	**/
-	public var deceleration:Vector2;
+	var deceleration:Vector2;
 }
 
+@:publicFields
 class MotionInteractiveLogic {
 	/**
 	 * Updates the speed and position of the MotionInteractive 
@@ -73,7 +75,7 @@ class MotionInteractiveLogic {
 	 * @param motion				The motion interactive to be updated
 	 * @param elapsed_seconds	The amount of time passed since last update frame
 	**/
-	public static function compute_motion(motion:MotionInteractive, elapsed_seconds:Float) {
+	static function compute_motion(motion:MotionInteractive, elapsed_seconds:Float) {
 		// update x axis position and speed
 		var vel_delta = 0.5 * (compute_axis(motion.velocity.x, motion.acceleration.x, motion.deceleration.x, motion.velocity_maximum.x, elapsed_seconds)
 			- motion.velocity.x);
@@ -150,13 +152,14 @@ class MotionInteractiveLogic {
 	}
 }
 
+@:publicFields
 class VectorLogic {
-	public static function point_overlaps_circle(point:Vector2, target:Vector2, radius:Float){
+	static function point_overlaps_circle(point:Vector2, target:Vector2, radius:Float){
 		var distance = distance_to(point, target);
 		return distance <= radius;
 	}
 
-	public static function polygon_overlaps_point(polygon_model:Array<Vector2>, target:Vector2):Bool {
+	static function polygon_overlaps_point(polygon_model:Array<Vector2>, target:Vector2):Bool {
 		var collision = false;
 		for (a in 0...polygon_model.length) {
 			var point_a = polygon_model[a % polygon_model.length];
@@ -169,7 +172,7 @@ class VectorLogic {
 		return collision;
 	}
 
-	public static function distance_to(point_from:Vector2, point_to:Vector2):Float
+	static function distance_to(point_from:Vector2, point_to:Vector2):Float
 	{
 		var a = point_to.x - point_from.x;
 		var b = point_to.y - point_from.y;
@@ -177,7 +180,7 @@ class VectorLogic {
 		return Math.sqrt(a * a + b * b);
 	}
 
-	public static function line_overlaps_point(target:Vector2, line_from:Vector2, line_to:Vector2):Bool {
+	static function line_overlaps_point(target:Vector2, line_from:Vector2, line_to:Vector2):Bool {
 		var collision = false;
 		// get distance from the point to the two ends of the line
 		var d1 = VectorLogic.distance_to(target, line_from);
@@ -200,7 +203,7 @@ class VectorLogic {
 		return collision;
 	}
 
-	public static function line_overlaps_line(line_from_a:Vector2, line_to_a:Vector2, line_from_b:Vector2, line_to_b:Vector2):Bool {
+	static function line_overlaps_line(line_from_a:Vector2, line_to_a:Vector2, line_from_b:Vector2, line_to_b:Vector2):Bool {
 		var collision = false;
 		  // calculate the distance to intersection point
 		var uA = ((line_to_b.x-line_from_b.x)*(line_from_a.y-line_from_b.y) - (line_to_b.y-line_from_b.y)*(line_from_a.x-line_from_b.x)) / ((line_to_b.y-line_from_b.y)*(line_to_a.x-line_from_a.x) - (line_to_b.x-line_from_b.x)*(line_to_a.y-line_from_a.y));
@@ -229,7 +232,7 @@ class VectorLogic {
 		return collision;
 	}
 
-	public static function vector_transform(vector:Vector2, origin:Vector2, scale:Float, x:Float, y:Float, ?rotation_sin:Float, ?rotation_cos:Float, ?rotation:Float):Vector2 {
+	static function vector_transform(vector:Vector2, origin:Vector2, scale:Float, x:Float, y:Float, ?rotation_sin:Float, ?rotation_cos:Float, ?rotation:Float):Vector2 {
 		// rotate
 		var rotation_sin = rotation_sin == null ? Math.sin(rotation) : rotation_sin;
 		var rotation_cos = rotation_cos == null ? Math.cos(rotation) : rotation_cos;

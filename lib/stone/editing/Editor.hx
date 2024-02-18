@@ -12,25 +12,26 @@ import stone.core.Models;
 
 using stone.editing.Editor.GraphicsExtensions;
 
+@:publicFields
 class EditorTranslation {
-	public var bounds_view:Rectangle;
+	var bounds_view:Rectangle;
 
-	var x_center:Int;
-	var y_center:Int;
-	var points_in_translation_x = 10;
-	var points_in_translation_y = 10;
+	private var x_center:Int;
+	private var y_center:Int;
+	private var points_in_translation_x = 10;
+	private var points_in_translation_y = 10;
 
-	public var bounds_width_half:Float;
-	public var bounds_height_half:Float;
+	var bounds_width_half:Float;
+	var bounds_height_half:Float;
 
-	public function new(bounds_view:Rectangle, points_in_translation_x:Int = 1, points_in_translation_y:Int = 1) {
+	function new(bounds_view:Rectangle, points_in_translation_x:Int = 1, points_in_translation_y:Int = 1) {
 		this.bounds_view = bounds_view;
 		this.points_in_translation_x = points_in_translation_x;
 		this.points_in_translation_y = points_in_translation_y;
 		size_set(bounds_view.width, bounds_view.height);
 	}
 
-	public function size_set(width:Int, height:Int) {
+	function size_set(width:Int, height:Int) {
 		bounds_view.width = width;
 		bounds_view.height = height;
 		x_center = Std.int(bounds_view.width * 0.5);
@@ -39,7 +40,7 @@ class EditorTranslation {
 		bounds_height_half = bounds_view.height * 0.5;
 	}
 
-	public function view_to_model_point(point_in_view:Vector2):Vector2 {
+	function view_to_model_point(point_in_view:Vector2):Vector2 {
 		var offset_point:Vector2 = {
 			x: point_in_view.x - bounds_width_half,
 			y: point_in_view.y - bounds_height_half
@@ -53,7 +54,7 @@ class EditorTranslation {
 		return transformed_point;
 	}
 
-	public function model_to_view_point(point_in_model:Vector2):Vector2 {
+	function model_to_view_point(point_in_model:Vector2):Vector2 {
 		var transformed_point:Vector2 = {
 			x: (point_in_model.x * bounds_view.width) / points_in_translation_x,
 			y: (point_in_model.y * bounds_view.height) / points_in_translation_y,
@@ -68,30 +69,31 @@ class EditorTranslation {
 	}
 }
 
+@:publicFields
 class Designer {
-	public var model_index(default, null):Int = 0;
+	var model_index(default, null):Int = 0;
 
-	var mouse_pointer:FillBase;
+	private var mouse_pointer:FillBase;
 
-	public var line_under_cursor:LineBase;
+	var line_under_cursor:LineBase;
 
-	var size_segment:Int;
-	var size_segment_half:Int;
-	var size_snapping: Int;
-	var snapping_mod:Int = 4;
-	var graphics:Graphics;
-	var mouse_pointer_graphics:Cursor;
-	var bounds_grid:Rectangle;
-	public var is_file_modified(default, null):Bool;
+	private var size_segment:Int;
+	private var size_segment_half:Int;
+	private var size_snapping: Int;
+	private var snapping_mod:Int = 4;
+	private var graphics:Graphics;
+	private var mouse_pointer_graphics:Cursor;
+	private var bounds_grid:Rectangle;
+	var is_file_modified(default, null):Bool;
 
-	public var file(default, null):FileModel;
+	var file(default, null):FileModel;
 
-	public var translation(default, null):EditorTranslation;
+	var translation(default, null):EditorTranslation;
 
-	public var isDrawingLineBase(default, null):Bool = false;
-	public var figure(default, null):Figure;
+	var isDrawingLineBase(default, null):Bool = false;
+	var figure(default, null):Figure;
 
-	public function new(size_segment:Int, graphics:GraphicsBase, bounds_grid:Rectangle, file:FileModel) {
+	function new(size_segment:Int, graphics:GraphicsBase, bounds_grid:Rectangle, file:FileModel) {
 		this.file = file;
 		is_file_modified = false;
 		granularity_set(size_segment);
@@ -106,24 +108,24 @@ class Designer {
 		figure_init();
 	}
 
-	public function erase(){
+	function erase(){
 		mouse_pointer_graphics.erase();
 	}
 
-	public function draw() {
+	function draw() {
 		mouse_pointer_graphics.draw();
 	}
 
-	public function granularity_set(size_segment:Int) {
+	function granularity_set(size_segment:Int) {
 		this.size_segment = Std.int((size_segment * 0.5));
 		this.size_segment_half = -Std.int((size_segment * 0.5));
 	}
 	
-	public function granularity_set_modifier(mod:Int){
+	function granularity_set_modifier(mod:Int){
 		snapping_mod = mod;
 	}
 
-	function line_under_cursor_(position_cursor:Vector2):Null<LineBase> {
+	private function line_under_cursor_(position_cursor:Vector2):Null<LineBase> {
 		for (line in figure.lines) {
 			var overlaps:Bool = position_cursor.line_overlaps_point(line.point_from, line.point_to);
 			if (overlaps) {
@@ -133,7 +135,7 @@ class Designer {
 		return null;
 	}
 
-	public function line_under_cursor_remove() {
+	function line_under_cursor_remove() {
 		if (line_under_cursor == null) {
 			return;
 		}
@@ -150,7 +152,7 @@ class Designer {
 		}
 	}
 
-	public function update_mouse_pointer(mouse_position:Vector2) {
+	function update_mouse_pointer(mouse_position:Vector2) {
 		if (point_is_outside_grid(mouse_position)) {
 			return;
 		}
@@ -172,7 +174,7 @@ class Designer {
 		}
 	}
 
-	function figure_init() {
+	private function figure_init() {
 		if (file.models.length == 0) {
 			file.models = [
 				{
@@ -191,7 +193,7 @@ class Designer {
 		figure = graphics.map_figure(file.models[model_index], translation);
 	}
 
-	function erase_figure_graphics() {
+	private function erase_figure_graphics() {
 		// trace('clearing figure with ${figure.lines.length} lines');
 		// todo refactor to have separate graphics buffer for lines in designer
 		// graphics.buffer_lines.clear(true, true);
@@ -203,7 +205,7 @@ class Designer {
 		// trace('has remaining points ${figure.model.length}');
 	}
 
-	public function set_active_figure(direction:Int) {
+	function set_active_figure(direction:Int) {
 		erase_figure_graphics();
 		var index_next = (model_index + direction);
 		index_next = (index_next % file.models.length + file.models.length) % file.models.length;
@@ -215,7 +217,7 @@ class Designer {
 		figure = graphics.map_figure(file.models[model_index], translation);
 	}
 
-	public function add_new_figure() {
+	function add_new_figure() {
 		erase_figure_graphics();
 		file.models.push({
 			index: file.models.length,
@@ -228,13 +230,13 @@ class Designer {
 		figure = graphics.map_figure(file.models[model_index], translation);
 	}
 
-	var line_buffer:Array<LineBaseModel>;
+	private var line_buffer:Array<LineBaseModel>;
 
-	public function buffer_copy() {
+	function buffer_copy() {
 		line_buffer = figure.model;
 	}
 
-	public function buffer_paste() {
+	function buffer_paste() {
 		if (line_buffer != null) {
 			for (line in line_buffer) {
 				// file.models[model_index]
@@ -245,33 +247,33 @@ class Designer {
 		}
 	}
 
-	public function lines_remove() {
+	function lines_remove() {
 		erase_figure_graphics();
 		file.models[model_index].lines = [];
 		figure = graphics.map_figure(file.models[model_index], translation);
 	}
 
-	public function line_erase(line:LineBase) {
+	function line_erase(line:LineBase) {
 		// trace('designer clean line $line');
 		line.erase();
 	}
 
-	public function model_name():String {
+	function model_name():String {
 		return '$model_index : ${file.models[model_index].name}';
 	}
 
-	function map_line(from:Vector2, to:Vector2):LineBaseModel {
+	private function map_line(from:Vector2, to:Vector2):LineBaseModel {
 		return {
 			from: translation.view_to_model_point(from),
 			to: translation.view_to_model_point(to)
 		}
 	}
 
-	public function point_is_outside_grid(point:Vector2):Bool{
+	function point_is_outside_grid(point:Vector2):Bool{
 		return (point.x > bounds_grid.x + bounds_grid.width || point.y > bounds_grid.y + bounds_grid.height);
 	}
 
-	public function start_drawing_line(point:Vector2) {
+	function start_drawing_line(point:Vector2) {
 		if (isDrawingLineBase) {
 			trace('already drawing line?');
 			return;
@@ -288,7 +290,7 @@ class Designer {
 		trace('start_drawing_line ${x} ${y}');
 	}
 
-	public function stop_drawing_line(point:Vector2) {
+	function stop_drawing_line(point:Vector2) {
 		if (!isDrawingLineBase) {
 			return;
 		}
@@ -307,31 +309,33 @@ class Designer {
 		trace('stop_drawing_line ${point.x} ${point.y}');
 	}
 
-	public function png_data_from_figure(figure:FigureModel, translation:EditorTranslation, width:Int, height:Int):UInt8Array{
+	function png_data_from_figure(figure:FigureModel, translation:EditorTranslation, width:Int, height:Int):UInt8Array{
 		return graphics.png_data_from_figure(figure, translation, width, height);
 	}
 
-	public function reset_file_status() {
+	function reset_file_status() {
 		is_file_modified = false;
 	}
 
-	function round_to_nearest(value:Float, interval:Float):Float {
+	private function round_to_nearest(value:Float, interval:Float):Float {
 		return Math.round(value / interval) * interval;
 	}
 }
 
+@:publicFields
 @:structInit
 class Figure {
-	public var model:Array<LineBaseModel>;
-	public var lines:Array<LineBase>;
+	var model:Array<LineBaseModel>;
+	var lines:Array<LineBase>;
 
-	public function line_newest():LineBase {
+	function line_newest():LineBase {
 		return lines[lines.length - 1];
 	}
 }
 
+@:publicFields
 class GraphicsExtensions{
-	public static function map_figure(graphics:GraphicsBase, model:FigureModel, translation:EditorTranslation):Figure {
+	static function map_figure(graphics:GraphicsBase, model:FigureModel, translation:EditorTranslation):Figure {
 		var convert_line:LineBaseModel->LineBaseModel = line -> {
 			from: translation.model_to_view_point(line.from),
 			to: translation.model_to_view_point(line.to)

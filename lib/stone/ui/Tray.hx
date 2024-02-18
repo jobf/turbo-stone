@@ -7,31 +7,34 @@ import stone.core.Ui;
 import stone.text.Text.Align;
 import stone.ui.Interactive;
 
+@:publicFields
 @:structInit
 class Section {
-	public var sort_order:Int = 0;
-	public var contents:Array<InteractiveModel>;
-	public var title:Null<String> = null;
+	var sort_order:Int = 0;
+	var contents:Array<InteractiveModel>;
+	var title:Null<String> = null;
 }
 
+@:publicFields
 @:structInit
 class TrayModel {
-	public var color_fg:RGBA;
-	public var color_bg:RGBA;
-	public var tray_geometry:Rectangle;
-	public var item_geometry:Rectangle;
-	public var dialog_boundary:Rectangle;
-	public var section_separation:Int = 10;
-	public var item_separation:Int = 2;
+	var color_fg:RGBA;
+	var color_bg:RGBA;
+	var tray_geometry:Rectangle;
+	var item_geometry:Rectangle;
+	var dialog_boundary:Rectangle;
+	var section_separation:Int = 10;
+	var item_separation:Int = 2;
 }
 
+@:publicFields
 class Tray {
 	var tray_model:TrayModel;
 	var ui:Ui;
-	public var items(default, null):Array<Interactive>;
-	public var is_blocking_main(default, null):Bool = false;
+	var items(default, null):Array<Interactive>;
+	var is_blocking_main(default, null):Bool = false;
 
-	public function new(sections:Array<Section>, ui:Ui, tray_model:TrayModel) {
+	function new(sections:Array<Section>, ui:Ui, tray_model:TrayModel) {
 		this.tray_model = tray_model;
 		this.ui = ui;
 		items = [];
@@ -53,7 +56,7 @@ class Tray {
 		ui.show(force_fresh);
 	}
 
-	inline function sort_sections(sections:Array<Section>) {
+	private inline function sort_sections(sections:Array<Section>) {
 		ArraySort.sort(sections, (a, b) -> {
 			if (a.sort_order < b.sort_order)
 				return -1;
@@ -63,7 +66,7 @@ class Tray {
 		});
 	}
 
-	inline function sort_contents(contents:Array<InteractiveModel>) {
+	private inline function sort_contents(contents:Array<InteractiveModel>) {
 		ArraySort.sort(contents, (a, b) -> {
 			if (a.sort_order < b.sort_order)
 				return -1;
@@ -73,7 +76,7 @@ class Tray {
 		});
 	}
 
-	inline function make_contents(contents:Array<InteractiveModel>, y_section:Int, title:Null<String>):Int {
+	private inline function make_contents(contents:Array<InteractiveModel>, y_section:Int, title:Null<String>):Int {
 		var y_item:Int = y_section;
 		var has_title = title != null;
 		var bg_color = tray_model.color_bg;
@@ -132,7 +135,7 @@ class Tray {
 		return y_item;
 	}
 
-	inline function make_sub_menu(contents:Array<InteractiveModel>, y_tray_bottom:Int, sub_menu_items:Array<Interactive>, close_sub_menu:Void->Void):Array<Interactive> {
+	private inline function make_sub_menu(contents:Array<InteractiveModel>, y_tray_bottom:Int, sub_menu_items:Array<Interactive>, close_sub_menu:Void->Void):Array<Interactive> {
 		var y_item:Int = y_tray_bottom;
 		var interactives = [];
 
@@ -179,7 +182,7 @@ class Tray {
 		return interactives;
 	}
 
-	inline function make_help_dialog(sections:Array<Section>){
+	private inline function make_help_dialog(sections:Array<Section>){
 
 		var help_button_geometry:Rectangle ={
 			y: tray_model.tray_geometry.height - tray_model.item_geometry.height,
@@ -218,7 +221,7 @@ class Tray {
 		}
 	}
 
-	inline function make_button(model:InteractiveModel, item_geometry:Rectangle, color_bg:RGBA):stone.ui.Interactive.Button {
+	private inline function make_button(model:InteractiveModel, item_geometry:Rectangle, color_bg:RGBA):stone.ui.Interactive.Button {
 			var button = ui.make_button(
 			model,
 			item_geometry,
@@ -334,7 +337,7 @@ class Tray {
 		return button;
 	}
 
-	inline function make_label(model:InteractiveModel, item_geometry:Rectangle, color_bg:RGBA, is_toggled:Null<Bool> = null):stone.ui.Interactive {
+	private inline function make_label(model:InteractiveModel, item_geometry:Rectangle, color_bg:RGBA, is_toggled:Null<Bool> = null):stone.ui.Interactive {
 		return ui.make_label(
 			model,
 			item_geometry,
@@ -344,7 +347,7 @@ class Tray {
 		);
 	}
 
-	inline function make_toggle(model:InteractiveModel, item_geometry:Rectangle, color_bg:RGBA, is_enabled:Bool):stone.ui.Interactive.Toggle {
+	private inline function make_toggle(model:InteractiveModel, item_geometry:Rectangle, color_bg:RGBA, is_enabled:Bool):stone.ui.Interactive.Toggle {
 		return ui.make_toggle(
 			model,
 			item_geometry,
@@ -354,7 +357,7 @@ class Tray {
 		);
 	}
 
-	inline function make_slider(model:InteractiveModel, item_geometry:Rectangle, color_bg:RGBA, fraction:Float):stone.ui.Interactive.Slider {
+	private inline function make_slider(model:InteractiveModel, item_geometry:Rectangle, color_bg:RGBA, fraction:Float):stone.ui.Interactive.Slider {
 		return ui.make_slider(
 			model,
 			item_geometry,

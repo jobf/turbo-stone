@@ -1,22 +1,23 @@
 import stone.abstractions.Graphic;
 import stone.editing.Editor;
 
+@:publicFields
 class Entity {
-	public var motion(default, null):MotionInteractive;
+	var motion(default, null):MotionInteractive;
 
-	public var lines:Polygon;
+	var lines:Polygon;
 
-	public var weight:Float = 250;
-	public var rotation:Float = 0;
+	var weight:Float = 250;
+	var rotation:Float = 0;
+	var rotation_speed:Float;
 
-	public var scale:Float = 1;
+	var scale:Float = 1;
 
-	var rotation_direction:Int = 0;
-	public var rotation_speed:Float;
-	var model_points:Array<Vector2>;
-	var lines_points:Array<Vector2>;
+	private var rotation_direction:Int = 0;
+	private var model_points:Array<Vector2>;
+	private var lines_points:Array<Vector2>;
 
-	public function new(model:Array<Vector2>, x:Int, y:Int, rotation_speed:Float, graphics:GraphicsBase) {
+	function new(model:Array<Vector2>, x:Int, y:Int, rotation_speed:Float, graphics:GraphicsBase) {
 		// set up motion
 		motion = new MotionInteractive(x, y);
 		this.rotation_speed = rotation_speed;
@@ -28,31 +29,31 @@ class Entity {
 		lines_points = lines.points();
 	}
 
-	public function update(elapsed_seconds:Float) {
+	function update(elapsed_seconds:Float) {
 		motion.compute_motion(elapsed_seconds);
 		rotation = rotation + (rotation_speed * rotation_direction);
 	}
 
-	public function set_color(color:RGBA) {
+	function set_color(color:RGBA) {
 		lines.color = color;
 	}
 
-	public function draw() {
+	function draw() {
 		lines.draw(motion.position.x, motion.position.y, rotation, scale);
 		lines_points = lines.points();
 	}
 
-	public function set_rotation_direction(direction:Int) {
+	function set_rotation_direction(direction:Int) {
 		rotation_direction = direction;
 	}
 
-	public function collision_points():Array<Vector2> {
+	function collision_points():Array<Vector2> {
 		return lines.points();
 	}
 
-	public var offset:Float = 0;
+	var offset:Float = 0;
 
-	public function collision_center(translation:EditorTranslation):Vector2 {
+	function collision_center(translation:EditorTranslation):Vector2 {
 		// return motion.position.vector_transform(lines.origin, scale, 0, 0, lines.rotation_sin, lines.rotation_cos);
 
 		var rotation_sin = Math.sin(rotation);
@@ -88,7 +89,7 @@ class Entity {
 		// };
 	}
 
-	public function overlaps_polygon(model:Array<Vector2>):Bool {
+	function overlaps_polygon(model:Array<Vector2>):Bool {
 		for (point in model) {
 			if (lines_points.polygon_overlaps_point(point)) {
 				return true;

@@ -11,17 +11,19 @@ import stone.file.StorageSys as Store;
 
 
 
+@:publicFields
 @:structInit
 class FileContainer{
-	public var key:String;
-	public var json:FileJSON;
+	var key:String;
+	var json:FileJSON;
 }
 
+@:publicFields
 class FileStorage {
-	var _file_list:FileListJSON;
-	var key_file_list:String = "____FILE_LIST";
+	private var _file_list:FileListJSON;
+	private var key_file_list:String = "____FILE_LIST";
 
-	public function new() {
+	function new() {
 		var file_list_json = Store.getItem(key_file_list);
 		if(file_list_json == null){
 			_file_list ={
@@ -34,13 +36,13 @@ class FileStorage {
 		}
 	}
 	
-	function file_list_save(file_list:FileListJSON){
+	private function file_list_save(file_list:FileListJSON){
 		var writer = new JsonWriter<FileListJSON>();
 		var json_string:String = writer.write(file_list);
 		Store.setItem(key_file_list, json_string);
 	}
 
-	public function file_save(container:FileContainer){
+	function file_save(container:FileContainer){
 		var item = Store.getItem(container.key);
 		if(item == null){
 			// this is a new addition so add to the file list
@@ -53,16 +55,16 @@ class FileStorage {
 	}
 
 
-	public function file_paths():Array<String> {
+	function file_paths():Array<String> {
 		return _file_list.paths;
 	}
 
-	public function file_load(file_container_key:String):FileJSON{
+	function file_load(file_container_key:String):FileJSON{
 		var json_string = Store.getItem(file_container_key);
 		return parse_file(json_string);
 	}
 
-	public function file_delete(file_container_key:String){
+	function file_delete(file_container_key:String){
 		trace('delete $file_container_key');
 		var item = Store.getItem(file_container_key);
 		if(item != null){
@@ -73,17 +75,19 @@ class FileStorage {
 	}
 }
 
+@:publicFields
 @:structInit
 class FileListJSON {
-	public var paths:Array<String>;
+	var paths:Array<String>;
 }
 
+@:publicFields
 @:structInit
 class FileJSON {
 	/** the file name and extension e.g. filename.json**/
-	public var file_path(default, null):String;
+	var file_path(default, null):String;
 	/** the serialized content of the file **/
-	public var content(default, null):String;
+	var content(default, null):String;
 }
 
 function parse_file_list(json:String):FileListJSON {

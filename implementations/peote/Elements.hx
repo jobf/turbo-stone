@@ -1,19 +1,20 @@
 import peote.view.Color;
 import peote.view.Element;
 
+@:publicFields
 class FillElement implements Element {
-	@pivotX @formula("w * 0.5 + px_offset") public var px_offset:Float;
-	@pivotY @formula("h * 0.5 + py_offset") public var py_offset:Float;
-	@rotation public var rotation:Float = 0.0;
-	@sizeX @varying public var w:Float;
-	@sizeY @varying public var h:Float;
-	@color public var color:Color;
-	@posX public var x:Float;
-	@posY public var y:Float;
+	@pivotX @formula("w * 0.5 + px_offset") var px_offset:Float;
+	@pivotY @formula("h * 0.5 + py_offset") var py_offset:Float;
+	@rotation var rotation:Float = 0.0;
+	@sizeX @varying var w:Float;
+	@sizeY @varying var h:Float;
+	@color var color:Color;
+	@posX var x:Float;
+	@posY var y:Float;
 
 	var OPTIONS = {blend: true};
 
-	public function new(positionX:Float, positionY:Float, width:Float, height:Float, rotation:Float, color:Color = 0x556677ff) {
+	function new(positionX:Float, positionY:Float, width:Float, height:Float, rotation:Float, color:Color = 0x556677ff) {
 		this.x = positionX;
 		this.y = positionY;
 		this.w = width;
@@ -23,6 +24,7 @@ class FillElement implements Element {
 	}
 }
 
+@:publicFields
 class LineElement implements Element
 {
 	@posX var from_x:Int;
@@ -40,10 +42,10 @@ class LineElement implements Element
 	
 	var OPTIONS = {blend: true};
 
-	@sizeY public var thick:Int = 1;
-	@color public var c:Color;
+	@sizeY var thick:Int = 1;
+	@color var c:Color;
 
-	public function new(from_x:Int, from_y:Int, to_x:Int, to_y:Int, thick:Int, color:Color) {
+	function new(from_x:Int, from_y:Int, to_x:Int, to_y:Int, thick:Int, color:Color) {
 		this.thick = thick;
 		c = color;
 
@@ -64,19 +66,19 @@ class LineElement implements Element
 		r = Math.atan2(to_x - from_x, -(to_y - from_y)) * (180 / Math.PI) - 90;
 	}
 
-	public function set_start(x:Int, y:Int) {
+	function set_start(x:Int, y:Int) {
 		this.from_x = x;
 		this.from_y = y;
 		rotate();
 	}
 
-	public function set_end(x:Int, y:Int) {
+	function set_end(x:Int, y:Int) {
 		this.to_x = x;
 		this.to_y = y;
 		rotate();
 	}
 
-	public function set_rotation(r:Float) {
+	function set_rotation(r:Float) {
 		this.r = r;
 		rotate();
 	}

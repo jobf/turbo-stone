@@ -7,17 +7,18 @@ import stone.core.Engine;
 import stone.text.Text;
 import stone.ui.Interactive;
 
+@:publicFields
 class Ui{
-	var sliders(default, null):Array<Slider>;
-	var clickers(default, null):Array<Interactive>;
-	var labels(default, null):Array<Interactive>;
+	private var sliders(default, null):Array<Slider>;
+	private var clickers(default, null):Array<Interactive>;
+	private var labels(default, null):Array<Interactive>;
 	
-	var graphics:GraphicsBase;
-	var text:Text;
+	private var graphics:GraphicsBase;
+	private var text:Text;
 
-	public var y_start_offset:Int = 0;
+	var y_start_offset:Int = 0;
 
-	public function new(graphics_new_layer:GraphicsConstructor){
+	function new(graphics_new_layer:GraphicsConstructor){
 		sliders = [];
 		clickers = [];
 		labels = [];
@@ -26,7 +27,7 @@ class Ui{
 		this.text =  new Text(font_load_embedded(24), graphics_new_layer(800, 640));
 	}
 
-	public function handle_mouse_click(x_mouse:Int, y_mouse:Int){
+	function handle_mouse_click(x_mouse:Int, y_mouse:Int){
 		for (slider in sliders) {
 			if (slider.overlaps_background(x_mouse, y_mouse)) {
 				slider.click();
@@ -46,7 +47,7 @@ class Ui{
 		}
 	}
 
-	public function handle_mouse_release(){
+	function handle_mouse_release(){
 		for (slider in sliders) {
 			slider.release();
 		}
@@ -57,7 +58,7 @@ class Ui{
 
 	}
 
-	public function handle_mouse_moved(x_mouse:Int, y_mouse:Int){
+	function handle_mouse_moved(x_mouse:Int, y_mouse:Int){
 		for (slider in sliders) {
 			var interactive:Interactive = cast slider;
 
@@ -88,14 +89,14 @@ class Ui{
 		}
 	}
 
-	public function clear() {
+	function clear() {
 		sliders.clear(slider -> slider.erase());
 		clickers.clear(clicker -> clicker.erase());
 		labels.clear(interactive -> interactive.erase());
 	}
 
 
-	public function hide(){
+	function hide(){
 		// trace('hide all');
 		for (interactive in clickers) {
 			interactive.hide();
@@ -112,7 +113,7 @@ class Ui{
 		}
 	}
 
-	public function show(force_refresh:Bool=false){
+	function show(force_refresh:Bool=false){
 		for (interactive in clickers) {
 			var is_not_showing = !interactive.is_enabled;
 			if(is_not_showing || force_refresh){
@@ -152,7 +153,7 @@ class Ui{
 		}
 	}
 
-	public function make_slider(model:InteractiveModel, geometry:Rectangle, color_fg:RGBA, color_bg:RGBA, fraction:Float):Slider {
+	function make_slider(model:InteractiveModel, geometry:Rectangle, color_fg:RGBA, color_bg:RGBA, fraction:Float):Slider {
 		var on_erase = model.interactions.on_erase;
 		model.interactions.on_erase = (interactive:Interactive) -> {
 			sliders.remove(cast interactive);
@@ -174,7 +175,7 @@ class Ui{
 	}
 
 
-	public function make_toggle(model:InteractiveModel, geometry:Rectangle, color_fg:RGBA, color_bg:RGBA, is_enabled:Bool):Toggle {
+	function make_toggle(model:InteractiveModel, geometry:Rectangle, color_fg:RGBA, color_bg:RGBA, is_enabled:Bool):Toggle {
 		var on_erase = model.interactions.on_erase;
 		model.interactions.on_erase = (interactive:Interactive) -> {
 			clickers.remove(interactive);
@@ -187,7 +188,7 @@ class Ui{
 		return toggle;
 	}
 
-	public function make_button(model:InteractiveModel, geometry:Rectangle, color_fg:RGBA, color_bg:RGBA):Button {
+	function make_button(model:InteractiveModel, geometry:Rectangle, color_fg:RGBA, color_bg:RGBA):Button {
 		var on_erase = model.interactions.on_erase;
 		model.interactions.on_erase = (interactive:Interactive) -> {
 			clickers.remove(interactive);
@@ -200,7 +201,7 @@ class Ui{
 		return button;
 	}
 
-	public function make_label(model:InteractiveModel, geometry:Rectangle, color_fg:RGBA, color_bg:RGBA, is_toggled:Null<Bool> = null):Interactive {
+	function make_label(model:InteractiveModel, geometry:Rectangle, color_fg:RGBA, color_bg:RGBA, is_toggled:Null<Bool> = null):Interactive {
 		
 		if(is_toggled == null){
 			var on_erase = model.interactions.on_erase;
@@ -226,7 +227,7 @@ class Ui{
 		return label_toggle;
 	}
 
-	public function make_dialog_text(message:String, geometry:Rectangle, color_fg:RGBA, color_bg:RGBA, text_align:Align=CENTER):TextArea{
+	function make_dialog_text(message:String, geometry:Rectangle, color_fg:RGBA, color_bg:RGBA, text_align:Align=CENTER):TextArea{
 		var x_center = Std.int(geometry.x + geometry.width * 0.5);
 		var y_center = Std.int(geometry.y + geometry.height * 0.5);
 		var lines = message.split("\n");
@@ -244,8 +245,9 @@ class Ui{
 	}
 }
 
+@:publicFields
 @:structInit
 class TextArea{
-	public var text:Array<Word>;
-	public var background:FillBase;
+	var text:Array<Word>;
+	var background:FillBase;
 }
